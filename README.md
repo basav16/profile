@@ -14,4 +14,7 @@ Interactive tools I built with AI agents. All company names and data are anonymi
 ## Recruitment Tools
 - [Recruitment Automation](https://basav16.github.io/finance-tools/recruitment-automation.html): follow-up autopilot that replies to waiting candidates, holds sensitive ones for review, and scores every candidate
 
+## Fundraising Room
+- [Investor Room](https://basav16.github.io/finance-tools/fundraising-room.html): key numbers, market, flywheel, a bear/base/bull valuation model and use of funds for an illustrative enterprise AI company
+
 Basav Sharma · [linkedin.com/in/basavsharma](https://www.linkedin.com/in/basavsharma/)

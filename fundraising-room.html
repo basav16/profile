@@ -1,0 +1,327 @@
+<title>Fundraising Room</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: an analyst's investment note for a fictional enterprise AI company. Masthead with thesis, then key numbers, market, flywheel, growth model, use of funds donut, what I'd watch. Hover/tap reveals detail. */
+:root{
+  --bg:#f7f6f3; --paper:#ffffff; --sunk:#f0eee9; --fg:#14161c; --muted:#5d6270; --line:#dcd9d2;
+  --ink:#14161c; --ink-2:#2a2e38; --ink-fg:#ffffff; --ink-muted:#a3a8b5;
+  --accent:#c2410c; --accent-soft:#fbe6da; --blue:#1e3a8a; --teal:#0e7490; --gold:#b7791f; --slate:#b9b5ac;
+  --serif:"Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --sans:"Inter", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1115; --paper:#171a21; --sunk:#1f232c; --fg:#eef0f4; --muted:#9aa0ad; --line:#2c313c;
+  --ink:#eef0f4; --ink-2:#c9cdd6; --ink-fg:#0f1115; --ink-muted:#5d6270;
+  --accent:#fb923c; --accent-soft:#3a2416; --blue:#7c9cf5; --teal:#38bdd8; --gold:#e3b04b; --slate:#4a505c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1115; --paper:#171a21; --sunk:#1f232c; --fg:#eef0f4; --muted:#9aa0ad; --line:#2c313c;
+  --ink:#eef0f4; --ink-2:#c9cdd6; --ink-fg:#0f1115; --ink-muted:#5d6270;
+  --accent:#fb923c; --accent-soft:#3a2416; --blue:#7c9cf5; --teal:#38bdd8; --gold:#e3b04b; --slate:#4a505c; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:15px;line-height:1.55}
+.in{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+/* masthead */
+.mast{background:var(--paper);color:var(--fg);border-bottom:1px solid var(--line);border-top:4px solid var(--accent)}
+.mast .in{padding-block:30px 34px;display:flex;flex-direction:column;gap:22px}
+.mrow{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:center;font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.live{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:5px 12px;color:var(--fg)}
+.live i{width:7px;height:7px;border-radius:50%;background:var(--blue);display:inline-block}
+@media (prefers-reduced-motion:no-preference){.live i{animation:p 1.6s ease-in-out infinite}@keyframes p{50%{opacity:.3}}}
+.mast h1{font-family:var(--serif);font-weight:700;font-size:clamp(30px,5vw,54px);line-height:1.04;margin:0;max-width:20ch;text-wrap:balance;letter-spacing:-.01em}
+.mast h1 em{font-style:normal;color:var(--accent)}
+.lede{font-size:18px;max-width:64ch;margin:0;color:var(--muted)}
+.thesis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;border-top:1px solid var(--line);padding-top:20px}
+.thesis div{display:flex;flex-direction:column;gap:4px}
+.thesis b{font-family:var(--serif);font-size:18px;font-weight:700}
+.thesis span{color:var(--muted);font-size:14px}
+/* body */
+main .in{display:flex;flex-direction:column;gap:44px;padding-block:34px 40px}
+.sec{display:flex;flex-direction:column;gap:16px}
+.sh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.sh h2{font-family:var(--serif);font-size:28px;font-weight:700;margin:0;letter-spacing:-.005em}
+.sh .k{font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.take{font-family:var(--sans);font-size:18px;line-height:1.45;max-width:62ch;margin:0}
+.take::before{content:"My read  ";font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);vertical-align:2px}
+.est{font-family:var(--mono);font-size:10.5px;padding:1px 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+/* numbers */
+.nums{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border:1px solid var(--line);border-radius:12px;background:var(--paper);overflow:hidden}
+.num{padding:16px;display:flex;flex-direction:column;gap:2px;border-right:1px solid var(--line);cursor:help;position:relative;min-width:0}
+.num:last-child{border-right:0}
+.num:hover,.num:focus-visible{background:var(--sunk);outline:none}
+.num b{font-family:var(--serif);font-size:32px;font-weight:600;line-height:1.05;font-variant-numeric:tabular-nums}
+.num span{font-size:12.5px;color:var(--muted)}
+/* cards */
+.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.two{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px}
+.ct{font-size:13px;font-weight:600;margin:0 0 10px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.ct small{font-weight:400;color:var(--muted)}
+svg text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+svg .lab{fill:var(--fg);font-weight:500}
+svg .grid{stroke:var(--line)}
+.hov{cursor:pointer;transition:opacity .15s}
+.dim .hov{opacity:.35}.dim .hov.on{opacity:1}
+.eng{display:flex;flex-direction:column;gap:9px}
+.erow{display:grid;grid-template-columns:112px minmax(0,1fr) 40px;gap:10px;align-items:center;font-size:13px}
+.ebar{height:14px;border-radius:7px;background:var(--sunk);overflow:hidden}
+.ebar span{display:block;height:100%;background:var(--slate);border-radius:7px}
+.erow.hl .ebar span{background:var(--accent)}
+.erow .v{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+.note{font-size:12px;color:var(--muted);margin:10px 0 0}
+/* flywheel */
+.wheel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center}
+.wsvg{max-width:420px;width:100%;justify-self:center}
+.wsvg .node circle{fill:var(--paper);stroke:var(--line);stroke-width:1.5;transition:stroke .15s,fill .15s}
+.wsvg .node.on circle{stroke:var(--accent);fill:var(--accent-soft)}
+.wsvg .node text{font-family:var(--sans);font-size:13px;fill:var(--fg);font-weight:600}
+.wsvg .node .sub{font-family:var(--mono);font-size:10px;fill:var(--muted);font-weight:400}
+.wsvg .arc{fill:none;stroke:var(--muted);stroke-width:1.5;stroke-dasharray:3 4}
+.wsvg .hub{font-family:var(--serif);font-size:15px;fill:var(--fg)}
+.detail{display:flex;flex-direction:column;gap:8px}
+.detail .k{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.detail h3{font-family:var(--serif);font-size:26px;font-weight:700;margin:0}
+.detail p{margin:0;color:var(--muted);max-width:46ch}
+.detail .m{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--fg)}
+/* model */
+.model{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:24px}
+.ctrls{display:flex;flex-direction:column;gap:16px}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{flex:1;font:inherit;font-size:13px;font-weight:500;padding:7px 0;border:0;background:var(--paper);color:var(--fg);cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.ctrl{display:flex;flex-direction:column;gap:6px}
+.ctrl label{display:flex;justify-content:space-between;font-size:13.5px;font-weight:500}
+.ctrl output{font-family:var(--mono);color:var(--accent)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.outs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.outs div{border-top:3px solid var(--blue);padding-top:6px}
+.outs b{font-family:var(--serif);font-size:28px;font-weight:600;font-variant-numeric:tabular-nums;display:block;line-height:1.1}
+.outs span{font-size:12px;color:var(--muted)}
+/* funds */
+.funds{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:28px;align-items:center}
+.donut{width:100%;max-width:320px;justify-self:center}
+.donut path{stroke:var(--paper);stroke-width:3;cursor:pointer;transition:transform .15s,opacity .15s;transform-origin:160px 160px}
+.donut path.on{transform:scale(1.04)}
+.donut .c1{font-family:var(--serif);font-size:40px;font-weight:600;fill:var(--fg)}
+.donut .c2{font-family:var(--sans);font-size:13px;fill:var(--muted)}
+.fchips{display:flex;flex-wrap:wrap;gap:8px}
+.fchip{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--paper);color:var(--fg);border-radius:999px;padding:5px 12px;cursor:pointer}
+.fchip i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.fchip[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+/* watch */
+.watch{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.w{border-top:3px solid var(--accent);padding-top:10px;display:flex;flex-direction:column;gap:6px}
+.w b{font-family:var(--serif);font-size:19px;font-weight:600}
+.w span{font-size:14px;color:var(--muted)}
+.w .m{font-family:var(--mono);font-size:12px;color:var(--fg)}
+/* tooltip */
+.tip{position:fixed;z-index:10;max-width:260px;background:var(--ink);color:var(--ink-fg);font-size:12.5px;line-height:1.45;padding:9px 11px;border-radius:8px;pointer-events:none;box-shadow:0 6px 20px #0003}
+.tip b{display:block;font-size:13px;margin-bottom:2px}
+.tip .s{display:block;color:var(--ink-muted);font-family:var(--mono);font-size:10.5px;margin-top:4px}
+.src{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px;display:flex;flex-direction:column;gap:3px}
+.src a{color:var(--muted)}
+footer{font-size:13px;color:var(--muted);text-align:center}
+button:focus-visible,.hov:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:980px){.nums{grid-template-columns:repeat(3,minmax(0,1fr))}.num:nth-child(3){border-right:0}.num:nth-child(-n+3){border-bottom:1px solid var(--line)}}
+@media (max-width:1000px){.thesis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:860px){.two,.wheel,.model,.funds{grid-template-columns:minmax(0,1fr)}.thesis,.watch{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:480px){.nums{grid-template-columns:repeat(2,minmax(0,1fr))}.num{border-right:0;border-bottom:1px solid var(--line)}.outs b{font-size:22px}}
+</style>
+
+<header class="mast">
+  <div class="in">
+    <div class="mrow"><span>Sample Company · Fundraising room · illustrative data · prepared by Basav Sharma</span><span class="live"><i></i>Live prototype</span></div>
+    <h1>Enterprise AI that reaches production <em>in weeks, not quarters.</em></h1>
+    <p class="lede">Sample Company puts AI agents into the back-office workflows of large companies, then reuses what it builds at the next customer. Each deployment makes the following one faster and cheaper.</p>
+    <div class="thesis">
+      <div><b>Paid pilots, not proofs of concept</b><span>Every engagement starts with a scoped, paid pilot tied to one business metric. 74% of pilots convert to a production contract.</span></div>
+      <div><b>Reusable agent library</b><span>Over 400 tested agent components for finance, support and procurement. New deployments start 60% built.</span></div>
+      <div><b>Land and expand</b><span>Customers start in one department and spread. Net revenue retention of 138% means the base grows without new logos.</span></div>
+      <div><b>Software margins over time</b><span>Services carry each launch; platform fees carry the renewal. Gross margin has moved from 41% to 63% in two years.</span></div>
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="in">
+
+  <section class="sec" aria-label="Key numbers">
+    <div class="sh"><h2>Where the company stands</h2><span class="k">hover any number for detail</span></div>
+    <div class="nums">
+      <div class="num" tabindex="0" data-t="Annual recurring revenue|Platform fees plus contracted managed services.|Illustrative"><b>$47M</b><span>ARR</span></div>
+      <div class="num" tabindex="0" data-t="Enterprise customers|Companies with more than $1B in revenue on an annual contract.|Illustrative"><b>312</b><span>enterprise customers</span></div>
+      <div class="num" tabindex="0" data-t="Net revenue retention|Revenue from last year's customers this year, after churn and expansion.|Illustrative"><b>138%</b><span>net revenue retention</span></div>
+      <div class="num" tabindex="0" data-t="Agents in production|Live agents running customer workflows today.|Illustrative"><b>1,940</b><span>agents in production</span></div>
+      <div class="num" tabindex="0" data-t="Time to go-live|Median weeks from signed pilot to first agent in production.|Illustrative"><b>7 wks</b><span>median time to go-live</span></div>
+      <div class="num" tabindex="0" data-t="Capital raised|Seed $4M, A $17M, B $50M. Last round post-money $310M.|Illustrative"><b>$71M</b><span>raised to date</span></div>
+    </div>
+  </section>
+
+  <section class="sec" aria-label="Market">
+    <div class="sh"><h2>Budgets have moved from pilots to production</h2><span class="k">market</span></div>
+    <p class="take">Most large companies have run AI pilots; few have shipped them. Budget is now going to whoever can get agents live and keep them running. Big consultancies sell the strategy deck. Sample Company sells the working system.</p>
+    <div class="two">
+      <div class="card">
+        <p class="ct">Enterprise AI implementation spend <small>$B · hover a bar</small></p>
+        <svg id="mkt" viewBox="0 0 520 230" role="img" aria-label="Enterprise AI implementation spend, 2025 to 2030"></svg>
+        <p class="note">Illustrative figures for a fast-growing category.</p>
+      </div>
+      <div class="card">
+        <p class="ct">Weeks from contract to production <small>illustrative · lower is better</small></p>
+        <div class="eng" id="eng"></div>
+        <p class="note">Speed to production is the main buying criterion once a pilot budget becomes an operating budget.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" aria-label="Flywheel">
+    <div class="sh"><h2>Every deployment makes the next one cheaper</h2><span class="k">hover or tap a stage</span></div>
+    <div class="wheel">
+      <svg class="wsvg" id="wheel" viewBox="0 0 400 400" role="img" aria-label="Company flywheel"></svg>
+      <div class="detail" id="wd"></div>
+    </div>
+  </section>
+
+  <section class="sec" aria-label="Growth model">
+    <div class="sh"><h2>Pressure-test the round</h2><span class="est">illustrative model</span></div>
+    <div class="model">
+      <div class="ctrls">
+        <div class="seg" role="group" aria-label="Scenario">
+          <button data-s="bear" aria-pressed="false">Bear</button><button data-s="base" aria-pressed="true">Base</button><button data-s="bull" aria-pressed="false">Bull</button>
+        </div>
+        <div class="ctrl"><label for="g">ARR growth per year <output id="g-o"></output></label><input type="range" id="g" min="10" max="150" step="5" value="65"></div>
+        <div class="ctrl"><label for="m">Multiple on next year's ARR <output id="m-o"></output></label><input type="range" id="m" min="4" max="30" step="1" value="13"></div>
+        <div class="ctrl"><label for="b">2026 ARR <output id="b-o"></output></label><input type="range" id="b" min="25" max="95" step="1" value="47"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
+        <div class="outs">
+          <div><b id="o-rev"></b><span>2029 ARR</span></div>
+          <div><b id="o-val"></b><span>implied valuation</span></div>
+          <div><b id="o-step"></b><span>step-up on last round</span></div>
+        </div>
+        <svg id="chart" viewBox="0 0 600 230" role="img" aria-label="Projected ARR"></svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" aria-label="Use of funds">
+    <div class="sh"><h2>Where the money goes</h2><span class="est">proposed</span></div>
+    <div class="funds">
+      <svg class="donut" id="donut" viewBox="0 0 320 320" role="img" aria-label="Use of funds"></svg>
+      <div class="detail">
+        <div class="ctrl" style="max-width:360px"><label for="rs">Round size <output id="rs-o"></output></label><input type="range" id="rs" min="60" max="240" step="10" value="140"></div>
+        <div class="fchips" id="fchips"></div>
+        <span class="k" id="fd-k"></span>
+        <h3 id="fd-h"></h3>
+        <p id="fd-p"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" aria-label="What I'd watch">
+    <div class="sh"><h2>Three numbers I'd watch</h2><span class="k">what prices this round</span></div>
+    <div class="watch">
+      <div class="w"><b>Reuse rate</b><span>Share of each new deployment built from existing agent components. This is the flywheel turned into a number.</span><span class="m">Target: above 70%</span></div>
+      <div class="w"><b>Pilot-to-production conversion</b><span>Paid pilots that become annual contracts within two quarters. Falling conversion is the first sign of a services trap.</span><span class="m">Target: hold above 70%</span></div>
+      <div class="w"><b>Software share of gross profit</b><span>Platform fees versus implementation hours. This decides whether the round is priced as software or as services.</span><span class="m">Target: past 60% by 2028</span></div>
+    </div>
+  </section>
+
+  <div class="src"><span>All company names, products and figures on this page are fictional and for illustration only.</span></div>
+  <footer>Made by Basav Sharma</footer>
+</div>
+</main>
+<div class="tip" id="tip" hidden></div>
+
+<script>
+(function(){
+  var tip=document.getElementById("tip");
+  function show(e,html){tip.innerHTML=html;tip.hidden=false;var x=e.clientX||0,y=e.clientY||0;
+    if(!e.clientX){var r=e.target.getBoundingClientRect();x=r.left+r.width/2;y=r.bottom;}
+    var w=tip.offsetWidth,h=tip.offsetHeight;tip.style.left=Math.max(8,Math.min(window.innerWidth-w-8,x+12))+"px";tip.style.top=Math.max(8,Math.min(window.innerHeight-h-8,y+14))+"px";}
+  function hide(){tip.hidden=true}
+  function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
+
+  // numbers
+  document.querySelectorAll(".num").forEach(function(n){
+    var p=n.dataset.t.split("|"),h="<b>"+esc(p[0])+"</b>"+esc(p[1])+'<span class="s">'+esc(p[2])+"</span>";
+    n.addEventListener("mousemove",function(e){show(e,h)});n.addEventListener("mouseleave",hide);
+    n.addEventListener("focus",function(e){show(e,h)});n.addEventListener("blur",hide);
+  });
+
+  // market bars
+  var M=[["2025",14.6,"Illustrative"],["2026",23.9,"Illustrative, +64%"],["2030",71.3,"Illustrative, ~31% a year"]],svg=document.getElementById("mkt"),s="";
+  var W=520,H=230,l=40,b=28,t=18,top=80,bw=(W-l-10)/M.length;
+  [0,20,40,60,80].forEach(function(v){var y=t+(H-t-b)*(1-v/top);s+='<line class="grid" x1="'+l+'" x2="'+W+'" y1="'+y+'" y2="'+y+'"/><text x="'+(l-6)+'" y="'+(y+4)+'" text-anchor="end">'+v+'</text>'});
+  M.forEach(function(m,i){var h=(H-t-b)*(m[1]/top),x=l+i*bw+bw*.22,w=bw*.56,y=H-b-h;
+    s+='<rect class="hov" tabindex="0" data-i="'+i+'" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="4" fill="'+(i===0?"var(--slate)":"var(--accent)")+'"/>';
+    s+='<text class="lab" x="'+(x+w/2)+'" y="'+(y-6)+'" text-anchor="middle">$'+m[1]+'B</text><text x="'+(x+w/2)+'" y="'+(H-8)+'" text-anchor="middle">'+m[0]+'</text>'});
+  svg.innerHTML=s;
+  svg.querySelectorAll(".hov").forEach(function(r){var m=M[+r.dataset.i],h="<b>"+m[0]+": $"+m[1]+"B</b>"+m[2]+'<span class="s">Illustrative</span>';
+    r.addEventListener("mousemove",function(e){svg.classList.add("dim");r.classList.add("on");show(e,h)});
+    r.addEventListener("mouseleave",function(){svg.classList.remove("dim");r.classList.remove("on");hide()});
+    r.addEventListener("focus",function(e){show(e,h)});r.addEventListener("blur",hide)});
+
+  // engagement
+  var E=[["Sample Co.",7,1],["Consultancy A",29,0],["Consultancy B",23,0],["In-house team",34,0]],eg=document.getElementById("eng");
+  E.forEach(function(e){var d=document.createElement("div");d.className="erow"+(e[2]?" hl":"");d.innerHTML='<span></span><div class="ebar"><span style="width:'+(e[1]/36*100)+'%"></span></div><span class="v">'+e[1]+'</span>';d.firstChild.textContent=e[0];eg.appendChild(d)});
+
+  // flywheel
+  var F=[
+    ["Find","Audit","Forward-deployed engineers map one costly workflow and the metric it moves, such as days to close or tickets per agent.","3-week paid discovery"],
+    ["Prove","Pilot","A scoped agent runs on live data next to the current team. The pilot is judged on the metric, not a demo.","74% of pilots convert"],
+    ["Ship","Deploy","The agent goes to production with monitoring, human review and the customer's own access controls.","Median 7 weeks to go-live"],
+    ["Spread","Expand","Proven agents move to the next department, and every new component joins the shared library.","138% net revenue retention"]];
+  var wh=document.getElementById("wheel"),cx=200,cy=200,R=135,ws='<circle cx="200" cy="200" r="'+R+'" class="arc"/>';
+  ws+='<text class="hub" x="200" y="195" text-anchor="middle">Reusable agents</text><text class="hub" x="200" y="216" text-anchor="middle" style="font-size:12px;fill:var(--muted)">compounds</text>';
+  F.forEach(function(f,i){var a=-Math.PI/2+i*Math.PI/2,x=cx+R*Math.cos(a),y=cy+R*Math.sin(a);
+    ws+='<g class="node hov" tabindex="0" data-i="'+i+'"><circle cx="'+x+'" cy="'+y+'" r="46"/><text x="'+x+'" y="'+(y-2)+'" text-anchor="middle">'+f[1]+'</text><text class="sub" x="'+x+'" y="'+(y+14)+'" text-anchor="middle">'+f[0].toUpperCase()+'</text></g>'});
+  wh.innerHTML=ws;
+  var wd=document.getElementById("wd");
+  function wsel(i){wh.querySelectorAll(".node").forEach(function(n){n.classList.toggle("on",+n.dataset.i===i)});var f=F[i];
+    wd.innerHTML='<span class="k"></span><h3></h3><p></p><span class="m"></span>';wd.children[0].textContent="Stage "+(i+1)+" · "+f[0];wd.children[1].textContent=f[1];wd.children[2].textContent=f[2];wd.children[3].textContent=f[3];}
+  wh.querySelectorAll(".node").forEach(function(n){var i=+n.dataset.i;n.addEventListener("mouseenter",function(){wsel(i)});n.addEventListener("click",function(){wsel(i)});n.addEventListener("focus",function(){wsel(i)})});
+  wsel(0);
+
+  // model
+  var g=document.getElementById("g"),m=document.getElementById("m"),bb=document.getElementById("b"),ch=document.getElementById("chart");
+  var SC={bear:[35,8,47],base:[65,13,47],bull:[95,19,58]};
+  function money(x){return x>=1000?"$"+(x/1000).toFixed(1)+"B":"$"+Math.round(x)+"M"}
+  function draw(){
+    var gr=+g.value/100,mul=+m.value,base=+bb.value;
+    document.getElementById("g-o").textContent=g.value+"%";document.getElementById("m-o").textContent=mul+"x";document.getElementById("b-o").textContent="$"+base+"M";
+    var yrs=[2026,2027,2028,2029],v=yrs.map(function(y,i){return base*Math.pow(1+gr,i)}),val=base*(1+gr)*mul;
+    document.getElementById("o-rev").textContent=money(v[3]);document.getElementById("o-val").textContent=money(val);document.getElementById("o-step").textContent=(val/310).toFixed(1)+"x";
+    var W=600,H=230,l=56,r=10,t=18,b=28,max=Math.max.apply(null,v),step=max>1500?500:max>600?200:max>250?100:50,top=Math.ceil(max/step)*step,s="";
+    for(var y=0;y<=top;y+=step){var py=t+(H-t-b)*(1-y/top);s+='<line class="grid" x1="'+l+'" x2="'+(W-r)+'" y1="'+py+'" y2="'+py+'"/><text x="'+(l-8)+'" y="'+(py+4)+'" text-anchor="end">'+money(y)+'</text>'}
+    var bw=(W-l-r)/4;v.forEach(function(x,i){var h=(H-t-b)*(x/top),X=l+i*bw+bw*.22,w=bw*.56,Y=H-b-h;
+      s+='<rect x="'+X+'" y="'+Y+'" width="'+w+'" height="'+h+'" rx="4" fill="'+(i===0?"var(--slate)":"var(--ink-2)")+'" style="'+(i===0?"":"fill:var(--accent)")+'"/><text class="lab" x="'+(X+w/2)+'" y="'+(Y-6)+'" text-anchor="middle">'+money(x)+'</text><text x="'+(X+w/2)+'" y="'+(H-8)+'" text-anchor="middle">'+yrs[i]+'</text>'});
+    ch.innerHTML=s;
+  }
+  function setSc(k){var v=SC[k];g.value=v[0];m.value=v[1];bb.value=v[2];document.querySelectorAll(".seg button").forEach(function(x){x.setAttribute("aria-pressed",x.dataset.s===k?"true":"false")});draw()}
+  document.querySelectorAll(".seg button").forEach(function(x){x.onclick=function(){setSc(x.dataset.s)}});
+  [g,m,bb].forEach(function(e){e.addEventListener("input",function(){document.querySelectorAll(".seg button").forEach(function(x){x.setAttribute("aria-pressed","false")});draw()})});
+  draw();
+
+  // donut
+  var U=[["Forward-deployed engineers","var(--accent)",34,"Triple the deployment team so more pilots start each quarter, with a pod based in each major region."],
+         ["Agent platform","var(--blue)",27,"Monitoring, evaluation and access controls built once, so every customer gets them on day one."],
+         ["Go-to-market","var(--teal)",23,"Industry teams for financial services, healthcare and logistics, plus partnerships with two systems integrators."],
+         ["Team and runway","var(--gold)",16,"Senior hires in security, finance and customer success, plus 30+ months of runway."]];
+  var dn=document.getElementById("donut"),rs=document.getElementById("rs"),sel=0,fc=document.getElementById("fchips");
+  function arc(a0,a1,r0,r1){var c=160,p=function(a,r){return [c+r*Math.cos(a),c+r*Math.sin(a)]},L=a1-a0>Math.PI?1:0,A=p(a0,r1),B=p(a1,r1),C=p(a1,r0),D=p(a0,r0);
+    return "M"+A+" A"+r1+" "+r1+" 0 "+L+" 1 "+B+" L"+C+" A"+r0+" "+r0+" 0 "+L+" 0 "+D+"Z"}
+  U.forEach(function(u,i){var b=document.createElement("button");b.className="fchip";b.innerHTML='<i style="background:'+u[1]+'"></i>';b.appendChild(document.createTextNode(u[0]));b.onclick=function(){fsel(i)};b.onmouseenter=function(){fsel(i)};fc.appendChild(b)});
+  function fdraw(){var tot=+rs.value,a=-Math.PI/2,s="";
+    document.getElementById("rs-o").textContent="$"+tot+"M";
+    U.forEach(function(u,i){var a1=a+u[2]/100*Math.PI*2;s+='<path class="'+(i===sel?"on":"")+'" data-i="'+i+'" d="'+arc(a+.01,a1-.01,92,150)+'" fill="'+u[1]+'" style="opacity:'+(i===sel?1:.55)+'"/>';a=a1});
+    var u=U[sel];s+='<text class="c1" x="160" y="168" text-anchor="middle">$'+Math.round(tot*u[2]/100)+'M</text><text class="c2" x="160" y="192" text-anchor="middle">'+u[2]+'% of the round</text>';
+    dn.innerHTML=s;
+    dn.querySelectorAll("path").forEach(function(p){p.addEventListener("mouseenter",function(){fsel(+p.dataset.i)});p.addEventListener("click",function(){fsel(+p.dataset.i)})});
+    fc.querySelectorAll(".fchip").forEach(function(b,i){b.setAttribute("aria-pressed",i===sel?"true":"false")});
+    document.getElementById("fd-k").textContent=u[2]+"% · $"+Math.round(tot*u[2]/100)+"M of $"+tot+"M";
+    document.getElementById("fd-h").textContent=u[0];document.getElementById("fd-p").textContent=u[3];}
+  function fsel(i){if(i===sel)return;sel=i;fdraw()}
+  rs.addEventListener("input",fdraw);fdraw();
+})();
+</script>
