@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finance Tools by Basav Sharma</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c2430;--mute:#5f6b78;--line:#e3e7ec;--accent:#1f5fbf}
+@media (prefers-color-scheme:dark){:root{--bg:#10151c;--card:#18202a;--ink:#e8edf3;--mute:#9aa6b5;--line:#2a3441;--accent:#7aa7ff}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+main{max-width:880px;margin:0 auto;padding:48px 16px 64px}
+h1{font-size:30px;margin:0 0 8px}
+.lede{color:var(--mute);margin:0 0 32px;max-width:62ch}
+.grid{display:grid;gap:16px}
+a.card{display:block;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px;color:inherit;text-decoration:none;transition:border-color .15s}
+a.card:hover{border-color:var(--accent)}
+a.card h2{margin:0 0 6px;font-size:19px;color:var(--accent)}
+a.card p{margin:0;color:var(--mute)}
+footer{margin-top:40px;color:var(--mute);font-size:14px}
+footer a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<h1>Finance Tools</h1>
+<p class="lede">Interactive finance tools I built with AI agents for a consumer goods company. Data is anonymized ("Sample Co."). Click any tool to open it live.</p>
+<div class="grid">
+<a class="card" href="fpa-dashboard.html"><h2>FP&amp;A Dashboard</h2><p>Three-statement model with plan vs actuals, channel P&amp;L, covenant and runway tracking, and what-if scenarios.</p></a>
+<a class="card" href="inventory-open-to-buy.html"><h2>Inventory Open-to-Buy</h2><p>SKU-level inventory plan by channel and warehouse, with weeks of supply, aging, buy plan and pricing ROI.</p></a>
+<a class="card" href="po-tracker.html"><h2>PO Tracker</h2><p>Purchase orders matched to receipts and bills, landed cost and freight checks, and credit memos in one view.</p></a>
+</div>
+<footer>Basav Sharma · <a href="https://www.linkedin.com/in/basavsharma/">linkedin.com/in/basavsharma</a></footer>
+</main>
+</body>
+</html>
