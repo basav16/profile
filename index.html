@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Basav Sharma · Finance, Strategy &amp; AI Systems</title>
-<meta name="description" content="Basav Sharma: founder, finance head, banker and AI transformation lead. Columbia MBA. Looking to work with founders in San Francisco.">
+<meta name="description" content="Basav Sharma: founder, finance head, banker and AI transformation lead. Columbia MBA. Looking to work with founders, operators and finance leaders in San Francisco.">
 <meta property="og:title" content="Basav Sharma">
 <meta property="og:description" content="I build finance strategy and AI systems that fast-growing companies run on.">
 <meta property="og:image" content="https://basav16.github.io/profile/img/basav.jpg">
@@ -13,7 +13,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
 :root{
-  --ivory:#f7f2e7; --ivory-2:#efe7d6; --card:#fffcf5; --line:#e3d9c4;
+  --ivory:#f8f0e1; --ivory-2:#f0e5cf; --card:#fffbf2; --line:#e4d6bb;
+  --royal:#2a52be; --royal-soft:#e3e9fa;
   --navy:#0f1f3d; --navy-2:#2b3a57; --mute:#6b7389;
   --gold:#b8975a; --gold-ink:#8a6a2f; --gold-soft:#f1e6cc;
   --deep:#0b1730; --deep-2:#13244a; --deep-line:#253a66; --deep-mute:#b3bdd1;
@@ -26,7 +27,7 @@ body{margin:0;background:var(--ivory);color:var(--navy);font:17px/1.6 var(--sans
 a{color:inherit}
 img{max-width:100%;display:block}
 .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
-.label{font:500 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gold-ink)}
+.label{font:500 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--royal)}
 
 /* nav */
 nav{position:sticky;top:0;z-index:20;background:rgba(247,242,231,.88);backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid transparent;transition:border-color .2s}
@@ -40,9 +41,9 @@ nav ul a:hover{color:var(--gold-ink)}
 nav ul a.hl{color:var(--navy);font-weight:700;border-bottom:2px solid var(--gold);padding-bottom:3px}
 
 /* hero */
-.hero{padding:56px 0 76px}
+.hero{padding:40px 0 56px}
 .hero .wrap{display:grid;grid-template-columns:1.25fr .75fr;gap:56px;align-items:center}
-.hero h1{font:800 clamp(64px,10.5vw,150px)/.88 var(--serif);letter-spacing:-.045em;margin:22px 0 28px}
+.hero h1{font:800 clamp(54px,8vw,112px)/.9 var(--serif);letter-spacing:-.04em;margin:18px 0 22px}
 .hero h1 em{font-style:normal;color:var(--gold)}
 .hero .lede{font-size:clamp(19px,2vw,23px);line-height:1.5;color:var(--navy-2);max-width:31ch;margin:0 0 34px}
 .hero .lede b{color:var(--navy);font-weight:600}
@@ -50,21 +51,21 @@ nav ul a.hl{color:var(--navy);font-weight:700;border-bottom:2px solid var(--gold
 .btn{display:inline-flex;align-items:center;gap:9px;padding:13px 22px;border-radius:999px;font:600 15px/1 var(--sans);text-decoration:none;border:1.5px solid var(--navy);transition:transform .15s, background .15s, color .15s, border-color .15s}
 .btn.primary{background:var(--navy);color:var(--ivory)}
 .btn:hover{transform:translateY(-2px)}
-.btn.primary:hover{background:var(--gold-ink);border-color:var(--gold-ink)}
+.btn.primary:hover{background:var(--royal);border-color:var(--royal)}
 .btn.li{background:var(--li);border-color:var(--li);color:#fff}
 .btn.li:hover{background:#084e96;border-color:#084e96}
 .btn svg{width:17px;height:17px}
-.portrait{position:relative;justify-self:end;width:100%;max-width:350px}
-.portrait::before{content:"";position:absolute;inset:22px -22px -22px 22px;background:var(--gold);border-radius:28px}
-.portrait img{position:relative;border-radius:28px;aspect-ratio:4/5;object-fit:cover;object-position:50% 20%;width:100%}
-.portrait .tag{position:absolute;left:-26px;bottom:34px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;box-shadow:0 10px 30px rgba(15,31,61,.14);font-size:14px;line-height:1.35}
+.portrait{position:relative;justify-self:end;width:100%;max-width:330px}
+.portrait::before{content:"";position:absolute;inset:16px -16px -16px 16px;background:var(--gold);border-radius:28px}
+.portrait img{position:relative;border-radius:28px;aspect-ratio:1/1.08;object-fit:cover;object-position:50% 25%;width:100%;height:auto}
+.portrait .tag{position:absolute;left:-34px;bottom:-20px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;box-shadow:0 10px 30px rgba(15,31,61,.14);font-size:14px;line-height:1.35}
 .portrait .tag b{display:block;font-weight:600}
 .portrait .tag span{color:var(--mute);font-size:13px}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2f9e68;margin-right:7px;vertical-align:1px;box-shadow:0 0 0 4px rgba(47,158,104,.2)}
 
 /* ticker */
-.ticker{background:var(--navy);color:var(--ivory);overflow:hidden;white-space:nowrap;padding:18px 0;font:600 clamp(18px,2.2vw,26px)/1 var(--serif)}
-.ticker .track{display:inline-flex;gap:44px;animation:slide 38s linear infinite;padding-left:44px}
+.ticker{background:var(--navy);color:var(--ivory);padding:20px 16px;font:600 clamp(16px,1.9vw,22px)/1.4 var(--serif);border-bottom:3px solid var(--royal)}
+.ticker .track{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 26px;max-width:1180px;margin:0 auto}
 .ticker i{font-style:normal;color:var(--gold)}
 @keyframes slide{to{transform:translateX(-50%)}}
 
@@ -79,7 +80,7 @@ section{padding:104px 0}
 .stat{padding:30px 24px 28px;border-right:1px solid var(--line)}
 .stat:last-child{border-right:0}
 .stat b{display:block;font:800 clamp(38px,4.4vw,56px)/1 var(--serif);letter-spacing:-.03em}
-.stat b small{font-size:.5em;color:var(--gold)}
+.stat b small{font-size:.5em;color:var(--royal)}
 .stat span{display:block;margin-top:10px;color:var(--navy-2);font-size:15px;line-height:1.45}
 
 /* journey */
@@ -90,7 +91,7 @@ section{padding:104px 0}
 .role h3{font:800 30px/1 var(--serif);letter-spacing:-.02em;margin:4px 0 0}
 .role .org{font-weight:600;font-size:15px}
 .role p{margin:0;color:var(--navy-2);font-size:15px;line-height:1.55}
-.role .pill{align-self:flex-start;margin-top:auto;font:500 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:7px 10px;border-radius:999px;background:var(--gold-soft);color:var(--gold-ink)}
+.role .pill{align-self:flex-start;margin-top:auto;font:500 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:7px 10px;border-radius:999px;background:var(--royal-soft);color:var(--royal)}
 .creds{margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .cred{display:flex;align-items:center;gap:18px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px 22px}
 .cred .logo{flex:none;width:96px;height:56px;display:grid;place-items:center}
@@ -105,6 +106,7 @@ section{padding:104px 0}
 .ind .ico{width:58px;height:58px;border-radius:16px;background:var(--navy);color:var(--gold);display:grid;place-items:center}
 .ind .ico svg{width:30px;height:30px}
 .ind div:nth-child(even) .ico{background:var(--gold);color:var(--navy)}
+.ind div:nth-child(3) .ico{background:var(--royal);color:#fff}
 .ind h3{font:800 22px/1.1 var(--serif);letter-spacing:-.01em;margin:6px 0 0}
 .ind p{margin:0;color:var(--mute);font-size:14px;line-height:1.5}
 
@@ -131,7 +133,7 @@ section{padding:104px 0}
 .tool .body{padding:24px 26px 26px;display:flex;flex-direction:column;gap:8px}
 .tool h4{font:800 28px/1.05 var(--serif);letter-spacing:-.02em;margin:0}
 .tool p{margin:0;color:var(--navy-2);font-size:15.5px}
-.tool .open{margin-top:10px;font-weight:600;font-size:14px;color:var(--gold-ink)}
+.tool .open{margin-top:10px;font-weight:600;font-size:14px;color:var(--royal)}
 .tools.single .tool{grid-template-columns:1.1fr 1fr;grid-template-rows:none}
 .tools.single .tool .shot{aspect-ratio:auto;min-height:280px;border-bottom:0;border-right:1px solid var(--line)}
 .tools.single .tool .body{justify-content:center;padding:36px}
@@ -204,7 +206,7 @@ footer .fine{margin-top:72px;padding-top:24px;border-top:1px solid #24365e;displ
   <div>
     <div class="label">Founder · Finance head · Banker · AI builder</div>
     <h1>Basav<br>Sharma<em>.</em></h1>
-    <p class="lede">I build <b>finance strategy and AI systems</b> that fast-growing companies run on, and I'm looking to work with <b>founders solving exciting problems</b>.</p>
+    <p class="lede">I build <b>finance strategy and AI systems</b> that fast-growing companies run on, and I'm looking to work with <b>founders, operators and finance heads</b> solving exciting problems and scaling businesses.</p>
     <div class="cta">
       <a class="btn primary" href="#tools">See what I've built
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></a>
@@ -218,15 +220,14 @@ footer .fine{margin-top:72px;padding-top:24px;border-top:1px solid #24365e;displ
   </div>
 </div></header>
 
-<div class="ticker" aria-hidden="true"><div class="track">
-  <span>Founder</span><i>✦</i><span>Finance head</span><i>✦</i><span>Investment banker</span><i>✦</i><span>AI transformation lead</span><i>✦</i><span>Columbia MBA</span><i>✦</i><span>Builder</span><i>✦</i>
-  <span>Founder</span><i>✦</i><span>Finance head</span><i>✦</i><span>Investment banker</span><i>✦</i><span>AI transformation lead</span><i>✦</i><span>Columbia MBA</span><i>✦</i><span>Builder</span><i>✦</i>
+<div class="ticker"><div class="track">
+  <span>Founder</span><i>✦</i><span>Finance head</span><i>✦</i><span>Investment banker</span><i>✦</i><span>AI transformation lead</span><i>✦</i><span>Columbia MBA</span>
 </div></div>
 
 <section id="about"><div class="wrap">
   <div class="head rv">
     <div><div class="label">About</div><h2>8 years on every side of the table.</h2></div>
-    <p>I've been a founder, a finance head, a banker, and most recently the AI transformation lead at a Khosla-backed company. I've raised money, closed books, advised on deals and rebuilt whole finance functions around AI agents. I just finished my MBA at Columbia and moved to San Francisco to build with founders.</p>
+    <p>I've been a founder, a finance head, a banker, and most recently the AI transformation lead at a Khosla-backed company. I've raised money, closed books, advised on deals and rebuilt whole finance functions around AI agents. I just finished my MBA at Columbia and moved to San Francisco to build with founders and operators.</p>
   </div>
   <div class="stats rv">
     <div class="stat"><b>$1.4<small>B</small></b><span>acquisition I helped a client's CEO and CFO say yes to</span></div>
@@ -266,7 +267,7 @@ footer .fine{margin-top:72px;padding-top:24px;border-top:1px solid #24365e;displ
     </article>
   </div>
   <div class="creds">
-    <div class="cred rv"><div class="logo"><img src="img/cbs.svg" alt="Columbia Business School logo"></div><div><b>Columbia Business School</b><span>MBA, Finance &amp; Strategy · 2026</span></div></div>
+    <div class="cred rv"><div class="logo"><img src="img/cbs.svg" alt="Columbia Business School logo"></div><div><b>Columbia Business School</b><span>MBA, Finance &amp; Strategy</span></div></div>
     <div class="cred rv"><div class="logo"><img src="img/bayes.svg" alt="Bayes Business School logo"></div><div><b>Bayes Business School, London</b><span>BSc (Hons) Management</span></div></div>
     <div class="cred rv"><div class="logo"><img src="img/cfa.svg" alt="CFA Institute logo"></div><div><b>CFA Institute</b><span>CFA Level II</span></div></div>
   </div>
@@ -275,7 +276,7 @@ footer .fine{margin-top:72px;padding-top:24px;border-top:1px solid #24365e;displ
 <section class="industries" id="industries"><div class="wrap">
   <div class="head rv">
     <div><div class="label">Industries</div><h2>Where I've worked.</h2></div>
-    <p>Different businesses, same job: find what moves the numbers, build the system that tracks it, and make the call with the founder.</p>
+    <p>Different businesses, same job: find what moves the numbers, build the system that tracks it, and make the call with the people running the business.</p>
   </div>
   <div class="ind">
     <div class="rv">
@@ -348,8 +349,8 @@ footer .fine{margin-top:72px;padding-top:24px;border-top:1px solid #24365e;displ
 <section class="seek"><div class="wrap">
   <div class="box rv">
     <div class="label">What I'm looking for</div>
-    <h2>Work with founders. <em>Build</em> things that matter.</h2>
-    <p>I want a seat next to a founder at an AI-native or fast-growing company: owning the ambiguous, high-priority problems, building the systems, and turning plans into numbers.</p>
+    <h2>Solve hard problems. <em>Scale</em> businesses.</h2>
+    <p>I want to work alongside founders, operators and finance heads (CEOs, COOs, CFOs and heads of operations) at AI-native or fast-growing companies: owning the ambiguous, high-priority problems, building the systems, and turning plans into numbers.</p>
     <div class="chips">
       <span class="role-c">Chief of Staff</span><span class="role-c">Strategic Finance</span><span class="role-c">Business Operations</span><span>San Francisco · in person</span><span class="avail"><span class="dot"></span>Available now</span>
     </div>
