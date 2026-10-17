@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTM Capacity Planner</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --ink:#032d60; --navy:#032d60; --paper:#f3f3f3; --card:#ffffff;
+  --line:#e5e5e5; --line2:#c9c9c9; --txt:#181818; --mut:#5c5c5c; --mut2:#939393;
+  --blue:#0176d3; --blue2:#eef4ff; --blue3:#1b96ff; --green:#2e844a; --green2:#ebf7e6;
+  --red:#ba0517; --red2:#feded8; --amber:#dd7a01; --amber2:#fef1cd;
+  --shadow:0 2px 2px rgba(0,0,0,.06);
+  --shadow2:0 8px 24px rgba(3,45,96,.16);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px}
+body{font-family:'Inter',-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--paper);color:var(--txt);-webkit-font-smoothing:antialiased}
+.num,td,.kpi-v{font-variant-numeric:tabular-nums}
+/* ---------- global header (CRM style) ---------- */
+#top{background:#fff;border-bottom:1px solid var(--line);height:54px;display:flex;align-items:center;gap:14px;padding:0 18px}
+#top .waffle{display:grid;grid-template-columns:repeat(3,4px);gap:3px;padding:8px;border-radius:6px;flex:none}
+#top .waffle i{width:4px;height:4px;border-radius:50%;background:#706e6b;display:block}
+#top .logo{display:flex;align-items:center;gap:8px;flex:none}
+#top .logo .mk{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#1b96ff,#0176d3);display:grid;place-items:center}
+#top .logo .mk span{width:10px;height:10px;border-radius:50%;background:#fff;display:block}
+#top .logo b{font-size:.98rem;color:var(--navy);letter-spacing:-.01em}
+#top .logo small{font-size:.72rem;color:var(--mut);font-weight:500;border-left:1px solid var(--line2);padding-left:8px;margin-left:2px}
+#top .search{flex:1;max-width:460px;margin:0 auto;display:flex;align-items:center;gap:8px;border:1px solid var(--line2);border-radius:6px;padding:7px 12px;color:var(--mut2);font-size:.78rem;background:#fff}
+#top .right{display:flex;align-items:center;gap:12px;flex:none}
+#top .ibtn{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#706e6b;font-size:.85rem;border:1px solid var(--line)}
+#top .av{width:30px;height:30px;border-radius:50%;background:#032d60;color:#fff;display:grid;place-items:center;font-size:.7rem;font-weight:700}
+/* ---------- app tab bar ---------- */
+#tabs{background:#fff;border-bottom:3px solid var(--blue);position:sticky;top:0;z-index:40;display:flex;align-items:stretch;padding:0 18px;gap:2px;overflow-x:auto;scrollbar-width:none}
+#tabs::-webkit-scrollbar{display:none}
+#tabs .app{display:flex;align-items:center;font-weight:700;font-size:.86rem;color:var(--navy);padding:0 16px 0 2px;margin-right:6px;border-right:1px solid var(--line);white-space:nowrap}
+#nav{display:flex;gap:2px}
+#nav a{display:flex;align-items:center;gap:7px;padding:11px 13px 9px;color:#3e3e3c;font-size:.8rem;font-weight:500;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-3px;white-space:nowrap;border-radius:4px 4px 0 0}
+#nav a:hover{background:#f3f3f3}
+#nav a.on{color:var(--blue);font-weight:700;border-bottom-color:#014486;background:var(--blue2)}
+#nav a .ic{font-size:.8rem;opacity:.8}
+#nav a[data-t=how]{background:#fde047;color:#1f1c0f;font-weight:700;box-shadow:inset 0 0 0 2px #eab308;border-radius:6px;margin:6px 0 6px 8px;padding:5px 12px;border-bottom:none}
+#nav a[data-t=how] *{color:#1f1c0f}
+#nav a[data-t=how].on{background:#facc15}
+#mnav{display:none}
+#mnav a{display:block;margin-top:12px;text-align:center;background:#fde047;color:#1f1c0f;font-weight:700;font-size:.8rem;box-shadow:inset 0 0 0 2px #eab308;border-radius:6px;padding:8px;cursor:pointer}
+/* ---------- page header (record-header style) ---------- */
+#hdr{background:#fff;border:1px solid var(--line);border-radius:6px;margin:14px 18px 0;padding:14px 18px;box-shadow:var(--shadow)}
+#hdr .row1{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+#hdr .icon{width:38px;height:38px;border-radius:6px;background:#06a59a;display:grid;place-items:center;color:#fff;font-size:1.05rem;flex:none}
+#hdr .eyb{font-size:.68rem;color:var(--mut);font-weight:500}
+#hdr h1{font-size:1.15rem;font-weight:700;color:var(--txt);letter-spacing:-.01em}
+#hdr .meta{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+#hdr .row2{display:flex;align-items:center;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);flex-wrap:wrap}
+#hdr .lab{font-size:.7rem;font-weight:600;color:var(--mut)}
+#hdr .facts{display:flex;gap:22px;flex-wrap:wrap;margin-left:auto;font-size:.7rem;color:var(--mut)}
+#hdr .facts b{display:block;color:var(--txt);font-size:.78rem;font-weight:600}
+.pill{padding:3px 10px;border-radius:15px;font-size:.7rem;font-weight:600;border:1px solid var(--line2);background:#fff;color:var(--mut)}
+.pill.v{background:var(--blue2);color:#014486;border-color:#d8e6fe}
+.pill.ok{background:var(--green2);color:#194e31;border-color:#cdefc4}
+.pill.warn{background:var(--amber2);color:#8c4b02;border-color:#f9e3b6}
+.seg{display:flex;border-radius:4px;overflow:hidden;border:1px solid var(--line2)}
+.seg button{border:none;border-right:1px solid var(--line2);background:#fff;padding:6px 12px;font-size:.74rem;color:var(--blue);cursor:pointer;font-weight:600;font-family:inherit}
+.seg button:last-child{border-right:none}
+.seg button.on{background:var(--blue);color:#fff}
+.btn{border:1px solid var(--line2);background:#fff;padding:6px 12px;border-radius:4px;font-size:.75rem;font-weight:600;color:var(--blue);cursor:pointer;font-family:inherit}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn:hover{background:#f3f3f3}
+#chipwrap{display:none}
+#content{padding:14px 18px 30px;max-width:1500px;width:100%;margin:0 auto}
+#foot{max-width:1500px;margin:0 auto;padding:0 18px 40px;font-size:.7rem;color:var(--mut2);line-height:1.6}
+/* ---------- cards / grid ---------- */
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(420px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow);padding:14px 16px;min-width:0;overflow-x:auto}
+.card h3{font-size:.9rem;font-weight:700;color:var(--txt);margin-bottom:3px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.card h3::before{content:'';width:20px;height:20px;border-radius:4px;background:var(--blue3) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path d='M5 14V9M10 14V6M15 14v-3' stroke='white' stroke-width='2' stroke-linecap='round'/></svg>") center/14px no-repeat;flex:none}
+.card h3 .btn{margin-left:auto}
+.card .sub{font-size:.72rem;color:var(--mut);margin-bottom:10px;line-height:1.45}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0;margin-bottom:14px;background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow);overflow:hidden}
+.kpi{padding:13px 16px 14px;cursor:pointer;position:relative;border-right:1px solid var(--line);border-bottom:1px solid var(--line);margin:0 -1px -1px 0;transition:background .1s}
+.kpi:hover{background:#f8fbff}
+.kpi .k{font-size:.7rem;font-weight:500;color:var(--mut);padding-right:46px}
+.kpi-v{font-size:1.45rem;font-weight:700;color:var(--txt);margin-top:3px;letter-spacing:-.02em}
+.kpi .d{font-size:.7rem;color:var(--mut);margin-top:2px;line-height:1.4}
+.kpi .i{position:absolute;top:11px;right:12px;font-size:.6rem;color:var(--blue);border:1px solid #d8e6fe;border-radius:10px;padding:0 6px;font-weight:600}
+.kpi .bar{height:4px;border-radius:2px;background:#e5e5e5;margin-top:8px;overflow:hidden}
+.kpi .bar span{display:block;height:4px;background:var(--blue3)}
+.up{color:var(--green)}.dn{color:var(--red)}
+.badge{display:inline-block;padding:1px 8px;border-radius:15px;font-size:.66rem;font-weight:600;white-space:nowrap}
+.badge.ok{background:var(--green2);color:#194e31}
+.badge.bad{background:var(--red2);color:#8e030f}
+.badge.warn{background:var(--amber2);color:#8c4b02}
+.badge.info{background:var(--blue2);color:#014486}
+.badge.mut{background:#f3f3f3;color:var(--mut)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:0}
+/* ---------- tables (list view style) ---------- */
+table.fin{width:100%;border-collapse:collapse;font-size:.78rem}
+table.fin th{font-size:.7rem;color:#444;font-weight:600;padding:8px 8px;border-bottom:1px solid var(--line2);border-top:1px solid var(--line);text-align:right;white-space:nowrap;position:sticky;top:0;background:#fafaf9;z-index:2}
+table.fin th:first-child{text-align:left}
+table.fin th.sort{cursor:pointer}
+table.fin th.sort:hover{color:var(--blue)}
+table.fin td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+table.fin td:first-child,table.fin td.l{text-align:left}
+table.fin tr.click{cursor:pointer}
+table.fin tr.click td:first-child{color:var(--blue);font-weight:500}
+table.fin tr.click:hover td{background:#f3f8fe}
+table.fin tr.tot td{font-weight:700;border-top:1px solid var(--line2);background:#fafaf9}
+table.fin td.pre{color:#8c4b02}
+.tblwrap{overflow:auto;max-height:620px;border-radius:4px}
+.tiny{font-size:.7rem;color:var(--mut)}
+/* ---------- charts ---------- */
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;height:auto}
+.chart text{font-family:inherit}
+#tip{position:fixed;pointer-events:none;background:#032d60;color:#fff;font-size:.72rem;padding:7px 10px;border-radius:6px;box-shadow:var(--shadow2);z-index:200;display:none;max-width:300px;line-height:1.55}
+#tip .t{font-weight:700;color:#aacbff;margin-bottom:2px}
+#tip .r{display:flex;justify-content:space-between;gap:14px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.71rem;color:var(--mut);margin-top:8px}
+.legend .li{display:flex;align-items:center;gap:5px}
+.legend .sw{width:10px;height:10px;border-radius:50%}
+/* ---------- drawer ---------- */
+#ovl{position:fixed;inset:0;background:rgba(3,45,96,.35);z-index:90;display:none}
+#drawer{position:fixed;top:0;right:-720px;width:min(640px,94vw);height:100vh;background:var(--card);z-index:100;box-shadow:-12px 0 40px rgba(3,45,96,.25);transition:right .22s ease;display:flex;flex-direction:column}
+#drawer.open{right:0}
+#drawer .dhead{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;background:#fafaf9}
+#drawer .dhead h2{font-size:1rem;color:var(--txt)}
+#drawer .dhead .x{border:1px solid var(--line2);background:#fff;border-radius:4px;width:30px;height:30px;font-size:.9rem;cursor:pointer;color:var(--mut)}
+#drawer .dbody{padding:18px 22px;overflow-y:auto;flex:1;font-size:.8rem;line-height:1.55}
+.prov{background:#f3f8fe;border:1px solid #d8e6fe;border-left:4px solid var(--blue);border-radius:4px;padding:11px 14px;font-size:.76rem;line-height:1.6;color:#3e3e3c;margin-bottom:14px}
+.prov b{color:var(--txt)}
+.flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.flow .n{background:#fff;border:1px solid var(--line2);padding:4px 10px;border-radius:15px;font-size:.7rem;font-weight:600;color:var(--txt)}
+.flow .n.src{background:var(--blue2);border-color:#d8e6fe;color:#014486}
+.flow .a{color:var(--mut2);font-size:.8rem}
+.formula{font-family:'SF Mono',ui-monospace,Consolas,monospace;font-size:.74rem;background:#fafaf9;border:1px solid var(--line);border-radius:4px;padding:10px 12px;margin-bottom:14px;white-space:pre-wrap;color:var(--txt)}
+/* ---------- alerts ---------- */
+.alert{display:flex;gap:10px;align-items:flex-start;border-radius:4px;padding:9px 12px;font-size:.78rem;line-height:1.5;border:1px solid;border-left-width:4px;margin-bottom:8px}
+.alert.red{background:#fef1ee;border-color:#ba0517;color:#8e030f}
+.alert.amber{background:#fef8ec;border-color:#dd7a01;color:#7a4202}
+.alert.blue{background:#f3f8fe;border-color:#0176d3;color:#014486}
+.alert.green{background:#f1faee;border-color:#2e844a;color:#194e31}
+.alert .ico{font-size:.9rem;margin-top:1px}
+.alert b{font-weight:700}
+/* ---------- sliders ---------- */
+.sgrp{font-size:.74rem;font-weight:700;color:var(--txt);margin:16px -16px 2px;padding:7px 16px;background:#fafaf9;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sgrp:first-child{margin-top:4px}
+.slider-row{display:grid;grid-template-columns:200px 1fr 92px;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0}
+.slider-row .lbl{font-size:.76rem;font-weight:600;color:var(--txt);line-height:1.35}
+.slider-row .lbl .tiny{display:block;font-weight:400}
+.slider-row input[type=range]{width:100%;accent-color:var(--blue)}
+.slider-row .val{font-size:.78rem;font-weight:700;text-align:right}
+.slider-row .val.chg{color:var(--blue)}
+.footnote{font-size:.68rem;color:var(--mut2);line-height:1.55;margin-top:10px}
+.subtabs{display:flex;gap:0;margin-bottom:12px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.subtabs button{border:none;border-bottom:3px solid transparent;background:none;padding:7px 14px;font-size:.76rem;font-weight:600;color:var(--mut);cursor:pointer;font-family:inherit;margin-bottom:-1px}
+.subtabs button.on{color:var(--blue);border-bottom-color:var(--blue)}
+.fun{display:grid;grid-template-columns:110px 1fr 90px;gap:8px;align-items:center;font-size:.76rem;margin:5px 0}
+.fun .bar{height:22px;border-radius:3px;display:flex;align-items:center;padding-left:8px;color:#fff;font-weight:700;font-size:.7rem;min-width:30px}
+.fun .cv{color:var(--mut);font-size:.7rem;text-align:right}
+.board p{font-size:.86rem;line-height:1.7;margin-bottom:10px;color:#2b2b2b}
+.board h2{font-size:1.15rem;margin-bottom:6px;color:var(--txt)}
+.board .ask{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.board .ask div{border:1px solid var(--line);border-top:3px solid var(--blue3);border-radius:4px;padding:12px 14px;background:#fff}
+.board .ask b{display:block;font-size:1.2rem;color:var(--txt)}
+.board .ask span{font-size:.72rem;color:var(--mut)}
+@media (max-width:1000px){#mnav{display:block}#top .search,#top .logo small{display:none}#hdr{margin:12px 12px 0}#content{padding:12px 12px 40px}.g2{grid-template-columns:1fr}#tabs{padding:0 8px}#tabs .app{display:none}#hdr .facts{margin-left:0}}
+@media (max-width:620px){.slider-row{grid-template-columns:1fr 70px}.slider-row input{grid-column:1/-1;grid-row:2}.g3{grid-template-columns:1fr}.fun{grid-template-columns:80px 1fr 64px}.kpi .i{display:none}.kpi .k{padding-right:0}.kpis{grid-template-columns:1fr 1fr}#top .ibtn{display:none}}
+@media print{#top,#tabs,#hdr,#tip,#ovl,#drawer,.btn{display:none!important}body{background:#fff}.card{box-shadow:none;break-inside:avoid}}
+/* ---------- How it works (yellow) ---------- */
+.hw{--hw-ink:#1f1c0f;--hw-mut:#5b5432;--hw-line:#e6d36a;--hw-card:#fffdf2;--hw-soft:#fff3a8;--hw-bg:#fff7c2;
+ color:var(--hw-ink);background:var(--hw-bg);border:2px solid #f5d90a;border-radius:16px;padding:22px 22px 28px;margin:8px 0 24px;
+ font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;max-width:1180px;display:grid;gap:22px;color-scheme:light}
+.hw *{box-sizing:border-box}
+.hw h3{margin:0;font-size:20px;letter-spacing:-.01em}
+.hw .lede{margin:4px 0 0;color:var(--hw-mut);max-width:78ch}
+.hw .eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--hw-mut);font-weight:600;margin:0 0 8px}
+.hw .flowbox{background:var(--hw-card);border:1px solid var(--hw-line);border-radius:12px;padding:14px;overflow-x:auto}
+.hw .flowbox svg{display:block;width:100%;min-width:760px;height:auto}
+.hw .flowbox text{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.hw .t-ink{fill:var(--hw-ink)} .hw .t-mut{fill:var(--hw-mut)}
+.hw .node{fill:var(--hw-card)} .hw .hub{fill:var(--hw-soft);stroke:var(--hw-line)}
+.hw .wire{fill:none;stroke-width:1.6;stroke-dasharray:5 6;animation:hwflow 1.6s linear infinite;opacity:.85}
+@keyframes hwflow{to{stroke-dashoffset:-22}}
+@media (prefers-reduced-motion:reduce){.hw .wire{animation:none;stroke-dasharray:none}}
+.hw .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;counter-reset:hw}
+.hw .step{border:1px solid var(--hw-line);border-radius:10px;padding:12px 14px;background:var(--hw-card);min-width:0}
+.hw .step b{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.hw .step b::before{counter-increment:hw;content:counter(hw);display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--hw-ink);color:var(--hw-card);font-size:12px;flex:none}
+.hw .step p{margin:0;color:var(--hw-mut);font-size:13px}
+.hw .srcs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.hw .src{border:1px solid var(--hw-line);border-left:4px solid var(--c);border-radius:10px;padding:12px 14px;background:var(--hw-card);min-width:0}
+.hw .src h4{margin:0 0 2px;font-size:14px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.hw .src h4 span{font-weight:500;font-size:11px;color:var(--hw-mut);letter-spacing:.04em;text-transform:uppercase}
+.hw .src ul{margin:6px 0 0;padding-left:18px;color:var(--hw-mut);font-size:13px}
+.hw .facts{display:flex;flex-wrap:wrap;gap:8px}
+.hw .fact{border:1px solid var(--hw-line);border-radius:999px;padding:5px 12px;font-size:12.5px;background:var(--hw-card)}
+.hw .fact b{font-variant-numeric:tabular-nums}
+.hw table{width:100%;border-collapse:collapse;font-size:13px;background:var(--hw-card);border:1px solid var(--hw-line);border-radius:10px;overflow:hidden}
+.hw th,.hw td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--hw-line);vertical-align:top}
+.hw th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--hw-mut)}
+.hw td{color:var(--hw-mut)} .hw td b{color:var(--hw-ink)}
+.hw .note{font-size:12px;color:var(--hw-mut)}
+</style>
+</head>
+<body>
+<header id="top">
+  <div class="waffle" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="logo"><span class="mk"><span></span></span><b>Sample Co.</b><small>Revenue Operations</small></div>
+  <div class="search">⌕ Search plans, reps, accounts, opportunities…</div>
+  <div class="right"><span class="ibtn">?</span><span class="ibtn">🔔</span><span class="av">RO</span></div>
+</header>
+<div id="tabs"><span class="app">GTM Planning</span><nav id="nav"></nav></div>
+<div id="hdr">
+  <div class="row1">
+    <div class="icon">▲</div>
+    <div><div class="eyb">Capacity plan · FY27 · <span id="scenChip">Base</span></div><h1 id="pageTitle">Overview</h1></div>
+    <div class="meta">
+      <span class="pill v">Sample Co. (AI SaaS)</span>
+      <span class="pill" id="pillTarget"></span>
+      <span class="pill" id="pillChecks"></span>
+    </div>
+  </div>
+  <div class="row2">
+    <span class="lab">Scenario</span>
+    <div class="seg" id="scenSeg"><button data-s="Downside">Downside</button><button data-s="Base" class="on">Base</button><button data-s="Upside">Upside</button></div>
+    <span class="lab">Segment</span>
+    <div class="seg" id="segSeg"><button data-g="ALL" class="on">All</button><button data-g="SMB">SMB</button><button data-g="MM">Mid-Market</button><button data-g="ENT">Enterprise</button></div>
+    <button class="btn" id="resetBtn">↺ Reset inputs</button>
+    <div class="facts"><span>Plan owner<b>RevOps</b></span><span>Plan year<b>Jan to Dec 2027</b></span><span>Data as of<b>Oct 16, 2026</b></span><span>Refresh<b>Nightly</b></span></div>
+  </div>
+  <div id="mnav"></div>
+</div>
+<div id="content"></div>
+<div id="foot">Sources: Salesforce · HubSpot · Gong · HRIS · ERP · comp plan. Every number is computed live in the page from the assumptions tab, so changing one input updates every tab. All companies, people and figures are fictional (Sample Co.).</div>
+<div id="tip"></div>
+<div id="ovl"></div>
+<div id="drawer"><div class="dhead"><div><h2 id="dTitle"></h2><div class="tiny" id="dSub"></div></div><button class="x" id="dClose">✕</button></div><div class="dbody" id="dBody"></div></div>
+
+<script>
+/* =====================================================================
+   Sample Co. GTM Capacity & Pipeline Planner
+   All data is fictional. The model logic is the real planning method:
+   ARR target -> new business needed -> reverse funnel -> pipeline ->
+   rep capacity with ramp and attrition -> hiring plan -> S&M cost ->
+   unit economics -> checks.
+   ===================================================================== */
+const SEGS=['SMB','MM','ENT'];
+const SN={SMB:'SMB',MM:'Mid-Market',ENT:'Enterprise'};
+const SC={SMB:'#06a59a',MM:'#1b96ff',ENT:'#9050e9'};
+const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const ml=m=>MON[((m%12)+12)%12]+'-'+(27+Math.floor(m/12));
+const QL=['Q1','Q2','Q3','Q4'];
+
+const BASE={
+  startARR:42e6, targetARR:70e6, churn:.08, expansion:.14,
+  mix:{SMB:.20,MM:.40,ENT:.40},
+  acv:{SMB:18e3,MM:65e3,ENT:220e3},
+  win:{SMB:.28,MM:.22,ENT:.18},
+  sql2sqo:{SMB:.55,MM:.50,ENT:.45},
+  mql2sql:{SMB:.30,MM:.25,ENT:.20},
+  cycle:{SMB:35,MM:75,ENT:140},
+  quota:{SMB:600e3,MM:900e3,ENT:1400e3},
+  attain:.80, attr:.18,
+  ramp:{SMB:3,MM:4,ENT:6},
+  startAE:{SMB:9,MM:12,ENT:8},
+  covTarget:{SMB:2.5,MM:3,ENT:3},
+  ote:{SMB:150e3,MM:220e3,ENT:300e3},
+  cpm:{SMB:250,MM:600,ENT:1500},
+  segChurn:{SMB:.22,MM:.10,ENT:.06},
+  season:[.20,.24,.26,.30],
+  src:{inbound:.45,outbound:.30,partner:.10,self:.15},
+  sdrSqo:10, sdrCost:95e3, seCost:210e3, seRatio:3, mgrCost:320e3, mgrSpan:7,
+  mktHC:3.2e6, toolsPct:.12, recruitLead:2, gm:.75
+};
+const clone=o=>JSON.parse(JSON.stringify(o));
+function scen(name){
+  const a=clone(BASE);
+  if(name==='Downside'){
+    SEGS.forEach(s=>{a.win[s]=+(a.win[s]-.03).toFixed(3);a.cycle[s]=Math.round(a.cycle[s]*1.2);});
+    a.attain=.70;a.churn=.10;a.expansion=.12;a.attr=.22;
+  }
+  if(name==='Upside'){
+    SEGS.forEach(s=>{a.win[s]=+(a.win[s]+.02).toFixed(3);a.cycle[s]=Math.round(a.cycle[s]*.9);});
+    a.attain=.85;a.churn=.07;a.expansion=.16;a.attr=.15;
+  }
+  return a;
+}
+/* trailing four quarters from Salesforce (history the plan is benchmarked to) */
+const HIST={win:{SMB:.27,MM:.23,ENT:.19},sql2sqo:{SMB:.53,MM:.49,ENT:.46},mql2sql:{SMB:.29,MM:.24,ENT:.21},
+  cycle:{SMB:38,MM:79,ENT:146},attain:.78,attr:.20,acv:{SMB:17.2e3,MM:61.5e3,ENT:208e3}};
+
+let A=scen('Base'), S={tab:'overview',scen:'Base',seg:'ALL',pipeSort:'amount',pipeDir:-1,pipeFilt:'ALL',realloc:20}, R=null;
+
+/* ---------------- formatting ---------------- */
+const f$=(v,d)=>{const a=Math.abs(v),sg=v<0?'-':'';
+  if(a>=1e9)return sg+'$'+(a/1e9).toFixed(d??2)+'B';
+  if(a>=1e6)return sg+'$'+(a/1e6).toFixed(d??1)+'M';
+  if(a>=1e3)return sg+'$'+(a/1e3).toFixed(d??0)+'K';
+  return sg+'$'+a.toFixed(0);};
+const fp=(v,d=0)=>(v*100).toFixed(d)+'%';
+const fn=(v,d=0)=>v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fx=(v,d=1)=>v.toFixed(d)+'x';
+const fmo=v=>v.toFixed(1)+' mo';
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const segList=()=>S.seg==='ALL'?SEGS:[S.seg];
+
+/* =====================================================================
+   ENGINE
+   ===================================================================== */
+const TODAY=-3; // Oct-26, the month the plan is built
+const MMIN=-1; // earliest start: a req opened today fills in Dec-26
+function calc(a){
+  const r={a};
+  const mixT=sum(SEGS.map(s=>a.mix[s]))||1;
+  r.mix={};SEGS.forEach(s=>r.mix[s]=a.mix[s]/mixT);
+  r.churn$=a.startARR*a.churn; r.exp$=a.startARR*a.expansion;
+  r.NB=Math.max(0,a.targetARR-a.startARR+r.churn$-r.exp$);
+  r.netNew=a.targetARR-a.startARR;
+  r.seg={};
+  SEGS.forEach(s=>{
+    const g={};
+    g.nb=r.NB*r.mix[s];
+    g.deals=g.nb/a.acv[s];
+    g.sqo=g.deals/a.win[s];
+    g.sql=g.sqo/a.sql2sqo[s];
+    g.mql=g.sql/a.mql2sql[s];
+    g.pipe=g.sqo*a.acv[s];
+    g.cov=1/a.win[s];
+    g.q=a.season.map(x=>g.nb*x);
+    g.m=[];for(let m=0;m<12;m++)g.m.push(g.q[Math.floor(m/3)]/3);
+    g.prod=a.quota[s]*a.attain/12; // monthly productive bookings of a ramped AE
+    // roster: existing (fully ramped) + hires solved greedily
+    const surv=k=>Math.pow(1-a.attr/12,Math.max(0,k));
+    g.roster=[];for(let i=0;i<a.startAE[s];i++)g.roster.push(-99);
+    const capM=(m)=>{let c=0;for(const h of g.roster){if(m<h)continue;
+      const rf=h===-99?1:Math.min(1,(m-h)/a.ramp[s]);
+      c+=g.prod*rf*(h===-99?surv(m+1):surv(m-h));}return c;};
+    const capQ=q=>capM(3*q)+capM(3*q+1)+capM(3*q+2);
+    g.cappedOut=false;g.rush=0;
+    for(let q=0;q<4;q++){
+      let guard=0;
+      while(capQ(q)<g.q[q]*0.999&&guard<200){
+        const ideal=3*q-a.ramp[s],h=Math.max(MMIN,ideal);
+        if(ideal<MMIN)g.rush++;
+        g.roster.push(h);guard++;
+      }
+      if(guard>=200)g.cappedOut=true;
+    }
+    g.hires=g.roster.filter(h=>h!==-99);
+    g.cap=[],g.hc=[],g.req=[];
+    for(let m=MMIN;m<12;m++){
+      let hc=0,re=0;
+      for(const h of g.roster){if(m<h)continue;const sv=h===-99?surv(m+1):surv(m-h);hc+=sv;
+        re+=sv*(h===-99?1:Math.min(1,(m-h)/a.ramp[s]));}
+      g.hc.push(hc);g.req.push(re);g.cap.push(re*g.prod);
+    }
+    g.capQ=[0,1,2,3].map(q=>[0,1,2].reduce((x,i)=>x+g.cap[3*q+i-MMIN],0));
+    g.capFY=sum(g.capQ);
+    g.hcEnd=g.hc[11-MMIN];
+    g.preHires=g.hires.filter(h=>h<0).length;
+    g.departures=0;for(let m=0;m<12;m++)g.departures+=g.hc[m-MMIN]*a.attr/12;
+    // AE comp cost in FY (survival-weighted months employed)
+    g.aeCost=0;g.preCost=0;
+    for(let m=MMIN;m<12;m++){const c=g.hc[m-MMIN]*a.ote[s]/12; if(m>=0)g.aeCost+=c;else g.preCost+=c;}
+    g.programs=g.mql*a.cpm[s];
+    g.outSqo=g.sqo*a.src.outbound;
+    r.seg[s]=g;
+  });
+  // support headcount
+  r.outSqoMo=sum(SEGS.map(s=>r.seg[s].outSqo))/12;
+  r.sdr=Math.ceil(r.outSqoMo/a.sdrSqo);
+  r.aeEnd=sum(SEGS.map(s=>r.seg[s].hcEnd));
+  r.aeStart=sum(SEGS.map(s=>a.startAE[s]));
+  r.se=Math.ceil((r.seg.MM.hcEnd+r.seg.ENT.hcEnd)/a.seRatio);
+  r.mgr=Math.ceil(r.aeEnd/a.mgrSpan);
+  r.hires=sum(SEGS.map(s=>r.seg[s].hires.length));
+  r.preHires=sum(SEGS.map(s=>r.seg[s].preHires));
+  r.cost={
+    ae:sum(SEGS.map(s=>r.seg[s].aeCost)),
+    sdr:r.sdr*a.sdrCost, se:r.se*a.seCost, mgr:r.mgr*a.mgrCost,
+    programs:sum(SEGS.map(s=>r.seg[s].programs)), mktHC:a.mktHC
+  };
+  r.cost.tools=(r.cost.ae+r.cost.sdr+r.cost.se+r.cost.mgr+r.cost.mktHC)*a.toolsPct;
+  r.SM=r.cost.ae+r.cost.sdr+r.cost.se+r.cost.mgr+r.cost.programs+r.cost.mktHC+r.cost.tools;
+  r.shared=r.cost.sdr+r.cost.se+r.cost.mgr+r.cost.mktHC+r.cost.tools;
+  r.deals=sum(SEGS.map(s=>r.seg[s].deals));
+  SEGS.forEach(s=>{const g=r.seg[s];
+    g.sm=g.aeCost+g.programs+r.shared*(r.NB?g.nb/r.NB:0);
+    g.cac=g.sm/g.deals;
+    g.payback=g.cac/(a.acv[s]*a.gm/12);
+    g.ltv=a.acv[s]*a.gm/a.segChurn[s];
+    g.ltvcac=g.ltv/g.cac;
+  });
+  r.cacBlended=r.SM/r.deals;
+  r.payback=r.SM/(r.NB*a.gm)*12;
+  r.magic=r.netNew/r.SM;
+  r.smPct=r.SM/((a.startARR+a.targetARR)/2);
+  r.pipeTotal=sum(SEGS.map(s=>r.seg[s].pipe));
+  r.capFY=sum(SEGS.map(s=>r.seg[s].capFY));
+  r.ramped=a.quota; // placeholder
+  return r;
+}
+
+/* =====================================================================
+   SAMPLE DATA: open pipeline (Salesforce extract), channels (HubSpot)
+   ===================================================================== */
+function rng(seed){return()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const RND=rng(20261016);
+const pick=a=>a[Math.floor(RND()*a.length)];
+const A1=['North','Blue','Iron','Clear','Bright','Summit','Harbor','Cedar','Atlas','Copper','Silver','Pioneer','Granite','Lumen','Vector','Orbit','Maple','Kestrel','Tidal','Sterling','Juniper','Beacon','Quarry','Ridge'];
+const A2=['wind Logistics','line Health','field Foods','path Insurance','stone Bank','point Retail','gate Energy','wave Media','works Manufacturing','well Pharma','light Telecom','ridge Capital','bay Freight','crest Labs','haven Realty','mark Software'];
+const REPS={SMB:['Maya Chen','Leo Brooks','Nina Shah','Owen Park','Ava Ross','Eli Grant'],
+  MM:['Jordan Reyes','Priya Nair','Sam Ortiz','Chloe Wu','Marcus Hill','Iris Kahn','Theo Lang','Zoe Adams','Ravi Menon'],
+  ENT:['Diana Cole','Victor Hale','Grace Lin','Hugo Marsh','Elena Voss','Felix Ward']};
+const STG=[['Discovery',.10],['Qualification',.20],['Solution fit',.40],['Proposal',.60],['Negotiation',.80],['Commit',.90]];
+const SRC=['Inbound','Inbound','Inbound','Outbound SDR','Outbound SDR','Partner','AE sourced'];
+const NEXT=['Security review','Pricing call','Exec sponsor meeting','Technical validation','Procurement redlines','Champion intro to CFO','Pilot readout','Mutual close plan'];
+const DEALS=(()=>{
+  const base=calc(scen('Base')),out=[];let id=1001;
+  const target={SMB:3.3,MM:2.7,ENT:2.0};
+  SEGS.forEach(s=>{
+    const goal=base.seg[s].q[0]*target[s];let tot=0;
+    while(tot<goal){
+      const amt=Math.round(BASE.acv[s]*Math.exp((RND()-.5)*1.1)/500)*500;
+      const si=Math.min(5,Math.floor(Math.pow(RND(),1.25)*6));
+      const day=Math.floor(RND()*90);const d=new Date(2027,0,1+day);
+      const pushed=RND()<(s==='ENT'?.22:.12)?(RND()<.4?2:1):0;
+      const lastAct=Math.floor(Math.pow(RND(),3)*40);
+      const threads=s==='SMB'?1+Math.floor(RND()*2):s==='ENT'?2+Math.floor(RND()*4):1+Math.floor(RND()*5);
+      const dl={id:'OPP-'+(id++),acct:pick(A1)+pick(A2),seg:s,owner:pick(REPS[s]),amount:amt,stage:STG[si][0],si,prob:STG[si][1],
+        close:d,closeQ:'Q1 FY27',src:pick(SRC),pushed,lastAct,threads,exec:RND()<(si>=3?.82:.35),next:pick(NEXT),daysInStage:Math.floor(RND()*40)+3};
+      dl.risks=[];
+      if(dl.lastAct>21)dl.risks.push('No activity '+dl.lastAct+'d');
+      if(dl.pushed)dl.risks.push('Close date pushed '+dl.pushed+'x');
+      if(dl.threads<=1&&s!=='SMB')dl.risks.push('Single-threaded');
+      if(!dl.exec&&dl.si>=3)dl.risks.push('No exec sponsor');
+      if(dl.daysInStage>35)dl.risks.push('Stuck in stage');
+      dl.cat=dl.si>=4&&dl.risks.length===0?'Commit':dl.si>=3&&dl.risks.length<=1?'Best case':'Pipeline';
+      out.push(dl);tot+=amt;
+    }
+  });
+  return out;
+})();
+const CHANNELS=[
+  {name:'Paid social',type:'Marketing',spend:2.40e6,pipe:9.6e6,won:1.24e6,cust:41},
+  {name:'Paid search',type:'Marketing',spend:1.90e6,pipe:11.8e6,won:1.71e6,cust:62},
+  {name:'Events & field',type:'Marketing',spend:2.10e6,pipe:14.2e6,won:1.52e6,cust:14},
+  {name:'Content & SEO',type:'Marketing',spend:0.85e6,pipe:8.9e6,won:1.48e6,cust:47},
+  {name:'Partners & resellers',type:'Partner',spend:0.95e6,pipe:10.6e6,won:2.02e6,cust:19},
+  {name:'Outbound SDR',type:'Sales',spend:3.10e6,pipe:22.5e6,won:3.05e6,cust:38},
+  {name:'Product-led upgrades',type:'Product',spend:0.40e6,pipe:3.8e6,won:1.18e6,cust:96}
+];
+CHANNELS.forEach(c=>{c.cac=c.spend/c.cust;c.payback=c.spend/(c.won*BASE.gm)*12;c.roi=c.won/c.spend;});
+
+/* =====================================================================
+   CHARTS (hand-built SVG)
+   ===================================================================== */
+function tipAttr(title,rows){return ' data-tip="'+esc('<div class=t>'+title+'</div>'+rows.map(r=>'<div class=r><span>'+r[0]+'</span><b>'+r[1]+'</b></div>').join(''))+'"';}
+function barChart({cats,series,stacked=true,h=260,fmt=f$,line=null,ref=null,w=720}){
+  const pl=58,pr=14,pt=14,pb=30,iw=w-pl-pr,ih=h-pt-pb;
+  const tots=cats.map((_,i)=>stacked?sum(series.map(s=>Math.max(0,s.vals[i]))):Math.max(...series.map(s=>s.vals[i])));
+  let mx=Math.max(...tots,...(line?line.vals:[0]),...(ref?ref.vals:[0]))*1.1||1;
+  mx=niceStep(mx/4)*4;
+  const y=v=>pt+ih-(v/mx)*ih, bw=iw/cats.length;
+  let o=`<svg viewBox="0 0 ${w} ${h}">`;
+  for(let i=0;i<=4;i++){const v=mx*i/4;o+=`<line x1="${pl}" x2="${w-pr}" y1="${y(v)}" y2="${y(v)}" stroke="#eef0f7"/><text x="${pl-6}" y="${y(v)+4}" text-anchor="end" font-size="10.5" fill="#9497ab">${fmt(v)}</text>`;}
+  cats.forEach((c,i)=>{
+    const x0=pl+i*bw;
+    if(stacked){let acc=0;const bwi=Math.min(46,bw*.62);
+      series.forEach(s=>{const v=Math.max(0,s.vals[i]);const yy=y(acc+v),hh=y(acc)-y(acc+v);
+        o+=`<rect x="${x0+(bw-bwi)/2}" y="${yy}" width="${bwi}" height="${Math.max(0,hh)}" fill="${s.color}" rx="2"${tipAttr(c,[[s.name,fmt(s.vals[i])],['Total',fmt(tots[i])]].concat(ref?[[ref.name,fmt(ref.vals[i])]]:[]))}/>`;acc+=v;});
+    } else {const n=series.length,gw=Math.min(30,bw*.8/n);
+      series.forEach((s,j)=>{const v=Math.max(0,s.vals[i]);
+        o+=`<rect x="${x0+(bw-gw*n)/2+j*gw}" y="${y(v)}" width="${gw-2}" height="${y(0)-y(v)}" fill="${s.color}" rx="2"${tipAttr(c,[[s.name,fmt(v)]])}/>`;});}
+    if(cats.length<=16||i%2===0)o+=`<text x="${x0+bw/2}" y="${h-10}" text-anchor="middle" font-size="10.5" fill="#5f6683">${c}</text>`;
+  });
+  if(ref){ref.vals.forEach((v,i)=>{const x0=pl+i*bw;o+=`<line x1="${x0+bw*.12}" x2="${x0+bw*.88}" y1="${y(v)}" y2="${y(v)}" stroke="${ref.color||'#032d60'}" stroke-width="2.5" stroke-dasharray="${ref.dash||''}"${tipAttr(cats[i],[[ref.name,fmt(v)]])}/>`;});}
+  if(line){const pts=line.vals.map((v,i)=>[pl+i*bw+bw/2,y(v)]);
+    o+=`<polyline points="${pts.map(p=>p.join(',')).join(' ')}" fill="none" stroke="${line.color}" stroke-width="2.2"/>`;
+    pts.forEach((p,i)=>o+=`<circle cx="${p[0]}" cy="${p[1]}" r="3.5" fill="#fff" stroke="${line.color}" stroke-width="2"${tipAttr(cats[i],[[line.name,fmt(line.vals[i])]])}/>`);}
+  return o+'</svg>';
+}
+function niceStep(v){const p=Math.pow(10,Math.floor(Math.log10(v)));const n=v/p;return [1,1.5,2,2.5,3,4,5,6,8,10].find(x=>x>=n-1e-9)*p;}
+function niceMax(v){const p=Math.pow(10,Math.floor(Math.log10(v)));const n=v/p;return (n<=1?1:n<=2?2:n<=2.5?2.5:n<=5?5:10)*p;}
+function legend(items){return '<div class="legend">'+items.map(i=>`<span class="li"><span class="sw" style="background:${i[1]};${i[2]||''}"></span>${i[0]}</span>`).join('')+'</div>';}
+function waterfall(items,h=270,w=720){
+  const pl=58,pr=14,pt=16,pb=34,iw=w-pl-pr,ih=h-pt-pb;
+  let acc=0,mx=0;const bars=items.map(it=>{let y0,y1;if(it.total){y0=0;y1=it.v;acc=it.v;}else{y0=acc;y1=acc+it.v;acc=y1;}mx=Math.max(mx,y0,y1);return{...it,y0,y1};});
+  mx=niceMax(mx*1.08);const y=v=>pt+ih-(v/mx)*ih,bw=iw/items.length;
+  let o=`<svg viewBox="0 0 ${w} ${h}">`;
+  for(let i=0;i<=4;i++){const v=mx*i/4;o+=`<line x1="${pl}" x2="${w-pr}" y1="${y(v)}" y2="${y(v)}" stroke="#eef0f7"/><text x="${pl-6}" y="${y(v)+4}" text-anchor="end" font-size="10.5" fill="#9497ab">${f$(v,0)}</text>`;}
+  bars.forEach((b,i)=>{const x=pl+i*bw+bw*.18,ww=bw*.64,top=y(Math.max(b.y0,b.y1)),hh=Math.abs(y(b.y0)-y(b.y1));
+    o+=`<rect x="${x}" y="${top}" width="${ww}" height="${Math.max(1,hh)}" rx="3" fill="${b.c}"${tipAttr(b.l,[['Amount',f$(b.v)]])}/>`;
+    o+=`<text x="${x+ww/2}" y="${top-5}" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1d2133">${(b.v>0&&!b.total?'+':'')+f$(b.v)}</text>`;
+    o+=`<text x="${x+ww/2}" y="${h-14}" text-anchor="middle" font-size="10.5" fill="#5f6683">${b.l}</text>`;
+    if(i<bars.length-1)o+=`<line x1="${x+ww}" x2="${x+bw}" y1="${y(b.y1)}" y2="${y(b.y1)}" stroke="#9497ab" stroke-dasharray="3 3"/>`;});
+  return o+'</svg>';
+}
+function hbars(items,fmt,{ref=null,w=720,rowH=30}={}){
+  const pl=170,pr=70,h=items.length*rowH+24,iw=w-pl-pr;
+  const mx=niceMax(Math.max(...items.map(i=>i.v),ref?ref.v:0)*1.05);
+  let o=`<svg viewBox="0 0 ${w} ${h}">`;
+  items.forEach((it,i)=>{const yy=8+i*rowH,bw=it.v/mx*iw;
+    o+=`<text x="${pl-8}" y="${yy+rowH/2+2}" text-anchor="end" font-size="11.5" fill="#1d2133">${it.l}</text>`;
+    o+=`<rect x="${pl}" y="${yy+5}" width="${Math.max(2,bw)}" height="${rowH-12}" rx="4" fill="${it.c}"${tipAttr(it.l,it.tip||[['Value',fmt(it.v)]])}/>`;
+    o+=`<text x="${pl+bw+6}" y="${yy+rowH/2+2}" font-size="11" font-weight="700" fill="#1d2133">${fmt(it.v)}</text>`;});
+  if(ref){const x=pl+ref.v/mx*iw;o+=`<line x1="${x}" x2="${x}" y1="2" y2="${h-14}" stroke="#b91c1c" stroke-dasharray="4 4"/><text x="${x}" y="${h-2}" text-anchor="middle" font-size="10" fill="#b91c1c">${ref.l}</text>`;}
+  return o+'</svg>';
+}
+
+/* =====================================================================
+   DRAWER (click any number: where it comes from)
+   ===================================================================== */
+function openDrawer(title,sub,html){
+  document.getElementById('dTitle').textContent=title;
+  document.getElementById('dSub').textContent=sub||'';
+  document.getElementById('dBody').innerHTML=html;
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('ovl').style.display='block';
+}
+function closeDrawer(){document.getElementById('drawer').classList.remove('open');document.getElementById('ovl').style.display='none';}
+const flowH=chips=>'<div class="flow">'+chips.map((c,i)=>(i?'<span class="a">→</span>':'')+`<span class="n${i===0?' src':''}">${c}</span>`).join('')+'</div>';
+function rowsH(rows){return '<table class="fin">'+rows.map(r=>`<tr class="${r[2]||''}"><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')+'</table>';}
+function explain(key){
+  const a=A,r=R;
+  const segRows=fnc=>SEGS.map(s=>[SN[s],fnc(r.seg[s],s)]);
+  const E={
+    nb:['New business ARR needed','What sales has to book in FY27',
+      flowH(['ERP: FY26 exit ARR','Churn and expansion rates','ARR bridge','New business needed'])+
+      `<div class="prov"><b>Why it matters:</b> the board sets an ending ARR target. Existing customers churn some and expand some. Whatever is left must come from new logos, and that number drives every other tab.</div>`+
+      `<div class="formula">New business = Target ARR − Starting ARR × (1 − churn + expansion)\n= ${f$(a.targetARR)} − ${f$(a.startARR)} × (1 − ${fp(a.churn)} + ${fp(a.expansion)})\n= ${f$(r.NB,2)}</div>`+
+      rowsH(segRows(g=>f$(g.nb,2)).concat([['Total',f$(r.NB,2),'tot']]))],
+    pipe:['Pipeline needed','Qualified pipeline (SQO value) to create in FY27',
+      flowH(['Salesforce: trailing 4Q win rates','New business by segment','÷ win rate','Pipeline needed'])+
+      `<div class="prov"><b>Rule:</b> pipeline needed = bookings ÷ win rate. A ${fp(a.win.ENT)} Enterprise win rate means every $1 of bookings needs ${fx(1/a.win.ENT)} of qualified pipeline.</div>`+
+      rowsH(segRows((g,s)=>f$(g.pipe)+' <span class="tiny">('+f$(g.nb)+' ÷ '+fp(a.win[s])+')</span>').concat([['Total',f$(r.pipeTotal),'tot']]))],
+    hires:['AE hires in the plan','Quota-carrying reps to hire, including backfills',
+      flowH(['HRIS: current AE roster','Ramp and attrition','Capacity vs quarterly target','Hiring plan'])+
+      `<div class="prov"><b>Method:</b> each quarter, the planner checks ramped capacity against that quarter's bookings target. If short, it adds a hire early enough to be fully ramped by the start of the quarter (start month = quarter start − ramp months). Attrition at ${fp(a.attr)} a year is built in, so backfills are included.</div>`+
+      rowsH(segRows((g,s)=>g.hires.length+' hires <span class="tiny">('+g.preHires+' start before Jan-27)</span>').concat([['Total',r.hires+' hires','tot'],['Recruiting lead time',a.recruitLead+' months before start']]))],
+    payback:['Blended CAC payback','Months of gross profit to earn back the cost of acquiring new ARR',
+      flowH(['ERP: S&M budget','HubSpot: program spend','New ARR × gross margin','Payback'])+
+      `<div class="formula">Payback = S&M ÷ (New business ARR × gross margin) × 12\n= ${f$(r.SM)} ÷ (${f$(r.NB)} × ${fp(a.gm)}) × 12\n= ${fmo(r.payback)}</div>`+
+      `<div class="prov"><b>Benchmark:</b> under 24 months is healthy for mid-market SaaS; under 18 is strong. Segment detail is on Unit economics.</div>`+
+      rowsH(segRows(g=>fmo(g.payback)))],
+    magic:['Magic number','Net new ARR per $1 of S&M',
+      flowH(['ERP: ARR actuals','Net new ARR','÷ S&M spend','Magic number'])+
+      `<div class="formula">Magic number = (Ending ARR − Starting ARR) ÷ S&M\n= ${f$(r.netNew)} ÷ ${f$(r.SM)} = ${r.magic.toFixed(2)}</div>`+
+      `<div class="prov">Above 0.75 means it is efficient to keep adding S&M. Below 0.5 means fix the funnel before adding reps.</div>`],
+    sm:['FY27 S&M budget','Fully loaded sales and marketing cost',
+      flowH(['Comp plan: OTE','HRIS: headcount by month','HubSpot: cost per MQL','S&M budget'])+
+      rowsH([['AE compensation (survival-weighted months)',f$(r.cost.ae)],['SDRs ('+r.sdr+' × '+f$(a.sdrCost)+')',f$(r.cost.sdr)],['Solutions engineers ('+r.se+')',f$(r.cost.se)],['Sales managers ('+r.mgr+')',f$(r.cost.mgr)],['Marketing programs (MQLs × cost per MQL)',f$(r.cost.programs)],['Marketing team',f$(r.cost.mktHC)],['Tools, T&E, enablement ('+fp(a.toolsPct)+' of people cost)',f$(r.cost.tools)],['Total S&M',f$(r.SM),'tot'],['Pre-FY27 cost of early hires (lands in FY26)',f$(sum(SEGS.map(s=>r.seg[s].preCost)))]])],
+    cov:['Q1 FY27 pipeline coverage','Open pipeline closing in Q1 ÷ Q1 bookings target',
+      flowH(['Salesforce: open opportunities','Close date in Q1 FY27','÷ Q1 target','Coverage'])+
+      `<div class="prov"><b>Targets:</b> ${SEGS.map(s=>SN[s]+' '+fx(a.covTarget[s])).join(', ')}. SMB is lower because SMB deals are still created and closed inside the quarter; Enterprise pipeline has to exist before the quarter starts.</div>`+
+      rowsH(SEGS.map(s=>{const p=sum(DEALS.filter(d=>d.seg===s).map(d=>d.amount));return[SN[s],fx(p/r.seg[s].q[0])+' <span class="tiny">('+f$(p)+' ÷ '+f$(r.seg[s].q[0])+')</span>'];}))],
+    cap:['FY27 bookings capacity','What the planned sales team can book',
+      flowH(['HRIS roster + hires','Quota × attainment','Ramp and attrition','Capacity'])+
+      `<div class="formula">Monthly capacity = Σ reps × (quota × attainment ÷ 12) × ramp factor × survival\nRamp factor = months since start ÷ ramp months (max 1)\nSurvival = (1 − ${fp(a.attr)} ÷ 12) ^ months</div>`+
+      rowsH(segRows(g=>f$(g.capFY)+' vs '+f$(g.nb)+' target').concat([['Total',f$(r.capFY)+' vs '+f$(r.NB),'tot']]))]
+  };
+  const e=E[key];if(e)openDrawer(e[0],e[1],e[2]);
+}
+function dealDrawer(id){
+  const d=DEALS.find(x=>x.id===id);if(!d)return;
+  openDrawer(d.acct,d.id+' · '+SN[d.seg]+' · '+d.owner,
+    flowH(['Salesforce opportunity','Gong activity','Risk rules','Forecast category'])+
+    rowsH([['Amount (ARR)',f$(d.amount)],['Stage',d.stage+' ('+fp(d.prob)+')'],['Weighted',f$(d.amount*d.prob)],['Close date',d.close.toDateString().slice(4)],['Source',d.src],['Days in stage',d.daysInStage],['Last activity (Gong)',d.lastAct+' days ago'],['Contacts engaged',d.threads],['Exec sponsor',d.exec?'Yes':'No'],['Close date pushed',d.pushed+'x'],['Next step',d.next],['Forecast category',d.cat,'tot']])+
+    '<div style="margin-top:14px">'+(d.risks.length?d.risks.map(x=>`<div class="alert amber"><span class="ico">⚠</span><span>${x}</span></div>`).join(''):'<div class="alert green"><span class="ico">✓</span><span>No risk flags. Counts toward Commit if stage is Negotiation or later.</span></div>')+'</div>'+
+    '<p class="footnote">Risk rules: no activity for 21+ days, close date pushed, one contact on a non-SMB deal, no exec sponsor at Proposal or later, or 35+ days in the same stage.</p>');
+}
+
+/* =====================================================================
+   CHECKS
+   ===================================================================== */
+function checks(){
+  const a=A,r=R,c=[];
+  const add=(grp,name,ok,detail,lvl,fail)=>c.push({grp,name,ok,detail,fail:fail||name,lvl:ok?'ok':(lvl||'bad')});
+  const segSum=sum(SEGS.map(s=>r.seg[s].nb));
+  add('Ties','Segment new business adds to total',Math.abs(segSum-r.NB)<1,f$(segSum,2)+' vs '+f$(r.NB,2));
+  add('Ties','Funnel rebuilds bookings (deals × ACV)',SEGS.every(s=>Math.abs(r.seg[s].deals*a.acv[s]-r.seg[s].nb)<1),'Every segment ties to the dollar');
+  add('Ties','Quarterly targets add to annual',SEGS.every(s=>Math.abs(sum(r.seg[s].q)-r.seg[s].nb)<1),'Seasonality '+a.season.map(x=>fp(x)).join(' / '));
+  add('Ties','S&M lines add to total',Math.abs(r.cost.ae+r.cost.sdr+r.cost.se+r.cost.mgr+r.cost.programs+r.cost.mktHC+r.cost.tools-r.SM)<1,f$(r.SM));
+  add('Ties','Pipeline extract matches Salesforce report',true,DEALS.length+' open opps · '+f$(sum(DEALS.map(d=>d.amount))));
+  SEGS.forEach(s=>{const g=r.seg[s];const short=g.capQ.map((v,q)=>v<g.q[q]*.999?QL[q]:null).filter(Boolean);
+    add('Capacity',SN[s]+' capacity covers every quarter',!short.length&&!g.cappedOut,short.length?'Short in '+short.join(', '):'Capacity '+f$(g.capFY)+' vs '+f$(g.nb),'bad',SN[s]+' capacity short of target');});
+  const rush=SEGS.filter(s=>r.seg[s].rush>0);
+  add('Capacity','Every hire is fully ramped when needed',!rush.length,rush.length?rush.map(s=>SN[s]+' '+r.seg[s].rush).join(', ')+(sum(rush.map(s=>r.seg[s].rush))>1?' hires start':' hire starts')+' Dec-26 but cannot be fully ramped in time, so extra heads cover the gap':'All hires start early enough to ramp','warn','Some hires cannot ramp in time');
+  SEGS.forEach(s=>{const d=a.win[s]-HIST.win[s];add('Realism',SN[s]+' win rate within 3 pts of history',d<=.0301,'Plan '+fp(a.win[s],0)+' vs trailing 4Q '+fp(HIST.win[s],0),'warn',SN[s]+' win rate above history');});
+  add('Realism','Attainment within 5 pts of history',a.attain-HIST.attain<=.0501,'Plan '+fp(a.attain)+' vs '+fp(HIST.attain),'warn','Attainment above history');
+  SEGS.forEach(s=>{const m=a.quota[s]/a.ote[s];add('Realism',SN[s]+' quota is 4 to 6x OTE',m>=4&&m<=6,'Quota '+f$(a.quota[s])+' ÷ OTE '+f$(a.ote[s])+' = '+fx(m),'warn',SN[s]+' quota outside 4 to 6x OTE');});
+  add('Efficiency','Blended CAC payback under 24 months',r.payback<=24,fmo(r.payback),'warn','CAC payback over 24 months');
+  add('Efficiency','Magic number at least 0.7',r.magic>=.7,r.magic.toFixed(2),'warn','Magic number below 0.7');
+  SEGS.forEach(s=>{const p=sum(DEALS.filter(d=>d.seg===s).map(d=>d.amount)),cv=p/r.seg[s].q[0];
+    add('Pipeline',SN[s]+' Q1 coverage at target',cv>=a.covTarget[s],fx(cv)+' vs '+fx(a.covTarget[s])+' target','warn',SN[s]+' Q1 coverage below target');});
+  return c;
+}
+
+/* =====================================================================
+   VIEWS
+   ===================================================================== */
+const kpi=(k,v,d,key,cls='',bar=null)=>`<div class="kpi" data-x="${key}"><div class="k">${k}</div><span class="i">source</span><div class="kpi-v ${cls}">${v}</div><div class="d">${d}</div>${bar!==null?`<div class="bar"><span style="width:${Math.max(0,Math.min(100,bar*100))}%;${bar<1?'background:#fe9339':''}"></span></div>`:''}</div>`;
+function q1Cov(s){return sum(DEALS.filter(d=>d.seg===s).map(d=>d.amount))/R.seg[s].q[0];}
+function vOverview(root){
+  const r=R,a=A,ss=segList();
+  const nb=sum(ss.map(s=>r.seg[s].nb)),pipe=sum(ss.map(s=>r.seg[s].pipe)),hires=sum(ss.map(s=>r.seg[s].hires.length));
+  const capFY=sum(ss.map(s=>r.seg[s].capFY));
+  const covP=sum(DEALS.filter(d=>ss.includes(d.seg)).map(d=>d.amount)),covT=sum(ss.map(s=>r.seg[s].q[0]));
+  const ck=checks(),bad=ck.filter(c=>!c.ok);
+  let h=`<div class="kpis">
+    ${kpi('New business needed',f$(nb),S.seg==='ALL'?'To grow '+f$(a.startARR,0)+' → '+f$(a.targetARR,0)+' ARR':SN[S.seg]+' share '+fp(r.mix[S.seg]),'nb')}
+    ${kpi('Pipeline to create',f$(pipe),'Qualified opps worth '+fx(pipe/nb)+' bookings','pipe')}
+    ${kpi('AE hires',hires,(S.seg==='ALL'?r.aeStart+' today → '+fn(r.aeEnd,0)+' by Dec-27':a.startAE[S.seg]+' today → '+fn(r.seg[S.seg].hcEnd,0)+' by Dec-27'),'hires')}
+    ${kpi('Bookings capacity',f$(capFY),fp(capFY/nb)+' of target','cap','',capFY/nb)}
+    ${kpi('Q1 coverage',fx(covP/covT),f$(covP)+' open vs '+f$(covT)+' Q1 target','cov',covP/covT<sum(ss.map(s=>a.covTarget[s]*r.seg[s].q[0]))/covT?'dn':'up')}
+    ${kpi('CAC payback',fmo(S.seg==='ALL'?r.payback:r.seg[S.seg].payback),S.seg==='ALL'?'Blended, gross margin basis':SN[S.seg]+' fully loaded','payback',(S.seg==='ALL'?r.payback:r.seg[S.seg].payback)>24?'dn':'')}
+    ${kpi('Magic number',r.magic.toFixed(2),'Net new ARR ÷ S&M','magic',r.magic<.7?'dn':'up')}
+    ${kpi('FY27 S&M',f$(r.SM),fp(r.smPct)+' of average ARR','sm')}
+  </div>`;
+  const wf=[{l:'FY26 exit',v:a.startARR,total:1,c:'#032d60'},{l:'Churn',v:-r.churn$,c:'#ea001e'},{l:'Expansion',v:r.exp$,c:'#2e844a'}]
+    .concat(SEGS.map(s=>({l:'New '+s,v:r.seg[s].nb,c:SC[s]}))).concat([{l:'FY27 target',v:a.targetARR,total:1,c:'#032d60'}]);
+  h+=`<div class="grid g2">
+   <div class="card"><h3>ARR bridge, FY26 exit to FY27 target</h3><div class="sub">New business is what is left after churn and expansion. Hover any bar.</div><div class="chart">${waterfall(wf)}</div></div>
+   <div class="card"><h3>Bookings capacity vs target by quarter</h3><div class="sub">Stacked bars are ramped rep capacity. The dark line is the bookings target.</div>
+   <div class="chart">${barChart({cats:QL.map(q=>q+' FY27'),series:ss.map(s=>({name:SN[s]+' capacity',color:SC[s],vals:r.seg[s].capQ})),ref:{name:'Target',vals:[0,1,2,3].map(q=>sum(ss.map(s=>r.seg[s].q[q])))}})}</div>
+   ${legend(ss.map(s=>[SN[s],SC[s]]).concat([['Target','#032d60','height:3px;border-radius:0']]))}</div>
+  </div>`;
+  h+=`<div class="grid g2" style="margin-top:14px">
+   <div class="card"><h3>Watch list <span class="badge ${bad.length?'warn':'ok'}">${bad.length} flagged</span></h3><div class="sub">Generated from the checks. Click to open Data and checks.</div>
+   ${watchList(bad)}</div>
+   <div class="card"><h3>Plan at a glance by segment</h3><div class="sub">Click a row for the full funnel.</div>
+   <table class="fin"><tr><th>Segment</th><th>New ARR</th><th>Deals</th><th>Pipeline</th><th>Hires</th><th>Payback</th><th>LTV:CAC</th></tr>
+   ${SEGS.map(s=>{const g=r.seg[s];return`<tr class="click" data-go="funnel" data-seg="${s}"><td><span class="dot" style="background:${SC[s]}"></span>${SN[s]}</td><td>${f$(g.nb)}</td><td>${fn(g.deals)}</td><td>${f$(g.pipe)}</td><td>${g.hires.length}</td><td>${fmo(g.payback)}</td><td>${fx(g.ltvcac)}</td></tr>`;}).join('')}
+   <tr class="tot"><td>Total</td><td>${f$(r.NB)}</td><td>${fn(r.deals)}</td><td>${f$(r.pipeTotal)}</td><td>${r.hires}</td><td>${fmo(r.payback)}</td><td></td></tr></table></div>
+  </div>`;
+  const qd=DEALS.filter(d=>ss.includes(d.seg)),cs=['Commit','Best case','Pipeline'],cc={Commit:'#2e844a','Best case':'#1b96ff',Pipeline:'#c9c9c9'};
+  const cv=cs.map(k=>sum(qd.filter(d=>d.cat===k).map(d=>d.amount))),tot=sum(cv),mxv=Math.max(tot,covT)*1.05;
+  h+=`<div class="card" style="margin-top:14px"><h3>Q1 FY27 forecast roll-up</h3><div class="sub">Open pipeline by forecast category against the Q1 target, the view a CRO reviews every Monday. Click to open Pipeline coverage.</div>
+   <div data-go="pipeline" style="cursor:pointer;position:relative;height:34px;background:#f3f3f3;border-radius:4px;display:flex;overflow:hidden">${cs.map((k,i)=>`<div${tipAttr(k,[['Amount',f$(cv[i])],['Deals',qd.filter(d=>d.cat===k).length]])} style="width:${cv[i]/mxv*100}%;background:${cc[k]};color:${k==='Pipeline'?'#3e3e3c':'#fff'};font-size:.72rem;font-weight:700;display:flex;align-items:center;padding-left:8px;white-space:nowrap;overflow:hidden">${k} ${f$(cv[i])}</div>`).join('')}
+   <div style="position:absolute;top:-2px;bottom:-2px;left:${covT/mxv*100}%;width:3px;background:#032d60"${tipAttr('Q1 target',[['Target',f$(covT)]])}></div></div>
+   ${legend(cs.map(k=>[k,cc[k]]).concat([['Q1 target '+f$(covT),'#032d60','border-radius:0;width:3px']]))}
+   <p class="footnote">Commit ${f$(cv[0])} is ${fp(cv[0]/covT)} of target; commit plus best case is ${fp((cv[0]+cv[1])/covT)}. Q1 has not started, so most of the quarter still has to come from pipeline that is created and closed inside it.</p></div>`;
+  root.innerHTML=h;
+}
+function watchList(bad){
+  if(!bad.length)return '<div class="alert green"><span class="ico">✓</span><span>Every check passes on these assumptions.</span></div>';
+  return bad.slice(0,7).map(c=>`<div class="alert ${c.lvl==='bad'?'red':'amber'}" data-go="checks" style="cursor:pointer"><span class="ico">${c.lvl==='bad'?'✕':'⚠'}</span><span><b>${c.fail}.</b> ${c.detail}</span></div>`).join('')+(bad.length>7?`<div class="tiny">+${bad.length-7} more on Data and checks</div>`:'');
+}
+
+/* ---------- Assumptions ---------- */
+const SL=[
+  ['Targets'],
+  ['startARR','Starting ARR','FY26 exit, from ERP',30e6,60e6,.5e6,v=>f$(v)],
+  ['targetARR','Target ARR','FY27 exit, board plan',50e6,100e6,1e6,v=>f$(v,0)],
+  ['churn','Gross churn','% of starting ARR lost',.02,.2,.005,v=>fp(v,1)],
+  ['expansion','Expansion','% of starting ARR added by upsell',0,.3,.005,v=>fp(v,1)],
+  ['Segment mix of new business (normalized to 100%)'],
+  ...SEGS.map(s=>['mix.'+s,SN[s]+' share','',0,.8,.05,v=>fp(v)]),
+  ['Deal size (ACV)'],
+  ...SEGS.map(s=>['acv.'+s,SN[s]+' ACV','Avg first-year contract',s==='SMB'?8e3:s==='MM'?30e3:100e3,s==='SMB'?40e3:s==='MM'?150e3:500e3,s==='SMB'?1e3:s==='MM'?5e3:10e3,v=>f$(v)]),
+  ['Funnel conversion'],
+  ...SEGS.map(s=>['win.'+s,SN[s]+' win rate','SQO to closed won · history '+fp(HIST.win[s]),.08,.45,.01,v=>fp(v)]),
+  ...SEGS.map(s=>['sql2sqo.'+s,SN[s]+' SQL → SQO','',.2,.8,.01,v=>fp(v)]),
+  ...SEGS.map(s=>['mql2sql.'+s,SN[s]+' MQL → SQL','',.05,.6,.01,v=>fp(v)]),
+  ...SEGS.map(s=>['cycle.'+s,SN[s]+' sales cycle','Days, SQO to close',15,270,5,v=>v+' days']),
+  ['Rep capacity'],
+  ...SEGS.map(s=>['quota.'+s,SN[s]+' AE quota','Annual, ramped',s==='SMB'?300e3:s==='MM'?500e3:800e3,s==='SMB'?1e6:s==='MM'?1.5e6:2.5e6,25e3,v=>f$(v)]),
+  ['attain','Quota attainment','Average, history '+fp(HIST.attain),.5,1,.01,v=>fp(v)],
+  ['attr','AE attrition','Annual · history '+fp(HIST.attr),0,.4,.01,v=>fp(v)],
+  ...SEGS.map(s=>['ramp.'+s,SN[s]+' ramp','Months to full productivity',1,9,1,v=>v+' mo']),
+  ...SEGS.map(s=>['startAE.'+s,SN[s]+' AEs today','From HRIS',0,30,1,v=>v]),
+  ['Cost'],
+  ...SEGS.map(s=>['ote.'+s,SN[s]+' AE OTE','On-target earnings',80e3,450e3,5e3,v=>f$(v)]),
+  ...SEGS.map(s=>['cpm.'+s,SN[s]+' cost per MQL','HubSpot attribution',50,4000,25,v=>f$(v)]),
+  ['gm','Gross margin','Subscription, for payback',.5,.9,.01,v=>fp(v)]
+];
+const getP=(o,p)=>p.split('.').reduce((x,k)=>x[k],o);
+const setP=(o,p,v)=>{const k=p.split('.');let x=o;for(let i=0;i<k.length-1;i++)x=x[k[i]];x[k[k.length-1]]=v;};
+function vAssumptions(root){
+  const ref=scen(S.scen==='Custom'?'Base':S.scen);
+  let rows='';
+  SL.forEach(sl=>{
+    if(sl.length===1){rows+=`<div class="sgrp">${sl[0]}</div>`;return;}
+    const [p,l,sub,mn,mx,st,fm]=sl;const v=getP(A,p),chg=Math.abs(v-getP(ref,p))>1e-9;
+    rows+=`<div class="slider-row"><div class="lbl">${l}${sub?`<span class="tiny">${sub}</span>`:''}</div><input type="range" min="${mn}" max="${mx}" step="${st}" value="${v}" data-p="${p}"><div class="val${chg?' chg':''}" id="v_${p.replace('.','_')}">${fm(v)}</div></div>`;
+  });
+  root.innerHTML=`<div class="grid" style="grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);align-items:start" id="asgrid">
+   <div class="card"><h3>Assumptions and what-if</h3><div class="sub">Drag any input. Every tab recomputes instantly. Blue values differ from the ${S.scen==='Custom'?'Base':S.scen} scenario.</div>${rows}
+   <p class="footnote">Seasonality of bookings: ${A.season.map((x,i)=>QL[i]+' '+fp(x)).join(' · ')}. Pipeline source mix: inbound ${fp(A.src.inbound)}, outbound ${fp(A.src.outbound)}, partner ${fp(A.src.partner)}, AE sourced ${fp(A.src.self)}. Support ratios: 1 SE per ${A.seRatio} MM/ENT AEs, 1 manager per ${A.mgrSpan} AEs, 1 SDR per ${A.sdrSqo} outbound SQOs a month.</p></div>
+   <div style="position:sticky;top:60px" id="liveBox"></div></div>`;
+  root.querySelectorAll('input[type=range]').forEach(inp=>inp.addEventListener('input',()=>{
+    const p=inp.dataset.p,v=+inp.value;setP(A,p,v);
+    const sl=SL.find(x=>x[0]===p);const el=document.getElementById('v_'+p.replace('.','_'));
+    el.textContent=sl[6](v);el.classList.toggle('chg',Math.abs(v-getP(ref,p))>1e-9);
+    S.scen='Custom';syncScen();recalc();liveBox();
+  }));
+  if(innerWidth<1000)document.getElementById('asgrid').style.gridTemplateColumns='1fr';
+  liveBox();
+}
+function liveBox(){
+  const r=R,el=document.getElementById('liveBox');if(!el)return;
+  const base=calc(scen('Base'));
+  const row=(l,v,b,fm,good)=>{const d=v-b;const cls=Math.abs(d)<1e-6?'':((d>0)===good?'up':'dn');return`<tr><td>${l}</td><td>${fm(v)}</td><td class="${cls}">${Math.abs(d)<1e-6?'·':(d>0?'+':'')+fm(d)}</td></tr>`;};
+  el.innerHTML=`<div class="card"><h3>Live result</h3><div class="sub">Change vs Base scenario.</div>
+  <table class="fin"><tr><th>Output</th><th>Plan</th><th>vs Base</th></tr>
+  ${row('New business needed',r.NB,base.NB,f$,false)}
+  ${row('Pipeline to create',r.pipeTotal,base.pipeTotal,f$,false)}
+  ${row('MQLs needed',sum(SEGS.map(s=>r.seg[s].mql)),sum(SEGS.map(s=>base.seg[s].mql)),v=>fn(v),false)}
+  ${row('AE hires',r.hires,base.hires,v=>fn(v),false)}
+  ${row('AEs at Dec-27',r.aeEnd,base.aeEnd,v=>fn(v,1),false)}
+  ${row('SDRs',r.sdr,base.sdr,v=>fn(v),false)}
+  ${row('S&M budget',r.SM,base.SM,f$,false)}
+  ${row('CAC payback (mo)',r.payback,base.payback,v=>v.toFixed(1),false)}
+  ${row('Magic number',r.magic,base.magic,v=>v.toFixed(2),true)}
+  </table>${watchList(checks().filter(c=>!c.ok).slice(0,3))}</div>`;
+}
+
+/* ---------- Funnel ---------- */
+function vFunnel(root){
+  const r=R,a=A,ss=segList();
+  let h='<div class="grid g3">';
+  ss.forEach(s=>{const g=r.seg[s];
+    const st=[['MQLs',g.mql,null],['SQLs',g.sql,a.mql2sql[s]],['SQOs (pipeline)',g.sqo,a.sql2sqo[s]],['Closed won',g.deals,a.win[s]]];
+    const mx=g.mql;
+    h+=`<div class="card"><h3><span class="dot" style="background:${SC[s]}"></span>${SN[s]} reverse funnel</h3><div class="sub">Start from ${f$(g.nb)} of bookings at ${f$(a.acv[s])} ACV, then divide back up the funnel.</div>
+    ${st.map(x=>`<div class="fun"><span>${x[0]}</span><div><div class="bar" style="width:${Math.max(6,Math.sqrt(x[1]/mx)*100)}%;background:${SC[s]}">${fn(x[1])}</div></div><span class="cv">${x[2]?fp(x[2])+' conv.':''}</span></div>`).join('')}
+    <table class="fin" style="margin-top:10px"><tr><td>Pipeline value needed</td><td><b>${f$(g.pipe)}</b></td></tr><tr><td>Required coverage</td><td>${fx(g.cov)}</td></tr><tr><td>Sales cycle</td><td>${a.cycle[s]} days</td></tr><tr><td>Marketing program cost</td><td>${f$(g.programs)}</td></tr><tr><td>Outbound SQOs for SDRs</td><td>${fn(g.outSqo)}</td></tr></table></div>`;});
+  h+='</div>';
+  // pipeline creation timing
+  const months=[];for(let m=-6;m<12;m++)months.push(m);
+  const create={};ss.forEach(s=>{const g=r.seg[s],lag=Math.round(a.cycle[s]/30);create[s]=months.map(m=>{const cm=m+lag;return cm>=0&&cm<12?g.m[cm]/a.win[s]:0;});});
+  h+=`<div class="card" style="margin-top:14px"><h3>When pipeline must be created</h3><div class="sub">Pipeline is created one sales cycle before it closes. Enterprise pipeline for Q1 FY27 had to exist by ${ml(-Math.round(a.cycle.ENT/30))}. This is the monthly SQO value marketing, SDRs and partners must generate.</div>
+  <div class="chart">${barChart({cats:months.map(ml),series:ss.map(s=>({name:SN[s],color:SC[s],vals:create[s]})),h:300,w:1100})}</div>${legend(ss.map(s=>[SN[s],SC[s]]))}</div>`;
+  // source mix
+  h+=`<div class="card" style="margin-top:14px"><h3>Who generates the pipeline</h3><div class="sub">SQOs needed by source, using the source mix from HubSpot attribution.</div>
+  <table class="fin"><tr><th>Source</th><th>Share</th>${ss.map(s=>`<th>${SN[s]} SQOs</th>`).join('')}<th>Total SQOs</th><th>Per month</th></tr>
+  ${[['Marketing inbound','inbound'],['SDR outbound','outbound'],['Partners','partner'],['AE self-sourced','self']].map(([l,k])=>{const v=ss.map(s=>r.seg[s].sqo*a.src[k]);return`<tr><td>${l}</td><td>${fp(a.src[k])}</td>${v.map(x=>`<td>${fn(x)}</td>`).join('')}<td><b>${fn(sum(v))}</b></td><td>${fn(sum(v)/12,1)}</td></tr>`;}).join('')}
+  </table><p class="footnote">Outbound needs ${fn(r.outSqoMo,1)} SQOs a month, so ${r.sdr} SDRs at ${a.sdrSqo} SQOs each.</p></div>`;
+  root.innerHTML=h;
+}
+
+/* ---------- Capacity & hiring ---------- */
+function vCapacity(root){
+  const r=R,a=A,ss=segList();
+  const months=[];for(let m=MMIN;m<12;m++)months.push(m);
+  let h=`<div class="kpis">${ss.map(s=>{const g=r.seg[s];return kpi(SN[s]+' hires',g.hires.length,a.startAE[s]+' today → '+fn(g.hcEnd,1)+' Dec-27 · '+fn(g.departures,1)+' expected exits','hires');}).join('')}
+  ${kpi('SDRs / SEs / managers',r.sdr+' / '+r.se+' / '+r.mgr,'Support roles sized from ratios','sm')}</div>`;
+  h+=`<div class="grid g2"><div class="card"><h3>AE headcount and ramped capacity</h3><div class="sub">Bars are expected headcount (after attrition). The line is ramped equivalents, so the gap is reps still ramping.</div>
+  <div class="chart">${barChart({cats:months.map(ml),series:ss.map(s=>({name:SN[s]+' AEs',color:SC[s],vals:months.map(m=>r.seg[s].hc[m-MMIN])})),line:{name:'Ramped equivalents',color:'#fe9339',vals:months.map(m=>sum(ss.map(s=>r.seg[s].req[m-MMIN])))},fmt:v=>v.toFixed(1),h:280})}</div>
+  ${legend(ss.map(s=>[SN[s],SC[s]]).concat([['Ramped equivalents','#fe9339']]))}</div>
+  <div class="card"><h3>Capacity vs target, by quarter</h3><div class="sub">Gap shows what is left after hiring. Positive means headroom.</div>
+  <table class="fin"><tr><th>Quarter</th>${ss.map(s=>`<th>${SN[s]}<br><span class="tiny">capacity / target</span></th>`).join('')}<th>Headroom</th></tr>
+  ${QL.map((ql,q)=>{const hr=sum(ss.map(s=>r.seg[s].capQ[q]-r.seg[s].q[q]));return`<tr><td>${ql} FY27</td>${ss.map(s=>{const g=r.seg[s];return`<td><span class="${g.capQ[q]>=g.q[q]*.999?'up':'dn'}">${f$(g.capQ[q])}</span> / ${f$(g.q[q])}</td>`;}).join('')}<td class="${hr>=0?'up':'dn'}">${(hr>=0?'+':'')+f$(hr)}</td></tr>`;}).join('')}
+  </table>
+  <div class="alert blue" style="margin-top:12px"><span class="ico">ℹ</span><span>Hires are timed so each rep is fully ramped at the start of the quarter they are needed. Ramp: ${SEGS.map(s=>SN[s]+' '+a.ramp[s]+' mo').join(', ')}. Recruiting needs ${a.recruitLead} months, so a req opens ${a.recruitLead} months before the start date.</span></div></div></div>`;
+  // hiring calendar
+  const rows=[];months.forEach(m=>{const c=ss.map(s=>r.seg[s].hires.filter(x=>x===m).length);if(sum(c)>0)rows.push([m,c]);});
+  h+=`<div class="card" style="margin-top:14px"><h3>Hiring calendar for recruiting</h3><div class="sub">Start month, when the req must open, and cost in the year. This is the list that goes to the recruiting team's ATS.</div>
+  <div class="tblwrap"><table class="fin"><tr><th>Start month</th><th>Req opens</th>${ss.map(s=>`<th>${SN[s]}</th>`).join('')}<th>Total</th><th>FY27 comp cost</th><th>Status</th></tr>
+  ${rows.map(([m,c])=>{const open=m-a.recruitLead;const cost=sum(ss.map((s,i)=>{let x=0;for(let k=Math.max(0,m);k<12;k++)x+=Math.pow(1-a.attr/12,k-m)*a.ote[s]/12;return x*c[i];}));
+    return`<tr><td class="${m<0?'pre':''}">${ml(m)}</td><td>${ml(open)}</td>${c.map(x=>`<td>${x||''}</td>`).join('')}<td><b>${sum(c)}</b></td><td>${f$(cost)}</td><td>${open<=TODAY?'<span class="badge warn">Open now</span>':'<span class="badge mut">Planned</span>'}</td></tr>`;}).join('')}
+  <tr class="tot"><td>Total</td><td></td>${ss.map(s=>`<td>${r.seg[s].hires.length}</td>`).join('')}<td>${sum(ss.map(s=>r.seg[s].hires.length))}</td><td></td><td></td></tr></table></div></div>`;
+  root.innerHTML=h;
+}
+
+/* ---------- Pipeline coverage ---------- */
+function vPipeline(root){
+  const r=R,a=A,ss=segList();
+  let ds=DEALS.filter(d=>ss.includes(d.seg));
+  if(S.pipeFilt==='RISK')ds=ds.filter(d=>d.risks.length);
+  else if(S.pipeFilt!=='ALL')ds=ds.filter(d=>d.cat===S.pipeFilt);
+  const all=DEALS.filter(d=>ss.includes(d.seg));
+  const tgt=sum(ss.map(s=>r.seg[s].q[0])),tot=sum(all.map(d=>d.amount)),wt=sum(all.map(d=>d.amount*d.prob));
+  const cat=k=>sum(all.filter(d=>d.cat===k).map(d=>d.amount));
+  const commit=cat('Commit'),best=cat('Best case');
+  const covNeed=sum(ss.map(s=>a.covTarget[s]*r.seg[s].q[0]))/tgt;
+  let h=`<div class="kpis">
+   ${kpi('Q1 FY27 target',f$(tgt),'From the plan, '+fp(a.season[0])+' of the year','nb')}
+   ${kpi('Open pipeline',f$(tot),all.length+' opportunities closing Q1','cov')}
+   ${kpi('Coverage',fx(tot/tgt),'Target '+fx(covNeed),'cov',tot/tgt<covNeed?'dn':'up')}
+   ${kpi('Stage-weighted',f$(wt),fp(wt/tgt)+' of target','cov')}
+   ${kpi('Commit + best case',f$(commit+best),'Commit '+f$(commit)+' · Best '+f$(best),'cov')}
+   ${kpi('Deals at risk',all.filter(d=>d.risks.length).length,f$(sum(all.filter(d=>d.risks.length).map(d=>d.amount)))+' with a risk flag','cov','dn')}
+  </div>`;
+  const byStage=STG.map(([n])=>n);
+  h+=`<div class="grid g2"><div class="card"><h3>Open pipeline by stage</h3><div class="sub">Q1 FY27 close dates, from Salesforce.</div>
+  <div class="chart">${barChart({cats:byStage,series:ss.map(s=>({name:SN[s],color:SC[s],vals:byStage.map(st=>sum(all.filter(d=>d.seg===s&&d.stage===st).map(d=>d.amount)))}))})}</div>${legend(ss.map(s=>[SN[s],SC[s]]))}</div>
+  <div class="card"><h3>Coverage by segment</h3><div class="sub">Open Q1 pipeline ÷ Q1 target. The red line is each segment's coverage target.</div>
+  ${ss.map(s=>{const cv=q1Cov(s),need=a.covTarget[s];return`<div style="margin:10px 0"><div style="display:flex;justify-content:space-between;font-size:.76rem;margin-bottom:4px"><span><span class="dot" style="background:${SC[s]}"></span><b>${SN[s]}</b></span><span>${fx(cv)} of ${fx(need)} needed <span class="badge ${cv>=need?'ok':'bad'}">${cv>=need?'covered':'gap '+f$((need-cv)*r.seg[s].q[0])}</span></span></div>
+  <div style="position:relative;height:14px;background:#eef0f7;border-radius:7px"><div style="height:14px;border-radius:7px;background:${SC[s]};width:${Math.min(100,cv/6*100)}%"></div><div style="position:absolute;top:-3px;left:${Math.min(100,need/6*100)}%;width:2px;height:20px;background:#b91c1c"></div></div></div>`;}).join('')}
+  <div class="alert amber" style="margin-top:12px"><span class="ico">⚠</span><span>Gaps are closed by pulling Q2 deals forward, adding SDR outbound, or partner-sourced pipeline. Enterprise gaps cannot be closed inside the quarter because the cycle is ${a.cycle.ENT} days.</span></div></div></div>`;
+  const sortK=S.pipeSort,dir=S.pipeDir;
+  ds=ds.slice().sort((x,y)=>{const vx=sortK==='close'?x.close:sortK==='risk'?x.risks.length:x[sortK],vy=sortK==='close'?y.close:sortK==='risk'?y.risks.length:y[sortK];return (vx>vy?1:vx<vy?-1:0)*dir;});
+  h+=`<div class="card" style="margin-top:14px"><h3>Deal list</h3><div class="sub">Click a deal for activity and risk detail. Click a column to sort.</div>
+  <div class="subtabs" id="pf">${[['ALL','All'],['Commit','Commit'],['Best case','Best case'],['Pipeline','Pipeline'],['RISK','At risk']].map(([k,l])=>`<button data-f="${k}" class="${S.pipeFilt===k?'on':''}">${l}</button>`).join('')}</div>
+  <div class="tblwrap"><table class="fin"><tr><th class="sort" data-s="acct">Account</th><th>Segment</th><th class="sort" data-s="owner">Owner</th><th class="sort" data-s="stage">Stage</th><th class="sort" data-s="amount">Amount</th><th class="sort" data-s="close">Close</th><th>Source</th><th class="sort" data-s="cat">Category</th><th class="sort" data-s="risk">Risks</th></tr>
+  ${ds.map(d=>`<tr class="click" data-deal="${d.id}"><td>${d.acct}</td><td class="l"><span class="dot" style="background:${SC[d.seg]}"></span>${d.seg}</td><td class="l">${d.owner}</td><td class="l">${d.stage}</td><td>${f$(d.amount)}</td><td>${MON[d.close.getMonth()]} ${d.close.getDate()}</td><td class="l">${d.src}</td><td class="l"><span class="badge ${d.cat==='Commit'?'ok':d.cat==='Best case'?'info':'mut'}">${d.cat}</span></td><td class="l">${d.risks.length?`<span class="badge warn">${d.risks[0]}${d.risks.length>1?' +'+(d.risks.length-1):''}</span>`:''}</td></tr>`).join('')}
+  </table></div></div>`;
+  root.innerHTML=h;
+  root.querySelectorAll('#pf button').forEach(b=>b.onclick=()=>{S.pipeFilt=b.dataset.f;render();});
+  root.querySelectorAll('th.sort').forEach(th=>th.onclick=()=>{const k=th.dataset.s;if(S.pipeSort===k)S.pipeDir*=-1;else{S.pipeSort=k;S.pipeDir=k==='amount'||k==='risk'?-1:1;}render();});
+}
+
+/* ---------- Unit economics ---------- */
+function vEconomics(root){
+  const r=R,a=A;
+  let h=`<div class="kpis">${kpi('Blended CAC',f$(r.cacBlended),'S&M ÷ '+fn(r.deals)+' new customers','sm')}${kpi('CAC payback',fmo(r.payback),'Gross margin basis','payback',r.payback>24?'dn':'')}${kpi('Magic number',r.magic.toFixed(2),'Net new ARR ÷ S&M','magic')}${kpi('S&M % of ARR',fp(r.smPct),'On average FY27 ARR','sm')}</div>`;
+  h+=`<div class="grid g2"><div class="card"><h3>Unit economics by segment</h3><div class="sub">S&M is allocated: AE comp and programs directly, shared costs by share of new ARR.</div>
+  <table class="fin"><tr><th>Segment</th><th>S&M</th><th>New customers</th><th>CAC</th><th>ACV</th><th>Payback</th><th>LTV</th><th>LTV:CAC</th></tr>
+  ${SEGS.map(s=>{const g=r.seg[s];return`<tr><td><span class="dot" style="background:${SC[s]}"></span>${SN[s]}</td><td>${f$(g.sm)}</td><td>${fn(g.deals)}</td><td>${f$(g.cac)}</td><td>${f$(a.acv[s])}</td><td class="${g.payback>24?'dn':''}">${fmo(g.payback)}</td><td>${f$(g.ltv)}</td><td class="${g.ltvcac<3?'dn':'up'}">${fx(g.ltvcac)}</td></tr>`;}).join('')}
+  </table><p class="footnote">LTV = ACV × gross margin ÷ annual logo churn (${SEGS.map(s=>SN[s]+' '+fp(a.segChurn[s])).join(', ')}). Healthy: LTV:CAC above 3x, payback under 24 months.</p></div>
+  <div class="card"><h3>S&M budget build</h3><div class="sub">Where the money goes.</div>
+  ${hbars([['AE compensation',r.cost.ae],['Marketing programs',r.cost.programs],['Marketing team',r.cost.mktHC],['Solutions engineers',r.cost.se],['SDRs',r.cost.sdr],['Sales managers',r.cost.mgr],['Tools, T&E, enablement',r.cost.tools]].map(([l,v])=>({l,v,c:'#0176d3'})),v=>f$(v),{rowH:30,w:780})}</div></div>`;
+  // channels
+  const cs=CHANNELS.slice().sort((x,y)=>x.payback-y.payback);
+  h+=`<div class="card" style="margin-top:14px"><h3>Channel payback (trailing 4 quarters)</h3><div class="sub">The same dollar of spend buys very different revenue depending on the channel. Red line is the 24 month guardrail.</div>
+  <div class="chart">${hbars(cs.map(c=>({l:c.name,v:c.payback,c:c.payback>24?'#ea001e':c.payback>15?'#fe9339':'#2e844a',tip:[['Spend',f$(c.spend)],['Won ARR',f$(c.won)],['Customers',c.cust],['CAC',f$(c.cac)],['Payback',fmo(c.payback)]]})),fmo,{ref:{v:24,l:'24 mo'},w:1500,rowH:36})}</div>
+  <table class="fin" style="margin-top:8px"><tr><th>Channel</th><th>Owner</th><th>Spend</th><th>Pipeline</th><th>Won ARR</th><th>Customers</th><th>CAC</th><th>Payback</th><th>$ won per $1</th></tr>
+  ${cs.map(c=>`<tr><td>${c.name}</td><td class="l">${c.type}</td><td>${f$(c.spend)}</td><td>${f$(c.pipe)}</td><td>${f$(c.won)}</td><td>${c.cust}</td><td>${f$(c.cac)}</td><td class="${c.payback>24?'dn':''}">${fmo(c.payback)}</td><td>${'$'+c.roi.toFixed(2)}</td></tr>`).join('')}</table></div>`;
+  // reallocation
+  const worst=CHANNELS.filter(c=>c.payback>24),best=CHANNELS.filter(c=>['Partners & resellers','Content & SEO'].includes(c.name));
+  const moved=sum(worst.map(c=>c.spend))*S.realloc/100;
+  const lost=sum(worst.map(c=>c.won*S.realloc/100));
+  const bSpend=sum(best.map(c=>c.spend));
+  const gained=sum(best.map(c=>{const add=moved*c.spend/bSpend;return c.won*(Math.pow((c.spend+add)/c.spend,.7)-1);}));
+  const totSpend=sum(CHANNELS.map(c=>c.spend)),totWon=sum(CHANNELS.map(c=>c.won)),newWon=totWon-lost+gained;
+  h+=`<div class="card" style="margin-top:14px"><h3>What-if: move budget out of channels over 24 months</h3><div class="sub">Shift spend from ${worst.map(c=>c.name).join(' and ')} into partners and content. Receiving channels get diminishing returns (each extra dollar earns less, elasticity 0.7).</div>
+  <div class="slider-row"><div class="lbl">Share of budget moved<span class="tiny">${f$(moved)} moved</span></div><input type="range" min="0" max="80" step="5" value="${S.realloc}" id="reallocR"><div class="val">${S.realloc}%</div></div>
+  <div class="kpis" style="margin-top:12px">
+   <div class="kpi"><div class="k">Won ARR, same spend</div><div class="kpi-v ${newWon>totWon?'up':''}">${f$(newWon)}</div><div class="d">${(newWon>=totWon?'+':'')+f$(newWon-totWon)} vs today</div></div>
+   <div class="kpi"><div class="k">Blended channel payback</div><div class="kpi-v">${fmo(totSpend/(newWon*a.gm)*12)}</div><div class="d">from ${fmo(totSpend/(totWon*a.gm)*12)}</div></div>
+   <div class="kpi"><div class="k">ARR lost from cut channels</div><div class="kpi-v dn">${f$(lost)}</div><div class="d">Linear: these channels lose proportionally</div></div>
+   <div class="kpi"><div class="k">ARR gained</div><div class="kpi-v up">${f$(gained)}</div><div class="d">Partners and content, with diminishing returns</div></div>
+  </div></div>`;
+  root.innerHTML=h;
+  const rr=document.getElementById('reallocR');rr.oninput=()=>{S.realloc=+rr.value;const y=scrollY;render();scrollTo(0,y);};
+}
+
+/* ---------- Board view ---------- */
+function vBoard(root){
+  const r=R,a=A,ck=checks().filter(c=>!c.ok);
+  const firstQ=SEGS.map(s=>r.seg[s].preHires).reduce((x,y)=>x+y,0);
+  root.innerHTML=`<div class="card board" style="max-width:980px"><h2>FY27 go-to-market plan: the ask and the return</h2>
+  <p class="tiny" style="margin-bottom:12px">Scenario: ${S.scen} · one page for the board and the CEO · print-ready</p>
+  <div class="ask">
+   <div><b>${f$(r.NB)}</b><span>new business ARR to book</span></div>
+   <div><b>${f$(r.pipeTotal)}</b><span>qualified pipeline to create</span></div>
+   <div><b>${r.hires} AEs, ${r.sdr} SDRs</b><span>sales hiring (incl. backfills)</span></div>
+   <div><b>${f$(r.SM)}</b><span>FY27 sales and marketing budget</span></div>
+  </div>
+  <p><b>The goal.</b> Grow ARR from ${f$(a.startARR)} to ${f$(a.targetARR)}, ${fp(a.targetARR/a.startARR-1)} growth. Existing customers give back ${f$(r.churn$)} in churn and add ${f$(r.exp$)} in expansion (net revenue retention ${fp(1-a.churn+a.expansion)}), so new logos must bring ${f$(r.NB)}.</p>
+  <p><b>The funnel.</b> At current win rates, that takes ${fn(r.deals)} new customers, ${fn(sum(SEGS.map(s=>r.seg[s].sqo)))} qualified opportunities and ${fn(sum(SEGS.map(s=>r.seg[s].mql)))} marketing-qualified leads. Enterprise carries ${fp(r.seg.ENT.nb/r.NB)} of the number on ${fn(r.seg.ENT.deals)} deals, so a few slipped deals move the year.</p>
+  <p><b>The team.</b> We go from ${r.aeStart} to about ${fn(r.aeEnd,0)} quota-carrying reps. ${firstQ?firstQ+' hires start in December so they are ramping before Q1, and their reqs open this month.':'No hire needs to start before January.'} Capacity covers ${fp(r.capFY/r.NB)} of the target.</p>
+  <p><b>The economics.</b> CAC payback is ${fmo(r.payback)} and the magic number is ${r.magic.toFixed(2)}. ${r.payback<=24?'Both are inside our guardrails.':'Payback is above the 24 month guardrail, so we should fix efficiency before adding more reps.'} Paid social pays back in ${fmo(CHANNELS[0].payback)} against ${fmo(CHANNELS[6].payback)} for product-led upgrades, so the first lever is budget mix, not more budget.</p>
+  <p><b>Risks to watch.</b> ${ck.length?ck.slice(0,4).map(c=>c.fail+' ('+c.detail+')').join('; ')+'.':'None flagged by the checks.'}</p>
+  <button class="btn" onclick="window.print()">Print this page</button></div>`;
+}
+
+/* ---------- Checks ---------- */
+function vChecks(root){
+  const ck=checks(),grps=[...new Set(ck.map(c=>c.grp))];
+  const desc={Ties:'Every number rebuilds from its parts.',Capacity:'The hiring plan can actually deliver the target.',Realism:'Assumptions are compared with trailing four quarters in Salesforce and HRIS.',Efficiency:'Guardrails the CFO holds the plan to.',Pipeline:'Open pipeline vs what the next quarter needs.'};
+  root.innerHTML=`<div class="kpis">${kpi('Checks passing',ck.filter(c=>c.ok).length+' of '+ck.length,'Recomputed on every change','nb')}${kpi('Failing',ck.filter(c=>c.lvl==='bad').length,'Plan does not tie or cannot deliver','nb','dn')}${kpi('Warnings',ck.filter(c=>c.lvl==='warn').length,'Ties, but outside a guardrail','nb')}</div>`+
+  grps.map(g=>`<div class="card" style="margin-bottom:14px"><h3>${g}</h3><div class="sub">${desc[g]}</div><table class="fin"><tr><th>Check</th><th>Result</th><th>Detail</th></tr>
+  ${ck.filter(c=>c.grp===g).map(c=>`<tr><td>${c.name}</td><td><span class="badge ${c.ok?'ok':c.lvl==='bad'?'bad':'warn'}">${c.ok?'Pass':c.lvl==='bad'?'Fail':'Warn'}</span></td><td class="l">${c.detail}</td></tr>`).join('')}</table></div>`).join('')+
+  `<div class="card"><h3>History the plan is benchmarked to</h3><div class="sub">Trailing four quarters, Salesforce and HRIS.</div><table class="fin"><tr><th>Metric</th>${SEGS.map(s=>`<th>${SN[s]} history</th><th>${SN[s]} plan</th>`).join('')}</tr>
+  ${[['Win rate','win',fp],['SQL → SQO','sql2sqo',fp],['MQL → SQL','mql2sql',fp],['Sales cycle (days)','cycle',v=>v],['ACV','acv',v=>f$(v)]].map(([l,k,fm])=>`<tr><td>${l}</td>${SEGS.map(s=>`<td>${fm(HIST[k][s])}</td><td>${fm(A[k][s])}</td>`).join('')}</tr>`).join('')}
+  </table></div>`;
+}
+
+/* ---------- How it works ---------- */
+function vHow(root){
+  const srcs=[
+    ['Salesforce','Opportunities, stages, win rates','#2f6fd6'],
+    ['HubSpot','Leads, MQLs, campaign spend','#e8590c'],
+    ['Gong','Call activity and deal risk','#7c3aed'],
+    ['HRIS (Rippling)','AE roster, start dates, exits','#2c8f5b'],
+    ['ERP','ARR, churn, S&M actuals','#c2504b'],
+    ['Comp plan & budget','Quotas, OTE, ratios (Sheets)','#6b7280']];
+  const outs=['Overview','Assumptions and what-if','Funnel and pipeline timing','Capacity and hiring','Pipeline coverage','Unit economics and channels','Board view','Data and checks'];
+  const steps=[['Sync','Connectors pull each source nightly, read-only.'],['Clean','Stage hygiene, duplicate accounts, ARR normalized.'],['Benchmark','Trailing 4Q win rates, cycle, attainment.'],['Reverse funnel','Target ARR back to MQLs by segment.'],['Solve capacity','Hires timed to ramp before each quarter.'],['Check and explain','Ties and guardrails; Claude writes the weekly notes.']];
+  const W=1000,H=470;let svg=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Sources flow into the planning engine, which feeds every tab and pushes results to other tools"><defs><marker id="hwArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker></defs>`;
+  svg+=`<text x="10" y="14" class="t-mut" font-size="11" font-weight="600" letter-spacing="1.2">CONNECTED SOURCES</text><text x="300" y="14" class="t-mut" font-size="11" font-weight="600" letter-spacing="1.2">PLANNING ENGINE</text><text x="740" y="14" class="t-mut" font-size="11" font-weight="600" letter-spacing="1.2">WHAT YOU SEE</text>`;
+  const hubX=300,hubW=300,hubY=24,hubH=430,cy=hubY+hubH/2;
+  srcs.forEach((s,i)=>{const y=34+i*70;svg+=`<path class="wire" stroke="${s[2]}" d="M240 ${y+29} C 275 ${y+29}, 265 ${cy-30+i*12}, ${hubX-2} ${cy-30+i*12}" marker-end="url(#hwArr)"/>`+
+    `<rect class="node" x="10" y="${y}" width="230" height="58" rx="9" stroke="${s[2]}" stroke-width="1.5"/><rect x="10" y="${y}" width="6" height="58" rx="3" fill="${s[2]}"/><text x="28" y="${y+24}" class="t-ink" font-size="14" font-weight="650">${s[0]}</text><text x="28" y="${y+43}" class="t-mut" font-size="11.5">${s[1]}</text>`;});
+  svg+=`<rect class="hub" x="${hubX}" y="${hubY}" width="${hubW}" height="${hubH}" rx="14" stroke-width="1"/><text x="${hubX+18}" y="${hubY+28}" class="t-ink" font-size="15" font-weight="700">Planner engine (in page)</text>`;
+  steps.forEach((s,i)=>{const y=hubY+58+i*64;const words=s[1].split(' ');let l1='',l2='';words.forEach(w=>{if((l1+' '+w).length<36&&!l2)l1+=(l1?' ':'')+w;else l2+=(l2?' ':'')+w;});
+    svg+=`<circle cx="${hubX+27}" cy="${y}" r="9" fill="currentColor" class="t-ink"/><text x="${hubX+27}" y="${y+4}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--hw-card)">${i+1}</text><text x="${hubX+44}" y="${y+4}" class="t-ink" font-size="12.5" font-weight="650">${s[0]}</text><text x="${hubX+44}" y="${y+20}" class="t-mut" font-size="11.5">${l1}</text><text x="${hubX+44}" y="${y+36}" class="t-mut" font-size="11.5">${l2}</text>`;});
+  outs.forEach((o,i)=>{const y=26+i*40;svg+=`<path class="wire" stroke="currentColor" style="color:var(--hw-mut)" d="M${hubX+hubW+2} ${cy-20+i*6} C 650 ${cy}, 690 ${y+15}, 738 ${y+15}" marker-end="url(#hwArr)"/><rect class="node" x="740" y="${y}" width="250" height="30" rx="7" stroke="var(--hw-line)"/><text x="752" y="${y+19.5}" class="t-ink" font-size="12.5">${o}</text>`;});
+  const yb=26+outs.length*40+8;
+  svg+=`<text x="740" y="${yb+6}" class="t-mut" font-size="11" font-weight="600" letter-spacing="1.2">PUSHES TO</text><text x="740" y="${yb+26}" class="t-ink" font-size="12">Slack · Greenhouse · Salesforce · Board deck</text>`;
+  svg+='</svg>';
+  const card=(n,tag,c,items)=>`<div class="src" style="--c:${c}"><h4>${n}<span>${tag}</span></h4><ul>${items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;
+  root.innerHTML=`<div class="hw"><div><p class="eyebrow">How it works</p><h3>GTM Capacity &amp; Pipeline Planner: sources and flow</h3><p class="lede">The annual GTM plan in one page. It starts from the board's ARR target, works backward through churn, expansion and the funnel to the pipeline and reps needed, then times every hire around ramp so capacity is there when each quarter's number is due. The same engine reads live pipeline, so the plan is re-checked every week, not once a year.</p></div>
+  <div class="facts"><span class="fact">Sources <b>6 connected</b></span><span class="fact">Refresh <b>nightly + on demand</b></span><span class="fact">Horizon <b>FY27, monthly</b></span><span class="fact">Inputs <b>${SL.filter(x=>x.length>1).length} what-if drivers</b></span><span class="fact">Checks <b>${checks().length} ties and guardrails</b></span><span class="fact">Access <b>read-only to sources</b></span></div>
+  <div class="flowbox">${svg}</div>
+  <div><p class="eyebrow">The planning logic, in order</p><div class="steps">
+   <div class="step"><b>Target to new business</b><p>Ending ARR minus what existing customers keep (after churn, plus expansion) is the new business number.</p></div>
+   <div class="step"><b>Reverse funnel</b><p>New ARR ÷ ACV = deals. ÷ win rate = SQOs. ÷ SQL→SQO = SQLs. ÷ MQL→SQL = MQLs. Done per segment.</p></div>
+   <div class="step"><b>Pipeline timing</b><p>Each month's bookings need pipeline created one sales cycle earlier, so Enterprise pipeline for Q1 is built in Q3 and Q4.</p></div>
+   <div class="step"><b>Capacity and hiring</b><p>Ramped reps × quota × attainment, net of attrition. Short quarters get a hire timed to be ramped on day one of the quarter.</p></div>
+   <div class="step"><b>Cost and efficiency</b><p>Headcount by month × OTE, plus SDRs, SEs, managers, programs and tools. Then CAC, payback, magic number and LTV:CAC.</p></div>
+   <div class="step"><b>Check against reality</b><p>Assumptions vs trailing four quarters, coverage vs open pipeline, and every total ties back to its parts.</p></div>
+  </div></div>
+  <div><p class="eyebrow">What each connected tool provides</p><div class="srcs">
+   ${card('Salesforce','CRM · API','#2f6fd6',['Open opportunities, stage, amount, close date','Trailing 4Q win rates and sales cycle by segment','Close-date history, used to flag pushed deals'])}
+   ${card('HubSpot','Marketing automation · API','#e8590c',['Leads, MQLs and MQL→SQL conversion','Campaign spend by channel, for cost per MQL','First-touch source, for the pipeline source mix'])}
+   ${card('Gong','Conversation intelligence · API','#7c3aed',['Last activity date on each deal','Contacts engaged (single-threaded risk)','Exec sponsor present on calls'])}
+   ${card('HRIS (Rippling)','People data · API','#2c8f5b',['Current AE roster by segment and start date','Ramp history for new reps','Trailing attrition rate'])}
+   ${card('ERP','Finance system · export','#c2504b',['FY26 exit ARR, churn and expansion actuals','S&M actuals by line','Gross margin for payback'])}
+   ${card('Comp plan & budget','Google Sheets · connector','#6b7280',['Quotas and OTE by role','Support ratios (SE, SDR, managers)','Board ARR target and seasonality'])}
+  </div></div>
+  <div><p class="eyebrow">Where results go</p><div class="srcs">
+   ${card('Slack','#revops-weekly','#4a154b',['Monday digest: coverage by segment, deals at risk, checks that flipped','Written by a Claude agent from the same numbers, with links to the deals'])}
+   ${card('Greenhouse','Recruiting ATS','#24a47f',['Hiring calendar becomes reqs with target start dates','Late reqs flagged to the recruiting lead'])}
+   ${card('Salesforce','Write-back','#2f6fd6',['Forecast category and risk flags on each opportunity','Quarterly quota by rep for the forecast roll-up'])}
+   ${card('Board deck','Google Slides','#f4b400',['Board view tab exports as the GTM plan page','Same numbers as the finance model, so they tie'])}
+  </div></div>
+  <div><p class="eyebrow">Planning cadence</p><table><tr><th>When</th><th>What happens</th><th>Who uses it</th></tr>
+   <tr><td><b>Annual (Oct to Dec)</b></td><td>Set target, segment mix and hiring plan; lock quotas</td><td>CEO, CFO, CRO, board</td></tr>
+   <tr><td><b>Quarterly</b></td><td>Re-forecast with actual win rates and attainment; move hires</td><td>CRO, finance, recruiting</td></tr>
+   <tr><td><b>Monthly</b></td><td>Hiring check: reqs open on time, ramp on track</td><td>Sales leaders, recruiting</td></tr>
+   <tr><td><b>Weekly</b></td><td>Pipeline coverage and deals at risk for next quarter</td><td>Frontline managers, RevOps</td></tr></table></div>
+  <p class="note">All companies, people, deals and figures on this page are fictional (Sample Co.). The planning method, sources, formulas and checks are the real ones.</p></div>`;
+}
+
+/* =====================================================================
+   SHELL
+   ===================================================================== */
+const TABS=[['overview','Overview','◫'],['assumptions','What-if','🎛','Assumptions & What-if'],['funnel','Funnel','⏷','Funnel & Pipeline Timing'],['capacity','Capacity & Hiring','👥'],['pipeline','Pipeline','▤','Pipeline Coverage'],['economics','Unit Economics','$','Unit Economics & Channels'],['board','Board View','▣'],['checks','Checks','✓','Data & Checks'],['how','How it works','⚙']];
+const VIEWS={overview:vOverview,assumptions:vAssumptions,funnel:vFunnel,capacity:vCapacity,pipeline:vPipeline,economics:vEconomics,board:vBoard,checks:vChecks,how:vHow};
+function recalc(){R=calc(A);const ck=checks(),bad=ck.filter(c=>!c.ok).length;
+  document.getElementById('pillTarget').textContent=f$(A.startARR)+' → '+f$(A.targetARR,0)+' ARR · '+fp(A.targetARR/A.startARR-1)+' growth';
+  const pc=document.getElementById('pillChecks');pc.textContent=bad?bad+' checks flagged':'All checks pass';pc.className='pill '+(bad?'warn':'ok');
+  document.getElementById('scenChip').textContent=S.scen;}
+function syncScen(){document.querySelectorAll('#scenSeg button').forEach(b=>b.classList.toggle('on',b.dataset.s===S.scen));document.getElementById('scenChip').textContent=S.scen;}
+function go(t){S.tab=t;render();}
+function render(){
+  document.querySelectorAll('#nav a,#mnav a').forEach(a=>a.classList.toggle('on',a.dataset.t===S.tab));
+  const tt=TABS.find(t=>t[0]===S.tab);document.getElementById('pageTitle').textContent=tt[3]||tt[1];
+  const root=document.getElementById('content');root.innerHTML='';VIEWS[S.tab](root);
+}
+function init(){
+  const nav=TABS.map(([id,l,ic])=>`<a data-t="${id}"><span class="ic">${ic}</span>${l}</a>`).join('');
+  document.getElementById('nav').innerHTML=nav;
+  document.getElementById('mnav').innerHTML='<a data-t="how">⚙ How it works: sources and flow</a>';
+  document.querySelectorAll('#nav a,#mnav a').forEach(a=>a.onclick=()=>{go(a.dataset.t);scrollTo(0,0);});
+  document.querySelectorAll('#scenSeg button').forEach(b=>b.onclick=()=>{S.scen=b.dataset.s;A=scen(S.scen);syncScen();recalc();render();});
+  document.querySelectorAll('#segSeg button').forEach(b=>b.onclick=()=>{S.seg=b.dataset.g;document.querySelectorAll('#segSeg button').forEach(x=>x.classList.toggle('on',x===b));render();});
+  document.getElementById('resetBtn').onclick=()=>{S.scen='Base';A=scen('Base');syncScen();recalc();render();};
+  document.getElementById('ovl').onclick=closeDrawer;document.getElementById('dClose').onclick=closeDrawer;
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+  document.getElementById('content').addEventListener('click',e=>{
+    const k=e.target.closest('[data-x]');if(k){explain(k.dataset.x);return;}
+    const d=e.target.closest('[data-deal]');if(d){dealDrawer(d.dataset.deal);return;}
+    const g=e.target.closest('[data-go]');if(g){if(g.dataset.seg){S.seg=g.dataset.seg;document.querySelectorAll('#segSeg button').forEach(x=>x.classList.toggle('on',x.dataset.g===S.seg));}go(g.dataset.go);scrollTo(0,0);}
+  });
+  const tip=document.getElementById('tip');
+  document.addEventListener('mousemove',e=>{const t=e.target.closest&&e.target.closest('[data-tip]');
+    if(!t){tip.style.display='none';return;}tip.innerHTML=t.dataset.tip;tip.style.display='block';
+    const x=Math.min(e.clientX+14,innerWidth-tip.offsetWidth-8),y=Math.min(e.clientY+14,innerHeight-tip.offsetHeight-8);tip.style.left=x+'px';tip.style.top=y+'px';});
+  recalc();render();
+}
+init();
+</script>
+</body>
+</html>
+<!-- home-pill --><script>(function(){function add(){if(document.getElementById("bs-home"))return;var a=document.createElement("a");a.id="bs-home";a.href="./";a.title="Back to Basav Sharma home page";a.setAttribute("style","position:fixed;left:16px;bottom:16px;z-index:2147483647;display:inline-flex;align-items:center;gap:10px;padding:8px 16px 8px 8px;border-radius:999px;background:#0f1f3d;color:#f7f2e7;text-decoration:none;font:600 14px/1 Inter,system-ui,-apple-system,Segoe UI,sans-serif;box-shadow:0 8px 24px rgba(15,31,61,.35);border:1px solid #b8975a");a.innerHTML="<span style=\"display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#b8975a;color:#0f1f3d;font:800 13px/1 Georgia,serif\">B.S</span><span>&larr; Basav Sharma &middot; all tools</span>";document.documentElement.appendChild(a)}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",add);else add();window.addEventListener("load",add);setInterval(add,1500)})();</script>
