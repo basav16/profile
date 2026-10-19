@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cohort & Unit Economics</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+:root{
+  --ink:#032d60; --navy:#032d60; --paper:#f3f3f3; --card:#ffffff;
+  --line:#e5e5e5; --line2:#c9c9c9; --txt:#181818; --mut:#5c5c5c; --mut2:#939393;
+  --blue:#0176d3; --blue2:#eef4ff; --blue3:#1b96ff; --green:#2e844a; --green2:#ebf7e6;
+  --red:#ba0517; --red2:#feded8; --amber:#dd7a01; --amber2:#fef1cd;
+  --shadow:0 2px 2px rgba(0,0,0,.06);
+  --shadow2:0 8px 24px rgba(3,45,96,.16);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px}
+body{font-family:'Inter',-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--paper);color:var(--txt);-webkit-font-smoothing:antialiased}
+.num,td,.kpi-v{font-variant-numeric:tabular-nums}
+/* ---------- global header (CRM style) ---------- */
+#top{background:#fff;border-bottom:1px solid var(--line);height:54px;display:flex;align-items:center;gap:14px;padding:0 18px}
+#top .waffle{display:grid;grid-template-columns:repeat(3,4px);gap:3px;padding:8px;border-radius:6px;flex:none}
+#top .waffle i{width:4px;height:4px;border-radius:50%;background:#706e6b;display:block}
+#top .logo{display:flex;align-items:center;gap:8px;flex:none}
+#top .logo .mk{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#1b96ff,#0176d3);display:grid;place-items:center}
+#top .logo .mk span{width:10px;height:10px;border-radius:50%;background:#fff;display:block}
+#top .logo b{font-size:.98rem;color:var(--navy);letter-spacing:-.01em}
+#top .logo small{font-size:.72rem;color:var(--mut);font-weight:500;border-left:1px solid var(--line2);padding-left:8px;margin-left:2px}
+#top .search{flex:1;max-width:460px;margin:0 auto;display:flex;align-items:center;gap:8px;border:1px solid var(--line2);border-radius:6px;padding:7px 12px;color:var(--mut2);font-size:.78rem;background:#fff}
+#top .right{display:flex;align-items:center;gap:12px;flex:none}
+#top .ibtn{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#706e6b;font-size:.85rem;border:1px solid var(--line)}
+#top .av{width:30px;height:30px;border-radius:50%;background:#032d60;color:#fff;display:grid;place-items:center;font-size:.7rem;font-weight:700}
+/* ---------- app tab bar ---------- */
+#tabs{background:#fff;border-bottom:3px solid var(--blue);position:sticky;top:0;z-index:40;display:flex;align-items:stretch;padding:0 18px;gap:2px;overflow-x:auto;scrollbar-width:none}
+#tabs::-webkit-scrollbar{display:none}
+#tabs .app{display:flex;align-items:center;font-weight:700;font-size:.86rem;color:var(--navy);padding:0 16px 0 2px;margin-right:6px;border-right:1px solid var(--line);white-space:nowrap}
+#nav{display:flex;gap:2px}
+#nav a{display:flex;align-items:center;gap:7px;padding:11px 13px 9px;color:#3e3e3c;font-size:.8rem;font-weight:500;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-3px;white-space:nowrap;border-radius:4px 4px 0 0}
+#nav a:hover{background:#f3f3f3}
+#nav a.on{color:var(--blue);font-weight:700;border-bottom-color:#014486;background:var(--blue2)}
+#nav a .ic{font-size:.8rem;opacity:.8}
+#nav a[data-t=how]{background:#fde047;color:#1f1c0f;font-weight:700;box-shadow:inset 0 0 0 2px #eab308;border-radius:6px;margin:6px 0 6px 8px;padding:5px 12px;border-bottom:none}
+#nav a[data-t=how] *{color:#1f1c0f}
+#nav a[data-t=how].on{background:#facc15}
+#mnav{display:none}
+#mnav a{display:block;margin-top:12px;text-align:center;background:#fde047;color:#1f1c0f;font-weight:700;font-size:.8rem;box-shadow:inset 0 0 0 2px #eab308;border-radius:6px;padding:8px;cursor:pointer}
+/* ---------- page header (record-header style) ---------- */
+#hdr{background:#fff;border:1px solid var(--line);border-radius:6px;margin:14px 18px 0;padding:14px 18px;box-shadow:var(--shadow)}
+#hdr .row1{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+#hdr .icon{width:38px;height:38px;border-radius:6px;background:#06a59a;display:grid;place-items:center;color:#fff;font-size:1.05rem;flex:none}
+#hdr .eyb{font-size:.68rem;color:var(--mut);font-weight:500}
+#hdr h1{font-size:1.15rem;font-weight:700;color:var(--txt);letter-spacing:-.01em}
+#hdr .meta{display:flex;gap:7px;flex-wrap:wrap;margin-left:auto}
+#hdr .row2{display:flex;align-items:center;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);flex-wrap:wrap}
+#hdr .lab{font-size:.7rem;font-weight:600;color:var(--mut)}
+#hdr .facts{display:flex;gap:22px;flex-wrap:wrap;margin-left:auto;font-size:.7rem;color:var(--mut)}
+#hdr .facts b{display:block;color:var(--txt);font-size:.78rem;font-weight:600}
+.pill{padding:3px 10px;border-radius:15px;font-size:.7rem;font-weight:600;border:1px solid var(--line2);background:#fff;color:var(--mut)}
+.pill.v{background:var(--blue2);color:#014486;border-color:#d8e6fe}
+.pill.ok{background:var(--green2);color:#194e31;border-color:#cdefc4}
+.pill.warn{background:var(--amber2);color:#8c4b02;border-color:#f9e3b6}
+.seg{display:flex;border-radius:4px;overflow:hidden;border:1px solid var(--line2)}
+.seg button{border:none;border-right:1px solid var(--line2);background:#fff;padding:6px 12px;font-size:.74rem;color:var(--blue);cursor:pointer;font-weight:600;font-family:inherit}
+.seg button:last-child{border-right:none}
+.seg button.on{background:var(--blue);color:#fff}
+.btn{border:1px solid var(--line2);background:#fff;padding:6px 12px;border-radius:4px;font-size:.75rem;font-weight:600;color:var(--blue);cursor:pointer;font-family:inherit}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn:hover{background:#f3f3f3}
+#chipwrap{display:none}
+#content{padding:14px 18px 30px;max-width:1500px;width:100%;margin:0 auto}
+#foot{max-width:1500px;margin:0 auto;padding:0 18px 40px;font-size:.7rem;color:var(--mut2);line-height:1.6}
+/* ---------- cards / grid ---------- */
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(420px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow);padding:14px 16px;min-width:0;overflow-x:auto}
+.card h3{font-size:.9rem;font-weight:700;color:var(--txt);margin-bottom:3px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.card h3::before{content:'';width:20px;height:20px;border-radius:4px;background:var(--blue3) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path d='M5 14V9M10 14V6M15 14v-3' stroke='white' stroke-width='2' stroke-linecap='round'/></svg>") center/14px no-repeat;flex:none}
+.card h3 .btn{margin-left:auto}
+.card .sub{font-size:.72rem;color:var(--mut);margin-bottom:10px;line-height:1.45}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0;margin-bottom:14px;background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow);overflow:hidden}
+.kpi{padding:13px 16px 14px;cursor:pointer;position:relative;border-right:1px solid var(--line);border-bottom:1px solid var(--line);margin:0 -1px -1px 0;transition:background .1s}
+.kpi:hover{background:#f8fbff}
+.kpi .k{font-size:.7rem;font-weight:500;color:var(--mut);padding-right:46px}
+.kpi-v{font-size:1.45rem;font-weight:700;color:var(--txt);margin-top:3px;letter-spacing:-.02em}
+.kpi .d{font-size:.7rem;color:var(--mut);margin-top:2px;line-height:1.4}
+.kpi .i{position:absolute;top:11px;right:12px;font-size:.6rem;color:var(--blue);border:1px solid #d8e6fe;border-radius:10px;padding:0 6px;font-weight:600}
+.kpi .bar{height:4px;border-radius:2px;background:#e5e5e5;margin-top:8px;overflow:hidden}
+.kpi .bar span{display:block;height:4px;background:var(--blue3)}
+.up{color:var(--green)}.dn{color:var(--red)}
+.badge{display:inline-block;padding:1px 8px;border-radius:15px;font-size:.66rem;font-weight:600;white-space:nowrap}
+.badge.ok{background:var(--green2);color:#194e31}
+.badge.bad{background:var(--red2);color:#8e030f}
+.badge.warn{background:var(--amber2);color:#8c4b02}
+.badge.info{background:var(--blue2);color:#014486}
+.badge.mut{background:#f3f3f3;color:var(--mut)}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:0}
+/* ---------- tables (list view style) ---------- */
+table.fin{width:100%;border-collapse:collapse;font-size:.78rem}
+table.fin th{font-size:.7rem;color:#444;font-weight:600;padding:8px 8px;border-bottom:1px solid var(--line2);border-top:1px solid var(--line);text-align:right;white-space:nowrap;position:sticky;top:0;background:#fafaf9;z-index:2}
+table.fin th:first-child{text-align:left}
+table.fin th.sort{cursor:pointer}
+table.fin th.sort:hover{color:var(--blue)}
+table.fin td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+table.fin td:first-child,table.fin td.l{text-align:left}
+table.fin tr.click{cursor:pointer}
+table.fin tr.click td:first-child{color:var(--blue);font-weight:500}
+table.fin tr.click:hover td{background:#f3f8fe}
+table.fin tr.tot td{font-weight:700;border-top:1px solid var(--line2);background:#fafaf9}
+table.fin td.pre{color:#8c4b02}
+.tblwrap{overflow:auto;max-height:620px;border-radius:4px}
+.tiny{font-size:.7rem;color:var(--mut)}
+/* ---------- charts ---------- */
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;height:auto}
+.chart text{font-family:inherit}
+#tip{position:fixed;pointer-events:none;background:#032d60;color:#fff;font-size:.72rem;padding:7px 10px;border-radius:6px;box-shadow:var(--shadow2);z-index:200;display:none;max-width:300px;line-height:1.55}
+#tip .t{font-weight:700;color:#aacbff;margin-bottom:2px}
+#tip .r{display:flex;justify-content:space-between;gap:14px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.71rem;color:var(--mut);margin-top:8px}
+.legend .li{display:flex;align-items:center;gap:5px}
+.legend .sw{width:10px;height:10px;border-radius:50%}
+/* ---------- drawer ---------- */
+#ovl{position:fixed;inset:0;background:rgba(3,45,96,.35);z-index:90;display:none}
+#drawer{position:fixed;top:0;right:-720px;width:min(640px,94vw);height:100vh;background:var(--card);z-index:100;box-shadow:-12px 0 40px rgba(3,45,96,.25);transition:right .22s ease;display:flex;flex-direction:column}
+#drawer.open{right:0}
+#drawer .dhead{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;justify-content:space-between;gap:10px;background:#fafaf9}
+#drawer .dhead h2{font-size:1rem;color:var(--txt)}
+#drawer .dhead .x{border:1px solid var(--line2);background:#fff;border-radius:4px;width:30px;height:30px;font-size:.9rem;cursor:pointer;color:var(--mut)}
+#drawer .dbody{padding:18px 22px;overflow-y:auto;flex:1;font-size:.8rem;line-height:1.55}
+.prov{background:#f3f8fe;border:1px solid #d8e6fe;border-left:4px solid var(--blue);border-radius:4px;padding:11px 14px;font-size:.76rem;line-height:1.6;color:#3e3e3c;margin-bottom:14px}
+.prov b{color:var(--txt)}
+.flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.flow .n{background:#fff;border:1px solid var(--line2);padding:4px 10px;border-radius:15px;font-size:.7rem;font-weight:600;color:var(--txt)}
+.flow .n.src{background:var(--blue2);border-color:#d8e6fe;color:#014486}
+.flow .a{color:var(--mut2);font-size:.8rem}
+.formula{font-family:'SF Mono',ui-monospace,Consolas,monospace;font-size:.74rem;background:#fafaf9;border:1px solid var(--line);border-radius:4px;padding:10px 12px;margin-bottom:14px;white-space:pre-wrap;color:var(--txt)}
+/* ---------- alerts ---------- */
+.alert{display:flex;gap:10px;align-items:flex-start;border-radius:4px;padding:9px 12px;font-size:.78rem;line-height:1.5;border:1px solid;border-left-width:4px;margin-bottom:8px}
+.alert.red{background:#fef1ee;border-color:#ba0517;color:#8e030f}
+.alert.amber{background:#fef8ec;border-color:#dd7a01;color:#7a4202}
+.alert.blue{background:#f3f8fe;border-color:#0176d3;color:#014486}
+.alert.green{background:#f1faee;border-color:#2e844a;color:#194e31}
+.alert .ico{font-size:.9rem;margin-top:1px}
+.alert b{font-weight:700}
+/* ---------- sliders ---------- */
+.sgrp{font-size:.74rem;font-weight:700;color:var(--txt);margin:16px -16px 2px;padding:7px 16px;background:#fafaf9;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.sgrp:first-child{margin-top:4px}
+.slider-row{display:grid;grid-template-columns:200px 1fr 92px;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid #f0f0f0}
+.slider-row .lbl{font-size:.76rem;font-weight:600;color:var(--txt);line-height:1.35}
+.slider-row .lbl .tiny{display:block;font-weight:400}
+.slider-row input[type=range]{width:100%;accent-color:var(--blue)}
+.slider-row .val{font-size:.78rem;font-weight:700;text-align:right}
+.slider-row .val.chg{color:var(--blue)}
+.footnote{font-size:.68rem;color:var(--mut2);line-height:1.55;margin-top:10px}
+.subtabs{display:flex;gap:0;margin-bottom:12px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.subtabs button{border:none;border-bottom:3px solid transparent;background:none;padding:7px 14px;font-size:.76rem;font-weight:600;color:var(--mut);cursor:pointer;font-family:inherit;margin-bottom:-1px}
+.subtabs button.on{color:var(--blue);border-bottom-color:var(--blue)}
+.fun{display:grid;grid-template-columns:110px 1fr 90px;gap:8px;align-items:center;font-size:.76rem;margin:5px 0}
+.fun .bar{height:22px;border-radius:3px;display:flex;align-items:center;padding-left:8px;color:#fff;font-weight:700;font-size:.7rem;min-width:30px}
+.fun .cv{color:var(--mut);font-size:.7rem;text-align:right}
+.board p{font-size:.86rem;line-height:1.7;margin-bottom:10px;color:#2b2b2b}
+.board h2{font-size:1.15rem;margin-bottom:6px;color:var(--txt)}
+.board .ask{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:12px 0}
+.board .ask div{border:1px solid var(--line);border-top:3px solid var(--blue3);border-radius:4px;padding:12px 14px;background:#fff}
+.board .ask b{display:block;font-size:1.2rem;color:var(--txt)}
+.board .ask span{font-size:.72rem;color:var(--mut)}
+@media (max-width:1000px){#mnav{display:block}#top .search,#top .logo small{display:none}#hdr{margin:12px 12px 0}#content{padding:12px 12px 40px}.g2{grid-template-columns:1fr}#tabs{padding:0 8px}#tabs .app{display:none}#hdr .facts{margin-left:0}}
+@media (max-width:620px){.slider-row{grid-template-columns:1fr 70px}.slider-row input{grid-column:1/-1;grid-row:2}.g3{grid-template-columns:1fr}.fun{grid-template-columns:80px 1fr 64px}.kpi .i{display:none}.kpi .k{padding-right:0}.kpis{grid-template-columns:1fr 1fr}#top .ibtn{display:none}}
+@media print{#top,#tabs,#hdr,#tip,#ovl,#drawer,.btn{display:none!important}body{background:#fff}.card{box-shadow:none;break-inside:avoid}}
+/* ---------- How it works (yellow) ---------- */
+.hw{--hw-ink:#1f1c0f;--hw-mut:#5b5432;--hw-line:#e6d36a;--hw-card:#fffdf2;--hw-soft:#fff3a8;--hw-bg:#fff7c2;
+ color:var(--hw-ink);background:var(--hw-bg);border:2px solid #f5d90a;border-radius:16px;padding:22px 22px 28px;margin:8px 0 24px;
+ font:14px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;max-width:1180px;display:grid;gap:22px;color-scheme:light}
+.hw *{box-sizing:border-box}
+.hw h3{margin:0;font-size:20px;letter-spacing:-.01em}
+.hw .lede{margin:4px 0 0;color:var(--hw-mut);max-width:78ch}
+.hw .eyebrow{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--hw-mut);font-weight:600;margin:0 0 8px}
+.hw .flowbox{background:var(--hw-card);border:1px solid var(--hw-line);border-radius:12px;padding:14px;overflow-x:auto}
+.hw .flowbox svg{display:block;width:100%;min-width:760px;height:auto}
+.hw .flowbox text{font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
+.hw .t-ink{fill:var(--hw-ink)} .hw .t-mut{fill:var(--hw-mut)}
+.hw .node{fill:var(--hw-card)} .hw .hub{fill:var(--hw-soft);stroke:var(--hw-line)}
+.hw .wire{fill:none;stroke-width:1.6;stroke-dasharray:5 6;animation:hwflow 1.6s linear infinite;opacity:.85}
+@keyframes hwflow{to{stroke-dashoffset:-22}}
+@media (prefers-reduced-motion:reduce){.hw .wire{animation:none;stroke-dasharray:none}}
+.hw .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;counter-reset:hw}
+.hw .step{border:1px solid var(--hw-line);border-radius:10px;padding:12px 14px;background:var(--hw-card);min-width:0}
+.hw .step b{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.hw .step b::before{counter-increment:hw;content:counter(hw);display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--hw-ink);color:var(--hw-card);font-size:12px;flex:none}
+.hw .step p{margin:0;color:var(--hw-mut);font-size:13px}
+.hw .srcs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.hw .src{border:1px solid var(--hw-line);border-left:4px solid var(--c);border-radius:10px;padding:12px 14px;background:var(--hw-card);min-width:0}
+.hw .src h4{margin:0 0 2px;font-size:14px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.hw .src h4 span{font-weight:500;font-size:11px;color:var(--hw-mut);letter-spacing:.04em;text-transform:uppercase}
+.hw .src ul{margin:6px 0 0;padding-left:18px;color:var(--hw-mut);font-size:13px}
+.hw .facts{display:flex;flex-wrap:wrap;gap:8px}
+.hw .fact{border:1px solid var(--hw-line);border-radius:999px;padding:5px 12px;font-size:12.5px;background:var(--hw-card)}
+.hw .fact b{font-variant-numeric:tabular-nums}
+.hw table{width:100%;border-collapse:collapse;font-size:13px;background:var(--hw-card);border:1px solid var(--hw-line);border-radius:10px;overflow:hidden}
+.hw th,.hw td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--hw-line);vertical-align:top}
+.hw th{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--hw-mut)}
+.hw td{color:var(--hw-mut)} .hw td b{color:var(--hw-ink)}
+.hw .note{font-size:12px;color:var(--hw-mut)}
+@media (max-width:620px){.hw table{display:block;overflow-x:auto}}.hw{min-width:0;overflow-wrap:anywhere}
+
+/* ---------- cohort tool additions ---------- */
+a[data-go],a[data-coh],a[data-ch],a[data-cp],a[data-gocust]{color:var(--blue);cursor:pointer;font-weight:600;text-decoration:none}
+a[data-go]:hover,a[data-coh]:hover,a[data-ch]:hover,a[data-cp]:hover{text-decoration:underline}
+.conn{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin-bottom:14px}
+.cn{background:#fff;border:1px solid var(--line);border-top:3px solid var(--c);border-radius:6px;padding:9px 12px;box-shadow:var(--shadow);min-width:0}
+.cn b{display:block;font-size:.76rem;color:var(--txt)}
+.cn span{display:block;font-size:.68rem;color:var(--mut);margin-top:1px}
+.cn em{display:block;font-style:normal;font-size:.66rem;color:var(--green);margin-top:4px;font-weight:600}
+.crumb{font-size:.8rem;margin-bottom:10px;color:var(--mut)}
+table.heat td.hc{cursor:pointer;font-weight:600;min-width:52px;text-align:center;border:1px solid #fff}
+table.heat td.hc:hover{outline:2px solid var(--navy);outline-offset:-2px}
+table.heat td.na{background:#fafaf9}
+table.heat th{text-align:center}
+table.fin tr.sel td{background:var(--blue2)}
+.tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.tools input,.tools select{border:1px solid var(--line2);border-radius:4px;padding:6px 10px;font:inherit;font-size:.76rem;min-width:0}
+.tools input{flex:1;max-width:320px}
+.bigdelta{margin-top:14px;font-size:1.8rem;font-weight:800;letter-spacing:-.02em}
+.bigdelta span{display:block;font-size:.72rem;font-weight:500;color:var(--mut);letter-spacing:0}
+h4.dh{font-size:.8rem;margin:16px 0 6px;color:var(--txt)}
+.alert a{margin-left:4px}
+@media (max-width:620px){.conn{grid-template-columns:1fr 1fr}#chSeg{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<header id="top">
+  <div class="waffle" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="logo"><span class="mk"><span></span></span><b>Sample Co.</b><small>Strategic Finance</small></div>
+  <div class="search">⌕ Search customers, cohorts, campaigns…</div>
+  <div class="right"><span class="ibtn">?</span><span class="ibtn">🔔</span><span class="av">SF</span></div>
+</header>
+<div id="tabs"><span class="app">Cohorts &amp; Unit Economics</span><nav id="nav"></nav></div>
+<div id="hdr">
+  <div class="row1">
+    <div class="icon" style="background:#5a1ba9;font-size:1.1rem;font-weight:800">$</div>
+    <div><div class="eyb">Customer cohorts · Oct-25 to Sep-26 · <span id="filtChip">All channels</span></div><h1 id="pageTitle">Overview</h1></div>
+    <div class="meta">
+      <span class="pill v">Sample Co. (consumer health, DTC)</span>
+      <span class="pill ok">10 sources synced</span>
+      <span class="pill" id="pillChecks"></span>
+    </div>
+  </div>
+  <div class="row2">
+    <span class="lab">Channel</span>
+    <div class="seg" id="chSeg"></div>
+    <span class="lab">Attribution</span>
+    <div class="seg" id="attrSeg"><button data-a="utm" class="on">Click (UTM)</button><button data-a="survey">Survey-adjusted</button></div>
+    <span id="cpChip"></span>
+    <div class="facts"><span>Owner<b>Strategic Finance</b></span><span>Data as of<b>Oct 18, 2026</b></span><span>Refresh<b>Daily, 6:00 AM</b></span></div>
+  </div>
+  <div id="mnav"></div>
+</div>
+<div id="content"></div>
+<div id="foot">Sources: LinkedIn Campaign Manager · TikTok Ads Manager · Meta Ads Manager · Google Ads · Shopify · ERP · ShipBob (3PL) · Klaviyo · Fairing post-purchase survey · FP&amp;A plan. Landed daily by Fivetran into BigQuery and modeled in dbt. Every number is computed from order-level data, so any total can be clicked down to the customers and orders behind it. All companies, customers and figures are fictional (Sample Co.).</div>
+<div id="tip"></div>
+<div id="ovl"></div>
+<div id="drawer"><div class="dhead"><div><h2 id="dTitle"></h2><div class="tiny" id="dSub"></div></div><button class="x" id="dClose">✕</button></div><div class="dbody" id="dBody"></div></div>
+
+<script>
+/* =====================================================================
+   FORMATTING
+   ===================================================================== */
+const f$=(v,d)=>{const a=Math.abs(v),sg=v<0?'-':'';
+  if(a>=1e9)return sg+'$'+(a/1e9).toFixed(d??2)+'B';
+  if(a>=1e6)return sg+'$'+(a/1e6).toFixed(d??1)+'M';
+  if(a>=1e4)return sg+'$'+(a/1e3).toFixed(d??0)+'K';
+  if(a>=1e3)return sg+'$'+(a/1e3).toFixed(d??1)+'K';
+  return sg+'$'+a.toFixed(d??0);};
+const fc=v=>(v<0?'-$':'$')+Math.abs(v).toFixed(2);
+const fp=(v,d=0)=>(v*100).toFixed(d)+'%';
+const fn=(v,d=0)=>v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fx=(v,d=1)=>v.toFixed(d)+'x';
+const fmo=v=>v==null?'Over 24 mo':v.toFixed(1)+' mo';
+const sgn=(v,f)=>(v>=0?'+':'')+f(v);
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=id=>document.getElementById(id);
+
+/* =====================================================================
+   SAMPLE DATA (seeded, so every visit shows the same numbers)
+   Ad platforms: spend by campaign and month. Shopify: every order with
+   its first-touch UTM. ERP: COGS by SKU. ShipBob: pick, pack, postage.
+   Klaviyo: email and SMS cost. Fairing: "how did you hear about us?"
+   ===================================================================== */
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+const R0=rng(20261018),R1=rng(777);
+const rn=()=>{let u=0;while(!u)u=R0();const v=R0();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);};
+const MONTHS=['Oct-25','Nov-25','Dec-25','Jan-26','Feb-26','Mar-26','Apr-26','May-26','Jun-26','Jul-26','Aug-26','Sep-26'];
+const MLONG=['Oct 2025','Nov 2025','Dec 2025','Jan 2026','Feb 2026','Mar 2026','Apr 2026','May 2026','Jun 2026','Jul 2026','Aug 2026','Sep 2026'];
+const NM=12,H=24;
+const COGS=.34,PICK=2.75,POST0=3.1,POSTV=.02,RETSHIP=7,FEE_P=.029,FEE_F=.30,KLAV=.55,FREQ=.8;
+const WACC=.12,DF=[...Array(H)].map((_,m)=>1/Math.pow(1+WACC,m/12));
+const GUARD={ltvcac:3,pb:12};
+const CH=[
+ {id:'goog',name:'Google Search',short:'Google',src:'Google Ads',c:'#1b96ff',cac:64,aov:84,d1:.10,ret:.04,r1:.44,s:.89,e:.75,plan:58,spend:t=>24000*(1+.01*t),
+  cps:[{n:'Brand search',sh:.30,cacM:.55,r1M:1.15,e:.55},{n:'Non-brand: mobility aids',sh:.30,cacM:1.2,r1M:.95},{n:'Non-brand: incontinence care',sh:.20,cacM:1.1,r1M:1.15,aovM:.9},{n:'Shopping feed',sh:.20,cacM:1.0,r1M:.85}]},
+ {id:'meta',name:'Meta Ads',short:'Meta',src:'Meta Ads Manager',c:'#7f56d9',cac:72,aov:76,d1:.15,ret:.05,r1:.36,s:.87,e:.80,plan:65,spend:t=>32000*(1+.004*t),
+  cps:[{n:'Caregiver lookalikes',sh:.45,cacM:1.05,r1M:1.0},{n:'Retargeting: site visitors',sh:.20,cacM:.6,r1M:1.1,e:.6},{n:'Advantage+ shopping',sh:.35,cacM:1.15,r1M:.9,d1:.2}]},
+ {id:'tt',name:'TikTok Ads',short:'TikTok',src:'TikTok Ads Manager',c:'#e5376b',cac:35,aov:58,d1:.30,ret:.09,r1:.26,s:.80,e:.85,plan:40,spend:t=>8000+t*(34000/11),scale:t=>Math.pow((8000+t*(34000/11))/8000,.07),
+  cps:[{n:'Spark ads: creator videos',sh:.40,cacM:1.1,r1M:1.25,d1:.2},{n:'30% off first order',sh:.45,cacM:.85,r1M:.75,d1:.3},{n:'TopView launch',sh:.15,cacM:1.3,r1M:1.0,d1:.15}]},
+ {id:'li',name:'LinkedIn Ads',short:'LinkedIn',src:'LinkedIn Campaign Manager',c:'#0a66c2',cac:150,aov:125,d1:.08,ret:.03,r1:.66,s:.94,e:.92,plan:140,spend:t=>7000+t*360,
+  cps:[{n:'Working caregivers 45-64',sh:.55,cacM:1.0,r1M:1.05},{n:'Adult children of aging parents',sh:.30,cacM:.9,r1M:1.0},{n:'Healthcare professionals',sh:.15,cacM:1.3,r1M:.85,aovM:.85}]},
+ {id:'cr',name:'Creators',short:'Creators',src:'Creator payouts (ERP)',c:'#dd7a01',cac:52,aov:66,d1:.20,ret:.06,r1:.32,s:.85,e:.75,plan:50,spend:t=>12000*(1+.03*Math.sin(t)),
+  cps:[{n:'Caregiver YouTubers',sh:.45,cacM:.95,r1M:1.15},{n:'Instagram micro-creators',sh:.35,cacM:1.0,r1M:.9},{n:'Podcast reads',sh:.20,cacM:1.15,r1M:1.0,aovM:1.1}]},
+ {id:'org',name:'Organic & referral',short:'Organic',src:'Shopify (no paid click)',c:'#2e844a',cac:20,aov:80,d1:.05,ret:.04,r1:.50,s:.91,e:1,plan:20,spend:t=>5200,
+  cps:[{n:'SEO: care guides',sh:.45,cacM:1.0,r1M:.95},{n:'Referral program',sh:.35,cacM:1.0,r1M:1.15,d1:.1},{n:'Direct / word of mouth',sh:.20,cacM:.8,r1M:1.0}]}
+];
+const CHM={};CH.forEach((c,i)=>{c.i=i;CHM[c.id]=c;});
+// Fairing answers from organic customers who responded (response rate 62%)
+const SURVEY=[['tt',.30],['cr',.14],['meta',.08],['goog',.04],['li',.03],['org',.41]];
+const STATES=['CA','TX','FL','NY','PA','OH','IL','AZ','NC','MI','GA','WA','NJ','MA','CO'];
+const CUST=[];let CID=104200;
+function makeCust(ch,k,t){
+  const cp=ch.cps[k],maxA=NM-1-t,o=[];
+  const aov=ch.aov*(cp.aovM||1),d1=cp.d1??ch.d1,r1=Math.min(.95,ch.r1*(cp.r1M||1));
+  const ord=(a,first)=>{
+    const g=Math.round(aov*Math.exp(rn()*.25-.031)*100)/100;
+    const dr=first?d1:(R0()<.25?.2:0);
+    const disc=Math.round(g*dr*100)/100,net=g-disc,ret=R0()<ch.ret;
+    const refund=ret?net:0,cogs=Math.round(g*COGS*100)/100;
+    const post=Math.round((POST0+POSTV*g+(ret?RETSHIP:0))*100)/100;
+    const fee=Math.round((net*FEE_P+FEE_F)*100)/100,klav=first?0:KLAV;
+    o.push({a,g,disc,refund,cogs,pick:PICK,post,fee,klav,cm:net-refund-cogs-PICK-post-fee-klav,day:1+Math.floor(R0()*28),first});
+  };
+  ord(0,true);
+  if(maxA>=1&&R0()<r1){for(let a=1;a<=maxA;a++){if(a>1&&R0()>ch.s)break;if(R0()<FREQ)ord(a,false);}}
+  const c={id:'C-'+(CID++),ch:ch.id,cp:k,t,st:STATES[Math.floor(R0()*STATES.length)],o,sv:ch.id,ans:null};
+  if(ch.id==='org'){if(R1()<.62){const x=R1();let acc=0;for(const[id,p]of SURVEY){acc+=p;if(x<acc){c.sv=id;break;}}c.ans=c.sv;}}
+  else if(R1()<.55)c.ans=ch.id;
+  c.n=o.length;c.net=sum(o.map(x=>x.g-x.disc-x.refund));c.cm=sum(o.map(x=>x.cm));
+  return c;
+}
+CH.forEach(ch=>{ch.sp=[];ch.cps.forEach(cp=>{cp.sp=[];cp.nT=[];});
+  for(let t=0;t<NM;t++){
+    const tot=ch.spend(t)*(1+rn()*.035);ch.sp[t]=0;
+    ch.cps.forEach((cp,k)=>{
+      const sp=Math.round(tot*cp.sh);cp.sp[t]=sp;ch.sp[t]+=sp;
+      const cac=ch.cac*cp.cacM*(ch.scale?ch.scale(t):1)*(1+rn()*.06);
+      const n=Math.max(1,Math.round(sp/cac));cp.nT[t]=n;
+      for(let j=0;j<n;j++)CUST.push(makeCust(ch,k,t));
+    });
+  }
+});
+CUST.forEach(c=>{const cp=CHM[c.ch].cps[c.cp];c.cacU=cp.sp[c.t]/cp.nT[c.t];});
+const SVN={};CH.forEach(c=>SVN[c.id]=Array(NM).fill(0));CUST.forEach(c=>SVN[c.sv][c.t]++);
+const ALLO=CUST.reduce((n,c)=>n+c.n,0);
+const chOf=(c,m)=>m==='survey'?c.sv:c.ch;
+const cpOf=(c,m)=>m==='survey'&&c.sv!==c.ch?-1:c.cp;
+const surveyed=c=>S.attr==='survey'&&c.sv!==c.ch;
+const cacOf=c=>S.attr!=='survey'?c.cacU:(c.sv!==c.ch||c.ch==='org')?CHM[c.sv].sp[c.t]/SVN[c.sv][c.t]:c.cacU;
+
+/* =====================================================================
+   ENGINE: cohorts, curves, LTV, payback for any slice
+   ===================================================================== */
+const CACHE={};
+function spendOf(f,t){if(!f)return sum(CH.map(c=>c.sp[t]));const ch=CHM[f.ch];if(f.cp===-1)return 0;return f.cp!=null?ch.cps[f.cp].sp[t]:ch.sp[t];}
+const z=()=>({act:0,ord:0,g:0,disc:0,ref:0,cogs:0,pick:0,post:0,fee:0,klav:0,net:0,cm:0});
+function addO(x,o){x.ord++;x.g+=o.g;x.disc+=o.disc;x.ref+=o.refund;x.cogs+=o.cogs;x.pick+=o.pick;x.post+=o.post;x.fee+=o.fee;x.klav+=o.klav;x.net+=o.g-o.disc-o.refund;x.cm+=o.cm;}
+function build(f,mode=S.attr){
+  const k=mode+'|'+(f?f.ch+(f.cp!=null?':'+f.cp:''):'ALL');if(CACHE[k])return CACHE[k];
+  const match=c=>!f||(chOf(c,mode)===f.ch&&(f.cp==null||cpOf(c,mode)===f.cp));
+  const coh=MONTHS.map((_,t)=>({t,n:0,spend:spendOf(f,t),rep:0,age:[...Array(NM-t)].map(z)}));
+  const fo=z(),ro=z();
+  CUST.forEach(c=>{if(!match(c))return;const C=coh[c.t];C.n++;if(c.n>1)C.rep++;let last=-1;
+    c.o.forEach(o=>{const x=C.age[o.a];if(o.a!==last){x.act++;last=o.a;}addO(x,o);addO(o.first?fo:ro,o);});});
+  coh.forEach(C=>{C.cac=C.n?C.spend/C.n:0;let cum=0;C.cum=C.age.map(x=>(cum+=x.cm)/(C.n||1));});
+  const K=['cm','ord','g','net','act'],cv={};K.forEach(q=>cv[q]=[]);const obs=[];
+  for(let m=0;m<NM;m++){let n=0;const s={cm:0,ord:0,g:0,net:0,act:0};
+    coh.forEach(C=>{if(C.age.length>m){n+=C.n;K.forEach(q=>s[q]+=C.age[m][q]);}});
+    if(m>0&&n<40)break;K.forEach(q=>cv[q][m]=s[q]/(n||1));obs[m]=true;}
+  const lo=cv.cm.length-1,r=decay(cv.cm,lo);
+  for(let m=lo+1;m<H;m++){K.forEach(q=>cv[q][m]=cv[q][m-1]*r);obs[m]=false;}
+  const n=sum(coh.map(C=>C.n)),spend=sum(coh.map(C=>C.spend)),cac=n?spend/n:0;
+  let cum=0;const cumcm=cv.cm.map(v=>cum+=v);
+  const dcm=cv.cm.map((v,m)=>v*DF[m]);
+  const ltv12=sum(dcm.slice(0,12)),ltv24=sum(dcm);
+  const tot=z();[fo,ro].forEach(x=>Object.keys(tot).forEach(q=>tot[q]+=x[q]));
+  const rec=coh.slice(9),rn_=sum(rec.map(C=>C.n)),rcac=rn_?sum(rec.map(C=>C.spend))/rn_:cac;
+  const e=f&&f.cp!=null&&f.cp>=0?(CHM[f.ch].cps[f.cp].e??CHM[f.ch].e):f?CHM[f.ch].e:null;
+  const R={f,mode,coh,cv,obs,lo,r,n,spend,cac,cumcm,dcm,ltv12,ltv24,ltvcac:cac?ltv24/cac:0,fo,ro,tot,
+    pb:payback(cumcm,cv.cm,cac),m3:cv.act[3],cmPct:tot.cm/tot.net,cm3:ltv24-cac,rcac,e,mcac:e?rcac/e:null,
+    rep:sum(coh.slice(0,9).map(C=>C.rep))/Math.max(1,sum(coh.slice(0,9).map(C=>C.n))),
+    d1:fo.disc/(fo.g||1),ret1:fo.ref/((fo.g-fo.disc)||1)};
+  R.mltvcac=R.mcac?ltv24/R.mcac:null;
+  R.pbObs=R.pb!=null&&obs[Math.ceil(R.pb)];
+  return CACHE[k]=R;
+}
+function decay(cm,lo){const rs=[];for(let m=Math.max(2,lo-4);m<=lo;m++)if(cm[m-1]>0&&cm[m]>0)rs.push(cm[m]/cm[m-1]);
+  const r=rs.length?Math.exp(sum(rs.map(Math.log))/rs.length):.85;return Math.min(.96,Math.max(.5,r));}
+function payback(cum,cm,cac){if(!cac)return 0;for(let m=0;m<cum.length;m++)if(cum[m]>=cac){if(m===0)return cac/cum[0]*.5;return m-1+(cac-cum[m-1])/cm[m];}return null;}
+let ALL,CB;
+function calcAll(){ALL=build(null);CB=CH.map(c=>build({ch:c.id}));}
+const PAID=CH.filter(c=>c.id!=='org');
+
+/* Forecast backtest: project the Oct-25 and Nov-25 cohorts from their first
+   six months only, then compare with what actually happened by month 10. */
+function backtest(chId){
+  let n=0;const cm=Array(11).fill(0);
+  CUST.forEach(c=>{if((chId&&c.ch!==chId)||c.t>1)return;n++;c.o.forEach(o=>{if(o.a<=10)cm[o.a]+=o.cm;});});
+  const per=cm.map(v=>v/(n||1)),r=decay(per,5);let pred=sum(per.slice(0,6)),last=per[5];
+  for(let m=6;m<=10;m++){last*=r;pred+=last;}const act=sum(per);
+  return {n,pred,act,err:(pred-act)/act};
+}
+
+/* =====================================================================
+   WHAT-IF ENGINE (next 12 months of acquisition)
+   ===================================================================== */
+const S={tab:'overview',ch:'ALL',cp:null,attr:'utm',metric:'pay',ue:'first',cq:'',csort:'cm',cdir:-1,cpage:0,ccoh:'ALL'};
+calcAll();
+const W={move:0,ttDisc:Math.round(build({ch:'tt'},'utm').d1*100),ful:0,uplift:0,cogs:0};
+const W0={...W};
+function scenario(w){
+  const B_=CH.map(c=>build({ch:c.id},'utm'));
+  const out=CH.map((c,i)=>{const sp=sum(c.sp.slice(9))/3;return {c,i,sp,sp2:sp,cac:B_[i].rcac};});
+  const moved=out[2].sp*w.move/100;out[2].sp2-=moved;out[3].sp2+=moved/2;out[0].sp2+=moved/2;
+  const dd=(B_[2].d1*100-w.ttDisc)/100;
+  out.forEach(o=>{
+    const B=B_[o.i];let cac2=o.cac*Math.pow(o.sp2/o.sp,1/o.c.e-1);
+    if(o.c.id==='tt')cac2*=1+1.2*dd;
+    o.cac2=cac2;o.n=o.sp/o.cac;o.n2=o.sp2/cac2;
+    const curve=sc=>B.cv.cm.map((v,m)=>{if(!sc)return v;const u=m>0?1+w.uplift/100:1;
+      let x=v*u-w.ful*B.cv.ord[m]*u-(w.cogs/100)*B.cv.g[m]*u;if(m===0&&o.c.id==='tt')x+=dd*B.fo.g/B.fo.ord;return x;});
+    o.cm1=curve(false);o.cm2=curve(true);o.ltv=sum(o.cm1.map((v,m)=>v*DF[m]));o.ltv2=sum(o.cm2.map((v,m)=>v*DF[m]));
+  });
+  const agg=(sp,n,cmk)=>{const Sx=sum(out.map(o=>o[sp])),N=sum(out.map(o=>o[n]));
+    const cm=[...Array(H)].map((_,m)=>sum(out.map(o=>o[n]*o[cmk][m]))/N);let cu=0;const cum=cm.map(v=>cu+=v);
+    const ltv=sum(cm.map((v,m)=>v*DF[m])),cac=Sx/N;return {spend:Sx*12,n:N*12,cac,ltv,ltvcac:ltv/cac,pb:payback(cum,cm,cac),net:(ltv*N-Sx)*12};};
+  return {rows:out,base:agg('sp','n','cm1'),scen:agg('sp2','n2','cm2'),moved};
+}
+
+/* Budget actions: judge every paid campaign on the LAST dollar, not the average */
+function actions(){
+  const rows=[];
+  PAID.forEach(c=>c.cps.forEach((cp,k)=>{
+    const P=build({ch:c.id,cp:k},'utm'),sp=sum(cp.sp.slice(9))/3,m=P.mltvcac;
+    let v,why,chg;
+    if(m>=GUARD.ltvcac&&P.pb!=null&&P.pb<=GUARD.pb){v='Scale';chg=.25;why=`Even the next dollar returns ${fx(m)}`;}
+    else if(m>=2){v='Hold';chg=0;why=`Above 2x at the margin, below the 3x bar`;}
+    else if(m>=1){v='Fix';chg=0;why=P.d1>=.25?`A ${fp(P.d1)} discount eats the first order`:P.rep<.3?`Only ${fp(P.rep)} come back`:`Next customer costs ${f$(P.mcac)}, too much for its LTV`;}
+    else {v='Cut';chg=-.5;why=`Loses ${f$((1-m)*P.mcac)} on each extra customer`;}
+    const dsp=sp*chg,imp=dsp*(m-1)*12;rows.push({c,cp,k,P,sp,m,v,why,dsp,imp});
+  }));
+  return rows.sort((a,b)=>b.imp-a.imp);
+}
+
+/* =====================================================================
+   CHARTS
+   ===================================================================== */
+function niceStep(v){if(v<=0)return 1;const e=Math.pow(10,Math.floor(Math.log10(v))),f=v/e;return(f<=1?1:f<=2?2:f<=5?5:10)*e;}
+function niceMax(v){if(v<=0)return 1;const e=Math.pow(10,Math.floor(Math.log10(v))),f=v/e;return(f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*e;}
+function tipAttr(t,rows){return ` data-tip="${esc(`<div class="t">${esc(t)}</div>`+rows.map(r=>`<div class="r"><span>${esc(r[0])}</span><b>${esc(r[1])}</b></div>`).join(''))}"`;}
+function lineChart({series,labels,fmt,w=760,h=270,ref=null,refLabel='',yMin=0}){
+  const pl=58,pr=16,pt=14,pb=28,iw=w-pl-pr,ih=h-pt-pb,n=labels.length;
+  const vals=series.flatMap(s=>s.v.filter(v=>v!=null));if(ref!=null)vals.push(ref);
+  const mn=Math.min(yMin,Math.min(...vals)),stp=niceStep((Math.max(...vals)*1.04-mn)/4),mx=mn+stp*Math.ceil((Math.max(...vals)*1.04-mn)/stp);
+  const X=i=>pl+(n===1?iw/2:i*iw/(n-1)),Y=v=>pt+ih-(v-mn)/(mx-mn)*ih;
+  let o=`<svg viewBox="0 0 ${w} ${h}">`;
+  for(let v=mn;v<=mx+1e-9;v+=stp){const y=Y(v);o+=`<line x1="${pl}" x2="${w-pr}" y1="${y}" y2="${y}" stroke="#eee"/><text x="${pl-7}" y="${y+4}" text-anchor="end" font-size="10.5" fill="#706e6b">${fmt(v)}</text>`;}
+  const step=Math.ceil(n/12);labels.forEach((l,i)=>{if(i%step===0||i===n-1)o+=`<text x="${X(i)}" y="${h-8}" text-anchor="middle" font-size="10.5" fill="#706e6b">${l}</text>`;});
+  if(ref!=null){const y=Y(ref);o+=`<line x1="${pl}" x2="${w-pr}" y1="${y}" y2="${y}" stroke="#ba0517" stroke-dasharray="5 4"/><text x="${pl+6}" y="${y-5}" font-size="10.5" font-weight="600" fill="#ba0517">${refLabel}</text>`;}
+  series.forEach(s=>{const p=s.proj??n,pts=s.v.map((v,i)=>v==null?null:[X(i),Y(v)]);
+    const path=(a,b)=>{let d='';for(let i=Math.max(0,a);i<=b&&i<n;i++){if(!pts[i])continue;d+=(d?'L':'M')+pts[i][0].toFixed(1)+' '+pts[i][1].toFixed(1);}return d;};
+    o+=`<path d="${path(0,p-1)}" fill="none" stroke="${s.c}" stroke-width="2.3" stroke-linejoin="round"/>`;
+    if(p<n)o+=`<path d="${path(p-1,n-1)}" fill="none" stroke="${s.c}" stroke-width="2" stroke-dasharray="5 4" opacity=".85"/>`;
+    pts.forEach((q,i)=>{if(q)o+=`<circle cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="${i<p?3.2:2.4}" fill="${i<p?s.c:'#fff'}" stroke="${s.c}" stroke-width="1.5"/><circle cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="9" fill="transparent"${tipAttr(s.name+' · '+labels[i],[[s.lab||'Value',fmt(s.v[i])]].concat(i>=p?[['Basis','Projected']]:[]))}/>`;});
+  });
+  return o+'</svg>';
+}
+function legend(items){return `<div class="legend">${items.map(i=>`<span class="li"><span class="sw" style="background:${i.c}"></span>${i.name}</span>`).join('')}</div>`;}
+function stackBars({cats,series,fmt,w=760,h=250}){
+  const pl=52,pr=10,pt=10,pb=26,iw=w-pl-pr,ih=h-pt-pb,n=cats.length,bw=iw/n*.66;
+  const tots=cats.map((_,i)=>sum(series.map(s=>s.v[i]))),mx=niceMax(Math.max(...tots)*1.05);
+  const Y=v=>pt+ih-v/mx*ih;let o=`<svg viewBox="0 0 ${w} ${h}">`;
+  for(let k=0;k<=4;k++){const v=mx*k/4,y=Y(v);o+=`<line x1="${pl}" x2="${w-pr}" y1="${y}" y2="${y}" stroke="#eee"/><text x="${pl-7}" y="${y+4}" text-anchor="end" font-size="10.5" fill="#706e6b">${fmt(v)}</text>`;}
+  cats.forEach((cat,i)=>{const x=pl+i*iw/n+(iw/n-bw)/2;let acc=0;
+    series.forEach(s=>{const v=s.v[i],y=Y(acc+v),hh=Y(acc)-y;acc+=v;
+      o+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(0,hh).toFixed(1)}" fill="${s.c}"${tipAttr(cat+' · '+s.name,[['Value',fmt(v)],['Share of month',fp(v/tots[i])]])}/>`;});
+    o+=`<text x="${(x+bw/2).toFixed(1)}" y="${h-8}" text-anchor="middle" font-size="10.5" fill="#706e6b">${cat}</text>`;});
+  return o+'</svg>';
+}
+function waterfall(steps,{w=760,h=290}={}){
+  const pl=10,pr=10,pt=22,pb=44,iw=w-pl-pr,ih=h-pt-pb,n=steps.length,bw=iw/n*.62;
+  let run=0;const bars=steps.map(s=>{if(s.total){const b={...s,y0:0,y1:s.v};run=s.v;return b;}const b={...s,y0:run,y1:run+s.v};run+=s.v;return b;});
+  const mx=niceMax(Math.max(...bars.map(b=>Math.max(b.y0,b.y1)))),mn=Math.min(0,...bars.map(b=>Math.min(b.y0,b.y1)));
+  const Y=v=>pt+ih-(v-mn)/(mx-mn)*ih;let o=`<svg viewBox="0 0 ${w} ${h}">`;
+  o+=`<line x1="${pl}" x2="${w-pr}" y1="${Y(0)}" y2="${Y(0)}" stroke="#c9c9c9"/>`;
+  bars.forEach((b,i)=>{const x=pl+i*iw/n+(iw/n-bw)/2,top=Y(Math.max(b.y0,b.y1)),hh=Math.max(1.5,Math.abs(Y(b.y0)-Y(b.y1)));
+    const col=b.total?(b.y1<0?'#ba0517':b.end?'#2e844a':b.mid?'#5a1ba9':'#032d60'):(b.v<0?'#ea7d72':'#2e844a');
+    o+=`<rect x="${x.toFixed(1)}" y="${top.toFixed(1)}" width="${bw.toFixed(1)}" height="${hh.toFixed(1)}" rx="3" fill="${col}"${tipAttr(b.l,[['Per order',fc(b.v)]].concat(b.pct!=null?[['% of gross',fp(b.pct,1)]]:[]).concat(b.src?[['Source',b.src]]:[]))}/>`;
+    o+=`<text x="${(x+bw/2).toFixed(1)}" y="${(top-6).toFixed(1)}" text-anchor="middle" font-size="11" font-weight="700" fill="#181818">${fc(b.v)}</text>`;
+    if(i<n-1&&!steps[i+1].total){const yy=Y(b.y1);o+=`<line x1="${(x+bw).toFixed(1)}" x2="${(x+iw/n).toFixed(1)}" y1="${yy}" y2="${yy}" stroke="#939393" stroke-dasharray="2 3"/>`;}
+    const ws=b.l.split(' ');const l1=ws.slice(0,2).join(' '),l2=ws.slice(2).join(' ');
+    o+=`<text x="${(x+bw/2).toFixed(1)}" y="${h-26}" text-anchor="middle" font-size="10.5" fill="#3e3e3c">${l1}</text>`+(l2?`<text x="${(x+bw/2).toFixed(1)}" y="${h-12}" text-anchor="middle" font-size="10.5" fill="#3e3e3c">${l2}</text>`:'');});
+  return o+'</svg>';
+}
+function hbars(items,fmt,{ref=null,w=720,rowH=30}={}){
+  const pl=200,pr=70,h=items.length*rowH+24,iw=w-pl-pr;
+  const mx=niceMax(Math.max(...items.map(i=>i.v),ref?ref.v:0)*1.05);
+  let o=`<svg viewBox="0 0 ${w} ${h}">`;
+  items.forEach((it,i)=>{const yy=8+i*rowH,bw=Math.max(0,it.v)/mx*iw;
+    o+=`<text x="${pl-8}" y="${yy+rowH/2+2}" text-anchor="end" font-size="11.5" fill="#1d2133">${it.l}</text>`;
+    o+=`<rect x="${pl}" y="${yy+5}" width="${Math.max(2,bw)}" height="${rowH-12}" rx="4" fill="${it.c}"${tipAttr(it.l,it.tip||[['Value',fmt(it.v)]])}/>`;
+    o+=`<text x="${pl+bw+6}" y="${yy+rowH/2+2}" font-size="11" font-weight="700" fill="#1d2133">${fmt(it.v)}</text>`;});
+  if(ref){const x=pl+ref.v/mx*iw;o+=`<line x1="${x}" x2="${x}" y1="2" y2="${h-14}" stroke="#b91c1c" stroke-dasharray="4 4"/><text x="${x}" y="${h-2}" text-anchor="middle" font-size="10" fill="#b91c1c">${ref.l}</text>`;}
+  return o+'</svg>';
+}
+const AGES=[...Array(H)].map((_,i)=>'M'+i);
+
+/* =====================================================================
+   HELPERS
+   ===================================================================== */
+const F=()=>S.ch==='ALL'?null:{ch:S.ch,cp:S.cp};
+const cpName=(ch,k)=>k===-1?'Survey-credited (no click)':CHM[ch].cps[k].n;
+const fname=f=>!f?'All channels':CHM[f.ch].name+(f.cp!=null?' › '+cpName(f.ch,f.cp):'');
+const attrNote=()=>S.attr==='survey'?' · survey-adjusted':'';
+function kpi(k,v,d,x,cls=''){return `<div class="kpi" data-x="${x}"><div class="k">${k}</div><span class="i">ⓘ</span><div class="kpi-v ${cls}">${v}</div><div class="d">${d}</div></div>`;}
+const ltvCls=v=>v<1?'dn':v>=GUARD.ltvcac?'up':'';
+const pbBadge=(pb,obs)=>pb==null?'<span class="badge bad">Not in 24 mo</span>':`<span class="badge ${pb>GUARD.pb?'warn':'ok'}">${fmo(pb)}${obs?'':' (proj.)'}</span>`;
+const VB={Scale:'ok',Hold:'info',Fix:'warn',Cut:'bad'};
+const SRC=[['LinkedIn Campaign Manager','#0a66c2','Spend, campaigns, clicks'],['TikTok Ads Manager','#e5376b','Spend, campaigns, offers'],['Meta Ads Manager','#7f56d9','Spend by campaign, ad set'],['Google Ads','#1b96ff','Spend, brand vs non-brand'],['Shopify','#5e8e3e','Orders, discounts, refunds, UTMs, fees'],['ERP','#c2504b','COGS by SKU, marketing GL, creators'],['ShipBob (3PL)','#0f766e','Pick and pack, postage, returns'],['Klaviyo','#1f2937','Email and SMS cost'],['Fairing survey','#b45309','"How did you hear about us?"'],['FP&A plan','#6b7280','Budget, plan CAC, guardrails']];
+function planCac(f){if(!f){const sp=sum(CH.map(c=>sum(c.sp)));return sp/sum(CH.map(c=>sum(c.sp)/c.plan));}return CHM[f.ch].plan;}
+
+/* =====================================================================
+   VIEWS
+   ===================================================================== */
+function connectors(){return `<div class="conn">${SRC.map(s=>`<div class="cn" style="--c:${s[1]}"><b>${esc(s[0])}</b><span>${esc(s[2])}</span><em>● Synced 6:02 AM</em></div>`).join('')}</div>`;}
+function insights(){
+  const U=CH.map(c=>build({ch:c.id},'utm')),Sv=CH.map(c=>build({ch:c.id},'survey'));
+  const paid=PAID.map(c=>({c,B:U[c.i]}));
+  const cheap=paid.slice().sort((a,b)=>a.B.cac-b.B.cac)[0],worst=paid.slice().sort((a,b)=>a.B.ltvcac-b.B.ltvcac)[0];
+  const best=paid.slice().sort((a,b)=>b.B.ltvcac-a.B.ltvcac)[0],maxCac=paid.slice().sort((a,b)=>b.B.cac-a.B.cac)[0];
+  const meta=U[1],A=build(null,'utm');let h='';
+  if(cheap.c.id===worst.c.id){const sv=Sv[cheap.c.i];
+    h+=`<div class="alert red"><span class="ico">⚠</span><div><b>${cheap.c.name} looks cheap but ${cheap.B.ltvcac<1?'loses money':'barely pays back'}.</b> CAC is ${f$(cheap.B.cac)}, ${fp(1-cheap.B.cac/meta.cac)} below Meta. But a customer earns only ${f$(cheap.B.ltv24)} over 24 months, so LTV:CAC is ${fx(cheap.B.ltvcac)}. First orders carry a ${fp(cheap.B.d1)} discount, ${fp(cheap.B.ret1)} are returned, and just ${fp(cheap.B.m3)} still buy in month 3. Crediting it with every no-click customer who said "${cheap.c.short}" in the survey only lifts it to ${fx(sv.ltvcac)}, still far below the 3x target. <a data-go="channels" data-ch="${cheap.c.id}">See campaigns →</a></div></div>`;}
+  else h+=`<div class="alert red"><span class="ico">⚠</span><div><b>${worst.c.name} has the weakest return.</b> LTV:CAC is ${fx(worst.B.ltvcac)} on a CAC of ${f$(worst.B.cac)}. <a data-go="channels" data-ch="${worst.c.id}">See campaigns →</a></div></div>`;
+  h+=`<div class="alert green"><span class="ico">✓</span><div><b>${best.c.name} is the best paid channel${best.c.id===maxCac.c.id?', even though it looks the most expensive':''}.</b> CAC is ${f$(best.B.cac)}, but customers buy bigger baskets and keep coming back: ${f$(best.B.ltv24)} over 24 months (${fx(best.B.ltvcac)}), paid back in ${fmo(best.B.pb)}. At the margin the next customer costs ${f$(best.B.mcac)} and still returns ${fx(best.B.mltvcac)}. It gets ${fp(sum(best.c.sp)/A.spend)} of spend. <a data-go="channels" data-ch="${best.c.id}">See campaigns →</a></div></div>`;
+  const ttSh=t=>CH[2].sp[t]/sum(CH.map(c=>c.sp[t]));
+  const avg=(a,b,fnc)=>sum(A.coh.slice(a,b).map(fnc))/(b-a);
+  const cacE=sum(A.coh.slice(0,3).map(C=>C.spend))/sum(A.coh.slice(0,3).map(C=>C.n)),cacL=sum(A.coh.slice(7,10).map(C=>C.spend))/sum(A.coh.slice(7,10).map(C=>C.n));
+  const pE=avg(0,3,C=>C.cum[2]/C.cac),pL=avg(7,10,C=>C.cum[2]/C.cac);
+  h+=`<div class="alert amber"><span class="ico">◔</span><div><b>New cohorts are ${cacL<cacE*.97?'cheaper but ':''}worth less.</b> TikTok went from ${fp(ttSh(0))} of spend in Oct-25 to ${fp(ttSh(11))} in Sep-26. ${cacL<cacE*.97?`Blended CAC fell from ${f$(cacE)} to ${f$(cacL)}, but`:`Blended CAC held near ${f$(cacL)}, yet`} by month 2 the May to Jul cohorts had earned back ${fp(pL)} of CAC, against ${fp(pE)} for Oct to Dec. Growth in customer count is hiding weaker payback. <a data-go="cohorts">Open cohorts →</a></div></div>`;
+  const ac=actions(),tot=sum(ac.map(a=>a.imp)),cut=ac.filter(a=>a.v==='Cut').length,sc=ac.filter(a=>a.v==='Scale').length,fix=ac.filter(a=>a.v==='Fix').length;
+  h+=`<div class="alert blue"><span class="ico">➜</span><div><b>Recommended: scale ${sc} campaigns, fix ${fix}, cut ${cut}.</b> Each is judged on what its next dollar returns, not its average. Together the moves add about ${f$(tot)} of contribution after acquisition cost from next year's customers. <a data-go="actions">See the action list →</a></div></div>`;
+  return h;
+}
+function vOverview(root){
+  const A=ALL;let h=connectors();
+  h+=`<div class="kpis">${kpi('New customers',fn(A.n),'Oct-25 to Sep-26 cohorts','n')}${kpi('Acquisition spend',f$(A.spend),'Ads, creators and content','spend')}${kpi('Blended CAC',f$(A.cac),`Plan ${f$(planCac(null))}`,'cac',A.cac>planCac(null)*1.05?'dn':'')}${kpi('24-mo LTV',f$(A.ltv24),'CM2, discounted at 12%','ltv')}${kpi('LTV:CAC',fx(A.ltvcac),'Target 3x or more','ltvcac',ltvCls(A.ltvcac))}${kpi('CM3 per customer',f$(A.cm3),'24-mo LTV minus CAC','cm3',A.cm3<0?'dn':'')}${kpi('CAC payback',fmo(A.pb),'Guardrail 12 months','pb')}${kpi('Month-3 active',fp(A.m3),'Ordered in month 3','m3')}</div>`;
+  h+=`<div class="card" style="margin-bottom:14px"><h3>What the data says</h3><div class="sub">Written from the numbers on this page, on click (UTM) attribution. Each link opens the detail.</div>${insights()}</div>`;
+  h+=`<div class="grid g2"><div class="card"><h3>New customers by cohort and channel</h3><div class="sub">Each bar is the month a customer first ordered${attrNote()}. TikTok's share keeps growing.</div><div class="chart">${stackBars({cats:MONTHS,series:CH.map((c,i)=>({name:c.name,c:c.c,v:CB[i].coh.map(C=>C.n)})),fmt:v=>fn(v)})}</div>${legend(CH)}</div>
+  <div class="card"><h3>CAC vs contribution earned by month 2</h3><div class="sub">Per customer, by cohort. The gap between the lines is CAC still to be earned back.</div><div class="chart">${lineChart({labels:MONTHS.slice(0,10),fmt:v=>f$(v),series:[{name:'Blended CAC',c:'#032d60',v:A.coh.slice(0,10).map(C=>C.cac)},{name:'Contribution by month 2',c:'#2e844a',v:A.coh.slice(0,10).map(C=>C.cum[2])}]})}</div>${legend([{name:'Blended CAC',c:'#032d60'},{name:'CM2 per customer, months 0 to 2',c:'#2e844a'}])}</div></div>`;
+  h+=`<div class="card" style="margin-top:14px"><h3>Channel scorecard${attrNote()}</h3><div class="sub">Click a channel to see its campaigns, cohorts and customers.</div>${scoreTable()}</div>`;
+  root.innerHTML=h;
+}
+function scoreTable(){
+  return `<div class="tblwrap"><table class="fin"><tr><th>Channel</th><th>Spend</th><th>New customers</th><th>CAC</th><th>vs plan</th><th>Marginal CAC</th><th>1st order CM2</th><th>Month-3 active</th><th>24-mo LTV</th><th>LTV:CAC</th><th>Marginal LTV:CAC</th><th>Payback</th></tr>
+  ${CH.map((c,i)=>{const B=CB[i],vp=B.cac/c.plan-1,o=c.id==='org';return `<tr class="click" data-go="channels" data-ch="${c.id}"><td><span class="dot" style="background:${c.c}"></span>${c.name}</td><td>${f$(B.spend)}</td><td>${fn(B.n)}</td><td>${f$(B.cac)}</td><td class="${vp>.05?'dn':vp<-.05?'up':''}">${sgn(vp,v=>fp(v))}</td><td>${o?'—':f$(B.mcac)}</td><td class="${B.fo.cm<0?'dn':''}">${fc(B.fo.cm/B.fo.ord)}</td><td>${fp(B.m3)}</td><td>${f$(B.ltv24)}</td><td class="${ltvCls(B.ltvcac)}"><b>${fx(B.ltvcac)}</b></td><td class="${o?'':ltvCls(B.mltvcac)}">${o?'—':fx(B.mltvcac)}</td><td>${pbBadge(B.pb,B.pbObs)}</td></tr>`;}).join('')}
+  <tr class="tot"><td>All channels</td><td>${f$(ALL.spend)}</td><td>${fn(ALL.n)}</td><td>${f$(ALL.cac)}</td><td>${sgn(ALL.cac/planCac(null)-1,v=>fp(v))}</td><td>—</td><td>${fc(ALL.fo.cm/ALL.fo.ord)}</td><td>${fp(ALL.m3)}</td><td>${f$(ALL.ltv24)}</td><td>${fx(ALL.ltvcac)}</td><td>—</td><td>${pbBadge(ALL.pb,ALL.pbObs)}</td></tr></table></div>
+  <p class="footnote">Plan CAC comes from the FP&amp;A plan. Marginal CAC is what the next customer costs at the Jul to Sep run rate: recent CAC ÷ the channel's spend elasticity from quarterly lift tests. LTV is CM2 contribution discounted at a 12% cost of capital; months 12 to 23 are projected. Organic has no marginal spend to judge.</p>`;
+}
+const METRICS={pay:['Payback progress','Contribution earned per customer so far ÷ the cohort\'s CAC. Green cells have paid back.'],act:['Active customers','Share of the cohort that ordered in that month.'],nrr:['Net revenue retention','Net revenue in the month ÷ net revenue in the first month.'],cum:['Cumulative contribution','CM2 per customer earned so far, in dollars.']};
+function cellVal(C,m){const x=C.age[m];if(S.metric==='pay')return C.cum[m]/(C.cac||1);if(S.metric==='act')return x.act/(C.n||1);if(S.metric==='nrr')return x.net/(C.age[0].net||1);return C.cum[m];}
+function cellFmt(v){return S.metric==='cum'?'$'+v.toFixed(0):fp(v);}
+function cellBg(v,mx){if(S.metric==='pay'){if(v>=1){const a=Math.min(1,.3+(v-1)*.5);return [`rgba(46,132,74,${a.toFixed(2)})`,a>.55];}const a=Math.min(.6,.08+(1-v)*.5);return [`rgba(234,125,114,${a.toFixed(2)})`,false];}
+  const a=.06+Math.min(1,v/mx)*.8;return [`rgba(1,118,211,${a.toFixed(2)})`,a>.55];}
+function vCohorts(root){
+  const B=build(F()),noSp=!B.spend;if(noSp&&S.metric==='pay')S.metric='act';
+  const allv=B.coh.flatMap(C=>C.age.map((_,m)=>m===0&&S.metric!=='pay'&&S.metric!=='cum'?0:cellVal(C,m)));const mx=Math.max(...allv);
+  let h=`<div class="kpis">${kpi('Customers',fn(B.n),fname(F())+attrNote(),'n')}${kpi('CAC',noSp?'—':f$(B.cac),'Spend ÷ new customers','cac')}${kpi('Month-1 active',fp(B.cv.act[1]),'Ordered again in month 1','m3')}${kpi('Month-3 active',fp(B.m3),'Ordered in month 3','m3')}${kpi('24-mo LTV',f$(B.ltv24),'CM2, discounted','ltv')}${kpi('Payback',noSp?'—':fmo(B.pb),B.pbObs?'Observed':'Projected','pb')}</div>`;
+  h+=`<div class="card"><h3>Cohort grid · ${fname(F())}</h3><div class="sub">${METRICS[S.metric][1]} Click any cell to see the customers behind it.</div>
+  <div class="subtabs">${Object.entries(METRICS).filter(([k])=>!(noSp&&k==='pay')).map(([k,v])=>`<button data-metric="${k}" class="${S.metric===k?'on':''}">${v[0]}</button>`).join('')}</div>
+  <div class="tblwrap"><table class="fin heat"><tr><th>Cohort</th><th>Customers</th><th>CAC</th>${MONTHS.map((_,m)=>`<th>M${m}</th>`).join('')}</tr>
+  ${B.coh.map(C=>`<tr><td><a data-coh="${C.t}">${MONTHS[C.t]}</a></td><td>${fn(C.n)}</td><td>${C.spend?f$(C.cac):'—'}</td>${MONTHS.map((_,m)=>{if(m>=C.age.length)return '<td class="na"></td>';const v=cellVal(C,m),[bg,wt]=cellBg(v,mx);return `<td class="hc" data-cell="${C.t},${m}" style="background:${bg};color:${wt?'#fff':'#181818'}"${tipAttr(MONTHS[C.t]+' cohort · month '+m,[['Customers active',fn(C.age[m].act)],['Orders',fn(C.age[m].ord)],['Net revenue',f$(C.age[m].net)],['CM2',f$(C.age[m].cm)],['Earned back so far',C.spend?fp(C.cum[m]/C.cac):'—']])}>${cellFmt(v)}</td>`;}).join('')}</tr>`).join('')}
+  </table></div><p class="footnote">M0 is the month of the first order. Each cohort is shown up to Sep-26, the last full month.</p></div>`;
+  h+=`<div class="card" style="margin-top:14px"><h3>Cumulative contribution per customer vs CAC</h3><div class="sub">Solid is observed. Dashed is projected from this slice's own recent month-over-month decay (${fp(B.r)} kept each month); the backtest in Checks shows how accurate that has been. The line crosses CAC at payback.</div>
+  <div class="chart">${lineChart({w:1300,h:340,labels:AGES,fmt:v=>f$(v),series:[{name:fname(F()),lab:'Cumulative CM2',c:F()?CHM[S.ch].c:'#032d60',v:B.cumcm,proj:B.lo+1}],ref:noSp?null:B.cac,refLabel:'CAC '+f$(B.cac)})}</div></div>`;
+  root.innerHTML=h;
+}
+function vChannels(root){
+  let h='';
+  if(S.ch==='ALL'){
+    h+=`<div class="card"><h3>Payback curves by channel${attrNote()}</h3><div class="sub">CM2 earned per customer ÷ CAC, by month since the first order. Crossing 100% is payback. Dashed is projected.</div>
+    <div class="chart">${lineChart({w:1300,h:360,labels:AGES,fmt:v=>fp(v),series:PAID.map(c=>({name:c.name,lab:'Earned back',c:c.c,v:CB[c.i].cumcm.map(v=>v/CB[c.i].cac),proj:CB[c.i].lo+1})),ref:1,refLabel:'Payback'})}</div>${legend(PAID)}<p class="footnote">Organic & referral is left off because its low cost puts it far above the others (${fx(CB[5].ltvcac)}).</p></div>`;
+    h+=`<div class="card" style="margin-top:14px"><h3>Channel scorecard${attrNote()}</h3><div class="sub">Click a channel to see its campaigns.</div>${scoreTable()}</div>`;
+    h+=`<div class="card" style="margin-top:14px"><h3>Average vs marginal LTV:CAC</h3><div class="sub">The average says how a channel did. The margin says what the next dollar will do, and budget follows the margin. Red line is the 3x target.</div><div class="chart">${hbars(PAID.flatMap(c=>{const B=CB[c.i];return [{l:c.name+' · average',v:B.ltvcac,c:c.c,tip:[['CAC',f$(B.cac)],['24-mo LTV',f$(B.ltv24)],['LTV:CAC',fx(B.ltvcac)]]},{l:c.name+' · next dollar',v:B.mltvcac,c:c.c+'80',tip:[['Marginal CAC',f$(B.mcac)],['Elasticity',B.e.toFixed(2)],['Marginal LTV:CAC',fx(B.mltvcac)]]}];}),v=>fx(v),{ref:{v:3,l:'3x'},w:1300,rowH:28})}</div></div>`;
+    root.innerHTML=h;return;
+  }
+  const c=CHM[S.ch],B=CB[c.i],X=build(F()),noSp=!X.spend;
+  h+=`<div class="crumb"><a data-ch="ALL">All channels</a> › <a data-cp="none">${c.name}</a>${S.cp!=null?' › <b>'+esc(cpName(c.id,S.cp))+'</b>':''}</div>`;
+  h+=`<div class="kpis">${kpi('Spend',noSp?'—':f$(X.spend),'Oct-25 to Sep-26','spend')}${kpi('New customers',fn(X.n),fname(F())+attrNote(),'n')}${kpi('CAC',noSp?'—':f$(X.cac),`Plan ${f$(c.plan)}`,'cac',X.cac>c.plan*1.05?'dn':'')}${kpi('Marginal CAC',X.mcac&&!noSp&&c.id!=='org'?f$(X.mcac):'—','Cost of the next customer','mcac')}${kpi('1st order CM2',fc(X.fo.cm/(X.fo.ord||1)),'Contribution per first order','cmp',X.fo.cm<0?'dn':'')}${kpi('24-mo LTV',f$(X.ltv24),'CM2, discounted','ltv')}${kpi('LTV:CAC',noSp?'—':fx(X.ltvcac),'Target 3x or more','ltvcac',noSp?'':ltvCls(X.ltvcac))}${kpi('Payback',noSp?'—':fmo(X.pb),X.pbObs?'Observed':'Projected','pb')}</div>`;
+  const sv=S.attr==='survey'&&c.id!=='org'?build({ch:c.id,cp:-1}):null;
+  h+=`<div class="card"><h3>Campaigns · ${c.name}</h3><div class="sub">Spend from ${c.src}, matched to Shopify first orders by UTM campaign ID. Click a campaign to filter every tab to it.</div>
+  <div class="tblwrap"><table class="fin"><tr><th>Campaign</th><th>Spend</th><th>Customers</th><th>CAC</th><th>Marginal CAC</th><th>1st order discount</th><th>1st order CM2</th><th>Repeat rate</th><th>24-mo LTV</th><th>LTV:CAC</th><th>Payback</th></tr>
+  ${c.cps.map((cp,k)=>{const P=build({ch:c.id,cp:k});return `<tr class="click${S.cp===k?' sel':''}" data-cp="${k}"><td>${esc(cp.n)}</td><td>${f$(P.spend)}</td><td>${fn(P.n)}</td><td>${f$(P.cac)}</td><td>${c.id==='org'?'—':f$(P.mcac)}</td><td>${fp(P.d1)}</td><td class="${P.fo.cm<0?'dn':''}">${fc(P.fo.cm/P.fo.ord)}</td><td>${fp(P.rep)}</td><td>${f$(P.ltv24)}</td><td class="${ltvCls(P.ltvcac)}"><b>${fx(P.ltvcac)}</b></td><td>${pbBadge(P.pb,P.pbObs)}</td></tr>`;}).join('')}
+  ${sv&&sv.n?`<tr class="click${S.cp===-1?' sel':''}" data-cp="-1"><td>Survey-credited (no click)</td><td>—</td><td>${fn(sv.n)}</td><td>—</td><td>—</td><td>${fp(sv.d1)}</td><td>${fc(sv.fo.cm/sv.fo.ord)}</td><td>${fp(sv.rep)}</td><td>${f$(sv.ltv24)}</td><td>—</td><td>—</td></tr>`:''}
+  <tr class="tot"><td>${c.name}</td><td>${f$(B.spend)}</td><td>${fn(B.n)}</td><td>${f$(B.cac)}</td><td>${c.id==='org'?'—':f$(B.mcac)}</td><td>${fp(B.d1)}</td><td>${fc(B.fo.cm/B.fo.ord)}</td><td>${fp(B.rep)}</td><td>${f$(B.ltv24)}</td><td>${fx(B.ltvcac)}</td><td>${pbBadge(B.pb,B.pbObs)}</td></tr></table></div>
+  <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" data-go="cohorts">▦ Cohorts for ${esc(fname(F()))}</button><button class="btn" data-go="unit">$ Margin ladder</button><button class="btn" data-go="customers">👤 Customers</button></div></div>`;
+  if(!noSp)h+=`<div class="grid g2" style="margin-top:14px"><div class="card"><h3>CAC by month vs plan</h3><div class="sub">${fname(F())}. Red line is plan CAC from the FP&amp;A plan.</div><div class="chart">${lineChart({labels:MONTHS,fmt:v=>f$(v),series:[{name:'CAC',c:c.c,v:X.coh.map(C=>C.cac)}],ref:c.plan,refLabel:'Plan '+f$(c.plan)})}</div>
+  <div class="tblwrap"><table class="fin" style="margin-top:6px"><tr><th>Month</th>${MONTHS.map(m=>`<th>${m}</th>`).join('')}</tr><tr><td>Spend</td>${X.coh.map(C=>`<td>${f$(C.spend)}</td>`).join('')}</tr><tr><td>Customers</td>${X.coh.map(C=>`<td>${fn(C.n)}</td>`).join('')}</tr></table></div></div>
+  <div class="card"><h3>Cumulative contribution vs CAC</h3><div class="sub">CM2 per customer. Dashed is projected.</div><div class="chart">${lineChart({labels:AGES,fmt:v=>f$(v),series:[{name:fname(F()),lab:'Cumulative CM2',c:c.c,v:X.cumcm,proj:X.lo+1}],ref:X.cac,refLabel:'CAC '+f$(X.cac)})}</div></div></div>`;
+  root.innerHTML=h;
+}
+function vActions(root){
+  const ac=actions(),cnt=v=>ac.filter(a=>a.v===v).length,tot=sum(ac.map(a=>a.imp)),dsp=sum(ac.map(a=>a.dsp));
+  let h=`<div class="kpis">${kpi('Scale',cnt('Scale'),'+25% budget','act')}${kpi('Hold',cnt('Hold'),'Keep budget','act')}${kpi('Fix',cnt('Fix'),'Hold budget, fix offer or creative','act')}${kpi('Cut',cnt('Cut'),'−50% budget','act')}${kpi('Net budget change',sgn(dsp,v=>f$(v))+' / mo','Freed budget is held back','act')}${kpi('12-mo impact',sgn(tot,v=>f$(v)),'CM3 from next year\'s customers','act',tot>=0?'up':'dn')}</div>`;
+  h+=`<div class="card"><h3>Budget actions by campaign</h3><div class="sub">Each paid campaign is judged on its marginal LTV:CAC (what the next dollar returns) and payback, against the plan's guardrails of ${GUARD.ltvcac}x and ${GUARD.pb} months. Click a row to open the campaign.</div>
+  <div class="tblwrap"><table class="fin"><tr><th>Campaign</th><th>Channel</th><th>Spend / mo</th><th>CAC</th><th>Marginal CAC</th><th>24-mo LTV</th><th>Marginal LTV:CAC</th><th>Payback</th><th>Action</th><th>Why</th><th>Budget change / mo</th><th>12-mo impact</th></tr>
+  ${ac.map(a=>`<tr class="click" data-cpk="${a.k}" data-cch="${a.c.id}"><td>${esc(a.cp.n)}</td><td class="l"><span class="dot" style="background:${a.c.c}"></span>${a.c.short}</td><td>${f$(a.sp)}</td><td>${f$(a.P.cac)}</td><td>${f$(a.P.mcac)}</td><td>${f$(a.P.ltv24)}</td><td class="${ltvCls(a.m)}"><b>${fx(a.m)}</b></td><td>${pbBadge(a.P.pb,a.P.pbObs)}</td><td><span class="badge ${VB[a.v]}">${a.v}</span></td><td class="l tiny">${a.why}</td><td>${a.dsp?sgn(a.dsp,v=>f$(v)):'—'}</td><td class="${a.imp>0?'up':a.imp<0?'dn':''}">${a.imp?sgn(a.imp,v=>f$(v)):'—'}</td></tr>`).join('')}
+  <tr class="tot"><td>Total</td><td></td><td>${f$(sum(ac.map(a=>a.sp)))}</td><td colspan="7"></td><td>${sgn(dsp,v=>f$(v))}</td><td>${sgn(tot,v=>f$(v))}</td></tr></table></div>
+  <p class="footnote">Impact = budget change × (marginal LTV:CAC − 1) × 12 months, so cutting a campaign that loses money on its next customer adds contribution. Rules: Scale at marginal LTV:CAC ≥ 3x with payback ≤ 12 months; Hold at 2x to 3x; Fix at 1x to 2x (hold budget; fix the offer, creative or landing page); Cut below 1x. Judged on click attribution, so check the survey-adjusted view before cutting an awareness channel.</p></div>`;
+  root.innerHTML=h;
+}
+function ueSteps(x){const n=x.ord||1,g=x.g||1,net=x.g-x.disc-x.ref,cm1=net-x.cogs;return [
+  {l:'Gross order value',v:x.g/n,total:true,pct:1,src:'Shopify'},{l:'Discounts',v:-x.disc/n,pct:x.disc/g,src:'Shopify'},{l:'Refunds (returns)',v:-x.ref/n,pct:x.ref/g,src:'Shopify'},{l:'Net revenue',v:net/n,total:true,pct:net/g},
+  {l:'Product cost (COGS)',v:-x.cogs/n,pct:x.cogs/g,src:'ERP standard cost'},{l:'CM1 product margin',v:cm1/n,total:true,mid:true,pct:cm1/g},
+  {l:'Pick and pack',v:-x.pick/n,pct:x.pick/g,src:'ShipBob'},{l:'Postage and returns',v:-x.post/n,pct:x.post/g,src:'ShipBob'},{l:'Payment fees',v:-x.fee/n,pct:x.fee/g,src:'Shopify Payments'},{l:'Email and SMS',v:-x.klav/n,pct:x.klav/g,src:'Klaviyo'},
+  {l:'CM2 contribution',v:x.cm/n,total:true,end:true,pct:x.cm/g}];}
+function vUnit(root){
+  const B=build(F()),x=S.ue==='first'?B.fo:S.ue==='repeat'?B.ro:B.tot;
+  let h=`<div class="kpis">${kpi('Orders',fn(x.ord),{first:'First orders',repeat:'Repeat orders',all:'All orders'}[S.ue],'n')}${kpi('Gross AOV',fc(x.g/(x.ord||1)),'Before discounts','cmp')}${kpi('Net revenue / order',fc((x.g-x.disc-x.ref)/(x.ord||1)),'After discounts and refunds','cmp')}${kpi('CM1 / order',fc((x.g-x.disc-x.ref-x.cogs)/(x.ord||1)),'After product cost','cmp')}${kpi('CM2 / order',fc(x.cm/(x.ord||1)),'After all variable costs','cmp',x.cm<0?'dn':'')}${kpi('CM2 margin',fp(x.cm/((x.g-x.disc-x.ref)||1)),'Of net revenue','cmp')}</div>`;
+  h+=`<div class="card"><h3>What one order really earns · ${fname(F())}</h3><div class="sub">The margin ladder. CM1 is after product cost. CM2 is after every cost of getting the order to the customer and keeping them. CM3 is per customer: 24-mo LTV minus CAC (table below). Hover a bar for its source.</div>
+  <div class="subtabs">${[['first','First order'],['repeat','Repeat orders'],['all','All orders']].map(([k,l])=>`<button data-ue="${k}" class="${S.ue===k?'on':''}">${l}</button>`).join('')}</div>
+  <div class="chart">${waterfall(ueSteps(x),{w:1300,h:330})}</div></div>`;
+  h+=`<div class="card" style="margin-top:14px"><h3>The margin ladder, by channel</h3><div class="sub">Where the first order loses money, the channel only works if customers come back. Click a channel to drill in.</div>
+  <div class="tblwrap"><table class="fin"><tr><th>Channel</th><th>1st AOV</th><th>1st discount</th><th>1st refunds</th><th>1st CM1</th><th>1st CM2</th><th>Repeat CM2</th><th>Repeat orders (24 mo)</th><th>24-mo LTV</th><th>CAC</th><th>CM3 per customer</th></tr>
+  ${CH.map((c,i)=>{const Q=CB[i];const ro=sum(Q.cv.ord)-Q.cv.ord[0];return `<tr class="click" data-ch="${c.id}"><td><span class="dot" style="background:${c.c}"></span>${c.name}</td><td>${fc(Q.fo.g/Q.fo.ord)}</td><td>${fp(Q.fo.disc/Q.fo.g)}</td><td>${fp(Q.fo.ref/Q.fo.g)}</td><td>${fc((Q.fo.g-Q.fo.disc-Q.fo.ref-Q.fo.cogs)/Q.fo.ord)}</td><td class="${Q.fo.cm<0?'dn':''}"><b>${fc(Q.fo.cm/Q.fo.ord)}</b></td><td><b>${fc(Q.ro.cm/Q.ro.ord)}</b></td><td>${ro.toFixed(2)}</td><td>${f$(Q.ltv24)}</td><td>${f$(Q.cac)}</td><td class="${Q.cm3<0?'dn':'up'}"><b>${f$(Q.cm3)}</b></td></tr>`;}).join('')}</table></div>
+  <p class="footnote">COGS ${fp(COGS)} of list price (ERP standard cost by SKU). Pick and pack ${fc(PICK)} per order, postage by weight, and ${fc(RETSHIP)} return labels (ShipBob invoices). Payment fees ${fp(FEE_P,1)} + $0.30 (Shopify Payments). Klaviyo cost of ${fc(KLAV)} per repeat order (platform fee and SMS spend ÷ repeat orders). Returned goods are written off.</p></div>`;
+  root.innerHTML=h;
+}
+function vCustomers(root){
+  const f=F(),m=S.attr;
+  let rows=CUST.filter(c=>(!f||(chOf(c,m)===f.ch&&(f.cp==null||cpOf(c,m)===f.cp)))&&(S.ccoh==='ALL'||c.t===+S.ccoh)&&(!S.cq||c.id.toLowerCase().includes(S.cq.toLowerCase())||c.st===S.cq.toUpperCase()));
+  const key={cm:c=>c.cm,net:c=>c.net,n:c=>c.n,t:c=>c.t,pay:c=>c.cm/cacOf(c)}[S.csort];rows.sort((a,b)=>S.cdir*(key(a)-key(b)));
+  const per=50,pages=Math.max(1,Math.ceil(rows.length/per));S.cpage=Math.min(S.cpage,pages-1);const pg=rows.slice(S.cpage*per,S.cpage*per+per);
+  const paid=rows.filter(c=>c.cm>=cacOf(c)).length;
+  let h=`<div class="kpis">${kpi('Customers',fn(rows.length),fname(f)+attrNote(),'n')}${kpi('Paid back so far',fp(paid/(rows.length||1)),'CM2 ≥ their CAC','pb')}${kpi('Avg orders',(sum(rows.map(c=>c.n))/(rows.length||1)).toFixed(2),'To date','m3')}${kpi('Avg CM2',fc(sum(rows.map(c=>c.cm))/(rows.length||1)),'To date, per customer','ltv')}</div>`;
+  const th=(k,l)=>`<th class="sort" data-sort="${k}">${l}${S.csort===k?(S.cdir<0?' ↓':' ↑'):''}</th>`;
+  h+=`<div class="card"><h3>Customers · ${fname(f)}</h3><div class="sub">One row per customer from Shopify, deduplicated by hashed email. Click a customer to see every order.</div>
+  <div class="tools"><input id="cq" placeholder="Search customer ID or state (e.g. OH)" value="${esc(S.cq)}"><select id="ccoh"><option value="ALL">All cohorts</option>${MONTHS.map((mm,i)=>`<option value="${i}"${String(S.ccoh)===String(i)?' selected':''}>${mm}</option>`).join('')}</select><span class="tiny">${fn(rows.length)} customers · page ${S.cpage+1} of ${pages}</span><button class="btn" data-page="-1">‹ Prev</button><button class="btn" data-page="1">Next ›</button></div>
+  <div class="tblwrap"><table class="fin"><tr><th>Customer</th><th>Channel</th><th>Campaign</th><th>Survey answer</th>${th('t','Cohort')}<th>State</th>${th('n','Orders')}${th('net','Net revenue')}${th('cm','CM2')}<th>CAC</th>${th('pay','Earned back')}</tr>
+  ${pg.map(c=>{const ch=CHM[chOf(c,m)],cac=cacOf(c),p=c.cm/cac;return `<tr class="click" data-cust="${c.id}"><td>${c.id}</td><td class="l"><span class="dot" style="background:${ch.c}"></span>${ch.short}</td><td class="l">${esc(cpOf(c,m)===-1?'Survey-credited':CHM[c.ch].cps[c.cp].n)}</td><td class="l tiny">${c.ans?CHM[c.ans].short:'No answer'}</td><td>${MONTHS[c.t]}</td><td>${c.st}</td><td>${c.n}</td><td>${fc(c.net)}</td><td class="${c.cm<0?'dn':''}">${fc(c.cm)}</td><td>${fc(cac)}</td><td><span class="badge ${p>=1?'ok':p>=.5?'warn':'bad'}">${fp(p)}</span></td></tr>`;}).join('')}</table></div></div>`;
+  root.innerHTML=h;
+  const q=$('cq');q.oninput=()=>{S.cq=q.value;S.cpage=0;const pos=q.selectionStart;render();const n=$('cq');n.focus();n.setSelectionRange(pos,pos);};
+  $('ccoh').onchange=e=>{S.ccoh=e.target.value;S.cpage=0;render();};
+}
+function vWhatif(root){
+  const sc=scenario(W),b=sc.base,s=sc.scen;
+  const sl=(k,l,sub,min,max,step,fmt)=>`<div class="slider-row"><div class="lbl">${l}<span class="tiny">${sub}</span></div><input type="range" data-w="${k}" min="${min}" max="${max}" step="${step}" value="${W[k]}"><div class="val ${W[k]!==W0[k]?'chg':''}">${fmt(W[k])}</div></div>`;
+  let h=`<div class="grid g2"><div class="card"><h3>Levers <button class="btn" id="wReset">↺ Reset</button></h3><div class="sub">Next 12 months of new customers. Base spend is each channel's Jul to Sep run rate.</div>
+  <div class="sgrp">Budget mix</div>${sl('move','Move TikTok budget','Half to LinkedIn, half to Google',0,100,5,v=>v+'%')}
+  <div class="sgrp">Offer and cost</div>${sl('ttDisc','TikTok first-order discount','Each point cut raises TikTok CAC 1.2%',0,40,1,v=>v+'%')}${sl('ful','Fulfillment cost change','Per order, e.g. a new 3PL rate card',-3,3,.25,v=>(v<0?'-$':v>0?'+$':'$')+Math.abs(v).toFixed(2))}${sl('cogs','Product cost change','Points of list price',-5,5,.5,v=>(v>0?'+':'')+v+' pts')}
+  <div class="sgrp">Retention</div>${sl('uplift','Repeat orders uplift','e.g. subscribe-and-save or loyalty',0,30,1,v=>'+'+v+'%')}
+  <p class="footnote">CAC rises as a channel scales along its lift-test elasticity e: CAC × (new spend ÷ old spend)^(1/e − 1). LTV is discounted at 12%. Cost and retention changes apply to each channel's own curve from the Cohorts tab.</p></div>
+  <div class="card"><h3>Result: next 12 months of customers</h3><div class="sub">CM3: contribution over each customer's first 24 months, after acquisition cost.</div>
+  <table class="fin"><tr><th>Metric</th><th>Base</th><th>Scenario</th><th>Change</th></tr>
+  ${[['Acquisition spend',f$(b.spend),f$(s.spend),f$(s.spend-b.spend)],['New customers',fn(b.n),fn(s.n),sgn(s.n-b.n,v=>fn(v))],['Blended CAC',f$(b.cac),f$(s.cac),f$(s.cac-b.cac)],['24-mo LTV',f$(b.ltv),f$(s.ltv),f$(s.ltv-b.ltv)],['LTV:CAC',fx(b.ltvcac),fx(s.ltvcac),sgn(s.ltvcac-b.ltvcac,v=>v.toFixed(2)+'x')],['Payback',fmo(b.pb),fmo(s.pb),b.pb!=null&&s.pb!=null?(s.pb-b.pb).toFixed(1)+' mo':''],['CM3 (contribution after CAC)',f$(b.net),f$(s.net),f$(s.net-b.net)]].map((r,i)=>`<tr class="${i===6?'tot':''}"><td>${r[0]}</td><td>${r[1]}</td><td><b>${r[2]}</b></td><td class="${i===6?(s.net>=b.net?'up':'dn'):''}">${r[3]}</td></tr>`).join('')}</table>
+  <div class="bigdelta ${s.net>=b.net?'up':'dn'}">${sgn(s.net-b.net,v=>f$(v))}<span>CM3 vs base, next 12 months of customers</span></div></div></div>`;
+  h+=`<div class="card" style="margin-top:14px"><h3>By channel</h3><div class="sub">Monthly spend and customers, base vs scenario.</div><div class="tblwrap"><table class="fin"><tr><th>Channel</th><th>Elasticity</th><th>Spend / mo</th><th>Scenario</th><th>CAC</th><th>Scenario</th><th>Customers / mo</th><th>Scenario</th><th>24-mo LTV</th><th>Scenario</th></tr>
+  ${sc.rows.map(o=>`<tr><td><span class="dot" style="background:${o.c.c}"></span>${o.c.name}</td><td>${o.c.id==='org'?'—':o.c.e.toFixed(2)}</td><td>${f$(o.sp)}</td><td><b>${f$(o.sp2)}</b></td><td>${f$(o.cac)}</td><td><b>${f$(o.cac2)}</b></td><td>${fn(o.n)}</td><td><b>${fn(o.n2)}</b></td><td>${f$(o.ltv)}</td><td><b>${f$(o.ltv2)}</b></td></tr>`).join('')}</table></div></div>`;
+  root.innerHTML=h;
+  root.querySelectorAll('input[data-w]').forEach(i=>i.oninput=()=>{W[i.dataset.w]=+i.value;const y=scrollY;render();scrollTo(0,y);});
+  $('wReset').onclick=()=>{Object.assign(W,W0);render();};
+}
+function checks(){
+  const mk=(n,a,b,tol,note,src)=>({n,a,b,d:b-a,ok:Math.abs(b-a)<=Math.abs(a)*tol,note,src});
+  const erpAdj=[1,1.0004,.9991,.9932,1,1],rows=[];
+  CH.forEach((c,i)=>{const sp=sum(c.sp);rows.push(mk(c.name+' spend',sp,Math.round(sp*erpAdj[i]),.01,i===3?'LinkedIn invoices post a month late; Sep accrual booked':'Ties',c.src+' vs ERP marketing GL'));});
+  const U=build(null,'utm').tot;
+  rows.push(mk('Net revenue',U.net,Math.round(U.net*1.0031),.01,'Gift card breakage and tax timing','Shopify vs ERP revenue'));
+  rows.push(mk('Order count',ALLO,ALLO-14,.001,'14 test orders excluded in Shopify','Shopify vs ERP sales orders'));
+  rows.push(mk('COGS',U.cogs,Math.round(U.cogs*1.0042),.01,'Standard vs actual cost variance stays in the ERP','Order-level vs ERP COGS'));
+  rows.push(mk('Fulfillment cost',U.pick+U.post,Math.round((U.pick+U.post)*1.0058),.01,'Storage fees billed separately, kept out of CM2','Order-level vs ShipBob invoices'));
+  rows.push(mk('Email and SMS cost',U.klav,Math.round(U.klav*.996),.01,'Ties','Allocated vs Klaviyo invoices'));
+  return rows;
+}
+function vChecks(root){
+  const rs=checks();
+  let h=`<div class="card"><h3>Ties to the general ledger and invoices</h3><div class="sub">Run on every refresh and signed off at month-end close. Anything outside 1% blocks the refresh and posts to #finance-data.</div><div class="tblwrap"><table class="fin"><tr><th>Check</th><th>Compared</th><th>This page</th><th>Source</th><th>Difference</th><th>Status</th><th>Note</th></tr>
+  ${rs.map(r=>`<tr><td>${r.n}</td><td class="l tiny">${r.src}</td><td>${r.a>1e4?f$(r.a,1):fn(r.a)}</td><td>${r.b>1e4?f$(r.b,1):fn(r.b)}</td><td>${r.a>1e4?f$(r.d,1):fn(r.d)}</td><td><span class="badge ${r.ok?'ok':'bad'}">${r.ok?'Within 1%':'Review'}</span></td><td class="l tiny">${r.note}</td></tr>`).join('')}</table></div></div>`;
+  const bt=[null,...PAID.map(c=>c.id)].map(id=>({id,...backtest(id)}));
+  const orgN=CUST.filter(c=>c.ch==='org').length,resp=CUST.filter(c=>c.ch==='org'&&c.ans).length,moved=CUST.filter(c=>c.sv!==c.ch).length;
+  h+=`<div class="grid g2" style="margin-top:14px"><div class="card"><h3>Forecast backtest</h3><div class="sub">Can the projection be trusted? The Oct-25 and Nov-25 cohorts were projected from their first 6 months only, then compared with what they actually earned by month 10.</div>
+  <table class="fin"><tr><th>Slice</th><th>Customers</th><th>Projected CM2, M0 to M10</th><th>Actual</th><th>Error</th></tr>${bt.map(b=>`<tr><td>${b.id?`<span class="dot" style="background:${CHM[b.id].c}"></span>${CHM[b.id].name}`:'All channels'}</td><td>${fn(b.n)}</td><td>${fc(b.pred)}</td><td>${fc(b.act)}</td><td><span class="badge ${Math.abs(b.err)<=.05?'ok':Math.abs(b.err)<=.1?'warn':'bad'}">${sgn(b.err,v=>fp(v,1))}</span></td></tr>`).join('')}</table>
+  <p class="footnote">Within 5% is green. Small slices miss by more, so campaign-level projections are shown dashed and are never the only reason for a cut.</p></div>
+  <div class="card"><h3>Attribution</h3><div class="sub">How each first order is given to a channel, and where that can be wrong.</div>
+  <div class="alert blue"><span class="ico">ⓘ</span><div><b>Default is click (UTM) first touch.</b> The first order's UTM campaign ID is matched to the ad platform's campaign ID. ${fn(CUST.length-orgN)} customers matched a paid campaign.</div></div>
+  <div class="alert amber"><span class="ico">◔</span><div><b>${fn(orgN)} first orders had no paid click</b> and count as Organic & referral. ${fp(resp/orgN)} of them answered the Fairing survey, and ${fn(moved)} named a paid channel. The survey-adjusted view credits those customers to that channel, which raises organic CAC and lowers paid CAC.</div></div>
+  <div class="alert green"><span class="ico">✓</span><div><b>212 duplicate customers merged</b> by hashed email, so a returning customer isn't counted as new twice.</div></div></div></div>`;
+  root.innerHTML=h;
+}
+function vHow(root){
+  const steps=[['Land','Fivetran pulls all 10 sources into BigQuery at 5 AM, read-only.'],['Model','dbt builds costed orders, customers and campaign spend, with tests.'],['Attribute','UTM to campaign ID; survey answers kept as a second view.'],['Cohort','Group by first-order month, channel and campaign.'],['Project','Extend each curve by its own decay; discount at 12%.'],['Check','Tie to the GL and invoices; a failure blocks the refresh.']];
+  const outs=['Overview and insights','Budget actions','Cohort grid','Channels and campaigns','Margin ladder','Customers and orders','What-if','Ties and backtest'];
+  const W_=1000,H_=480;let svg=`<svg viewBox="0 0 ${W_} ${H_}" role="img" aria-label="Ten sources land in the warehouse, are modeled, and feed every tab"><defs><marker id="hwArr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker></defs>`;
+  svg+=`<text x="10" y="14" class="t-mut" font-size="11" font-weight="600" letter-spacing="1.2">SOURCES</text><text x="300" y="14" class="t-mut" font-size="11" font-weight="600" letter-spacing="1.2">WAREHOUSE AND MODELS</text><text x="740" y="14" class="t-mut" font-size="11" font-weight="600" letter-spacing="1.2">WHAT YOU SEE</text>`;
+  const hubX=300,hubW=300,hubY=24,hubH=440,cy=hubY+hubH/2;
+  SRC.forEach((s,i)=>{const y=26+i*44;svg+=`<path class="wire" stroke="${s[1]}" d="M240 ${y+18} C 275 ${y+18}, 265 ${cy-45+i*10}, ${hubX-2} ${cy-45+i*10}" marker-end="url(#hwArr)"/>`+
+    `<rect class="node" x="10" y="${y}" width="230" height="37" rx="8" stroke="${s[1]}" stroke-width="1.5"/><rect x="10" y="${y}" width="6" height="37" rx="3" fill="${s[1]}"/><text x="26" y="${y+16}" class="t-ink" font-size="12.5" font-weight="650">${esc(s[0])}</text><text x="26" y="${y+30}" class="t-mut" font-size="10.5">${esc(s[2])}</text>`;});
+  svg+=`<rect class="hub" x="${hubX}" y="${hubY}" width="${hubW}" height="${hubH}" rx="14" stroke-width="1"/><text x="${hubX+18}" y="${hubY+28}" class="t-ink" font-size="15" font-weight="700">Fivetran → BigQuery → dbt</text>`;
+  steps.forEach((s,i)=>{const y=hubY+60+i*64;const words=s[1].split(' ');let l1='',l2='';words.forEach(w=>{if((l1+' '+w).length<36&&!l2)l1+=(l1?' ':'')+w;else l2+=(l2?' ':'')+w;});
+    svg+=`<circle cx="${hubX+27}" cy="${y}" r="9" fill="currentColor" class="t-ink"/><text x="${hubX+27}" y="${y+4}" text-anchor="middle" font-size="11" font-weight="700" fill="var(--hw-card)">${i+1}</text><text x="${hubX+44}" y="${y+4}" class="t-ink" font-size="12.5" font-weight="650">${s[0]}</text><text x="${hubX+44}" y="${y+20}" class="t-mut" font-size="11.5">${l1}</text><text x="${hubX+44}" y="${y+36}" class="t-mut" font-size="11.5">${l2}</text>`;});
+  outs.forEach((o,i)=>{const y=26+i*42;svg+=`<path class="wire" stroke="currentColor" style="color:var(--hw-mut)" d="M${hubX+hubW+2} ${cy-20+i*6} C 650 ${cy}, 690 ${y+15}, 738 ${y+15}" marker-end="url(#hwArr)"/><rect class="node" x="740" y="${y}" width="250" height="30" rx="7" stroke="var(--hw-line)"/><text x="752" y="${y+19.5}" class="t-ink" font-size="12.5">${o}</text>`;});
+  const yb=26+outs.length*42+6;
+  svg+=`<text x="740" y="${yb+6}" class="t-mut" font-size="11" font-weight="600" letter-spacing="1.2">PUSHES TO</text><text x="740" y="${yb+24}" class="t-ink" font-size="12">Slack · ad budgets · board pack</text></svg>`;
+  const card=(n,tag,c,items)=>`<div class="src" style="--c:${c}"><h4>${n}<span>${tag}</span></h4><ul>${items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;
+  root.innerHTML=`<div class="hw"><div><p class="eyebrow">How it works</p><h3>Cohort &amp; Unit Economics: sources and flow</h3><p class="lede">The question this page answers: for every dollar spent to win a customer, how much comes back, how fast, and where should the next dollar go? Ad platforms know what a customer cost. Shopify knows what they bought. The ERP and the 3PL know what each order cost to make and deliver. None of them can answer the question alone. This page joins them at the order level, groups customers by when and where they came from, and judges every campaign on what its next dollar will return.</p></div>
+  <div class="facts"><span class="fact">Sources <b>10 connected</b></span><span class="fact">Refresh <b>daily 6 AM + on demand</b></span><span class="fact">Grain <b>every order</b></span><span class="fact">Customers <b>${fn(CUST.length)}</b></span><span class="fact">Orders <b>${fn(ALLO)}</b></span><span class="fact">Checks <b>${checks().length} ties to GL and invoices</b></span><span class="fact">Access <b>read-only to sources</b></span></div>
+  <div class="flowbox">${svg}</div>
+  <div><p class="eyebrow">The logic, in order</p><div class="steps">
+   <div class="step"><b>Cost of a customer</b><p>Spend by campaign and month ÷ customers whose first order carried that campaign's UTM = CAC. Creator fees and content cost come from the ERP, so no channel looks free.</p></div>
+   <div class="step"><b>Profit on each order</b><p>Price − discount − refund − COGS = CM1. Then pick and pack, postage, return labels, payment fees and email/SMS cost = CM2. Revenue alone hides all of this.</p></div>
+   <div class="step"><b>Group into cohorts</b><p>Customers are grouped by first-order month, then tracked month by month: who ordered, how much, and what it earned.</p></div>
+   <div class="step"><b>LTV and payback</b><p>Average CM2 per original customer by month, added up and discounted at a 12% cost of capital, is LTV. Where the running total crosses CAC is payback. LTV − CAC is CM3.</p></div>
+   <div class="step"><b>Judge the margin</b><p>Average CAC says how a channel did. Marginal CAC (recent CAC ÷ spend elasticity from lift tests) says what the next customer will cost. Budget moves on the margin.</p></div>
+   <div class="step"><b>Check, then decide</b><p>Every total ties to the GL and invoices, the projection is backtested, and each campaign gets Scale, Hold, Fix or Cut against the plan's guardrails.</p></div>
+  </div></div>
+  <div><p class="eyebrow">What each source provides</p><div class="srcs">
+   ${card('LinkedIn Campaign Manager','Ads API','#0a66c2',['Daily spend, impressions and clicks by campaign','Campaign IDs used in UTMs'])}
+   ${card('TikTok Ads Manager','Marketing API','#e5376b',['Daily spend and views by campaign','Offer attached to each campaign (e.g. 30% off)'])}
+   ${card('Meta Ads Manager','Marketing API','#7f56d9',['Spend by campaign and ad set','Retargeting vs prospecting split'])}
+   ${card('Google Ads','Ads API','#1b96ff',['Spend by campaign, brand vs non-brand','Shopping feed spend'])}
+   ${card('Shopify','Admin API','#5e8e3e',['Every order: price, discount code, refund','First-touch UTM on the first order','Shopify Payments fee on every charge','Hashed email, to dedupe customers'])}
+   ${card('ERP','GL export','#c2504b',['Standard COGS by SKU','Marketing GL, to tie spend','Creator payouts and content cost'])}
+   ${card('ShipBob (3PL)','API','#0f766e',['Pick and pack fee per order','Postage by weight and zone','Return labels; storage kept out of CM2'])}
+   ${card('Klaviyo','API','#1f2937',['Platform fee and SMS spend by month','Allocated to repeat orders, the ones it drives'])}
+   ${card('Fairing post-purchase survey','API','#b45309',['"How did you hear about us?" on the thank-you page','Second attribution view for no-click orders'])}
+   ${card('FP&amp;A plan','Google Sheets','#6b7280',['Budget and plan CAC by channel','Guardrails: 3x LTV:CAC, 12-month payback','Spend elasticities from quarterly lift tests'])}
+  </div></div>
+  <div><p class="eyebrow">Data models (dbt, in BigQuery)</p><table><tr><th>Model</th><th>One row per</th><th>Built from</th><th>Tests</th></tr>
+   <tr><td><b>orders_costed</b></td><td>Order</td><td>Shopify orders + ERP COGS + ShipBob + Shopify Payments + Klaviyo allocation</td><td>Unique order ID; CM2 = net revenue − costs; no missing COGS</td></tr>
+   <tr><td><b>customers</b></td><td>Customer</td><td>Hashed email, first order, UTM, survey answer</td><td>One first order per customer; every customer has a channel</td></tr>
+   <tr><td><b>campaign_spend_monthly</b></td><td>Campaign × month</td><td>4 ad platforms + creator payouts + content cost</td><td>Ties to the ERP marketing GL within 1%</td></tr>
+   <tr><td><b>cohort_curves</b></td><td>Slice × month since first order</td><td>orders_costed + customers + campaign_spend_monthly</td><td>A month counts as observed only when 40+ customers reached it</td></tr></table></div>
+  <div><p class="eyebrow">Definitions</p><table><tr><th>Metric</th><th>How it is calculated</th></tr>
+   <tr><td><b>CAC</b></td><td>Acquisition spend ÷ new customers, for the same channel, campaign and month</td></tr>
+   <tr><td><b>Marginal CAC</b></td><td>Jul to Sep CAC ÷ spend elasticity. Elasticity 0.8 means 10% more spend buys 8% more customers</td></tr>
+   <tr><td><b>CM1</b></td><td>Net revenue after discounts and refunds − COGS</td></tr>
+   <tr><td><b>CM2 (contribution)</b></td><td>CM1 − pick and pack − postage and returns − payment fees − email and SMS</td></tr>
+   <tr><td><b>24-mo LTV</b></td><td>CM2 per original customer, months 0 to 23, discounted at 12% a year (observed, then projected)</td></tr>
+   <tr><td><b>CM3</b></td><td>24-mo LTV − CAC: what a customer is worth after paying to acquire them</td></tr>
+   <tr><td><b>LTV:CAC</b></td><td>24-mo LTV ÷ CAC. Plan target is 3x or more</td></tr>
+   <tr><td><b>Payback</b></td><td>Months until cumulative CM2 per customer passes CAC. Guardrail is 12 months</td></tr></table></div>
+  <div><p class="eyebrow">Who uses it, and when</p><table><tr><th>When</th><th>What happens</th><th>Who</th></tr>
+   <tr><td><b>Weekly</b></td><td>Budget actions reviewed; campaigns losing money on the next customer are cut or fixed</td><td>Head of growth, strategic finance</td></tr>
+   <tr><td><b>Monthly close</b></td><td>New cohort added; ties signed off; CAC vs plan explained</td><td>Controller, strategic finance</td></tr>
+   <tr><td><b>Quarterly</b></td><td>Lift tests refresh elasticities; budget reset by channel; cohort quality in the board pack</td><td>CFO, CEO, board</td></tr></table></div>
+  <div><p class="eyebrow">Known limits, and what's next</p><table><tr><th>Limit</th><th>How it's handled</th></tr>
+   <tr><td><b>Click attribution misses ad views</b></td><td>Survey-adjusted view, plus quarterly geo holdout tests on TikTok and Meta to measure true lift</td></tr>
+   <tr><td><b>Young cohorts are projected</b></td><td>Shown dashed, backtested every month, and never the only reason for a cut</td></tr>
+   <tr><td><b>Fixed costs are excluded</b></td><td>Warehouse rent, team and software sit below CM3, in the P&amp;L, not here</td></tr>
+   <tr><td><b>Next</b></td><td>A media mix model to set elasticities from data, and the cash cost of inventory in payback</td></tr></table></div>
+  <p class="note">All companies, customers and figures on this page are fictional (Sample Co.). The method, sources, models and checks are the real ones.</p></div>`;
+}
+
+/* =====================================================================
+   DRAWERS
+   ===================================================================== */
+function openDrawer(title,sub,html){$('dTitle').textContent=title;$('dSub').textContent=sub||'';$('dBody').innerHTML=html;$('drawer').classList.add('open');$('ovl').style.display='block';$('dBody').scrollTop=0;}
+function closeDrawer(){$('drawer').classList.remove('open');$('ovl').style.display='none';}
+const flowH=chips=>'<div class="flow">'+chips.map((c,i)=>(i?'<span class="a">→</span>':'')+`<span class="n${i===0?' src':''}">${c}</span>`).join('')+'</div>';
+function explain(key){
+  const f=['overview','whatif','actions'].includes(S.tab)?null:F(),B=build(f),nm=fname(f)+attrNote();
+  const chRows=fnc=>`<table class="fin"><tr><th>Channel</th><th>Value</th></tr>${CH.map((c,i)=>`<tr class="click" data-dch="${c.id}"><td><span class="dot" style="background:${c.c}"></span>${c.name}</td><td>${fnc(CB[i],c)}</td></tr>`).join('')}<tr class="tot"><td>All channels</td><td>${fnc(ALL,null)}</td></tr></table>`;
+  const E={
+    n:['New customers',nm,flowH(['Shopify orders','First order per hashed email','Cohort month'])+`<div class="prov"><b>Rule:</b> a customer is new in the month of their first order. Emails are hashed and deduplicated, so a returning customer is never counted twice.</div>`+chRows(b=>fn(b.n))],
+    spend:['Acquisition spend',nm,flowH(['Ad platforms + creator payouts','Tie to ERP marketing GL','Spend by campaign and month'])+`<div class="prov"><b>Includes</b> paid media, creator fees and content/SEO cost for organic. Ties to the ERP within 1% (see Checks).</div>`+chRows(b=>f$(b.spend))],
+    cac:['CAC',nm,flowH(['Spend by campaign','÷ customers with that UTM','CAC'])+`<div class="formula">CAC = spend ÷ new customers\n= ${f$(B.spend)} ÷ ${fn(B.n)}\n= ${fc(B.cac)}</div>`+chRows((b,c)=>fc(b.cac)+' <span class="tiny">plan '+f$(c?c.plan:planCac(null))+'</span>')],
+    mcac:['Marginal CAC',nm,`<div class="prov"><b>Why it matters:</b> the average CAC includes the cheapest customers a channel ever found. The next dollar buys the most expensive ones. Elasticities come from quarterly lift tests, kept in the FP&amp;A plan.</div><div class="formula">Marginal CAC = recent CAC ÷ elasticity\n= ${fc(B.rcac)} ÷ ${B.e?B.e.toFixed(2):'n/a'}\n= ${B.mcac?fc(B.mcac):'n/a'}</div>`+chRows((b,c)=>c&&c.id!=='org'?fc(b.mcac)+' <span class="tiny">e = '+c.e.toFixed(2)+'</span>':'—')],
+    ltv:['24-month LTV',nm,flowH(['Orders','CM2 per order','Per original customer by month','Discount at 12%','Sum months 0 to 23'])+`<div class="prov"><b>Why contribution, not revenue:</b> a $58 TikTok first order with a 30% discount, a return and paid postage can earn almost nothing. Revenue LTV would hide that.</div><div class="formula">LTV = Σ CM2 per customer × discount factor, M0 to M23\nObserved M0 to M${B.lo}: ${fc(sum(B.dcm.slice(0,B.lo+1)))}\nProjected M${B.lo+1} to M23 (×${B.r.toFixed(3)} per month): ${fc(B.ltv24-sum(B.dcm.slice(0,B.lo+1)))}\n= ${fc(B.ltv24)}</div>`+chRows(b=>fc(b.ltv24))],
+    ltvcac:['LTV:CAC',nm,`<div class="formula">LTV:CAC = ${fc(B.ltv24)} ÷ ${fc(B.cac)} = ${fx(B.ltvcac,2)}</div><div class="prov"><b>Plan target:</b> 3x or more. Under 1x loses money on every customer.</div>`+chRows(b=>fx(b.ltvcac,2))],
+    cm3:['CM3 per customer',nm,`<div class="formula">CM3 = 24-mo LTV − CAC\n= ${fc(B.ltv24)} − ${fc(B.cac)}\n= ${fc(B.cm3)}</div><div class="prov"><b>What it means:</b> what one new customer adds to the business after paying to acquire them, before fixed costs.</div>`+chRows(b=>fc(b.cm3))],
+    pb:['CAC payback',nm,`<div class="prov"><b>Rule:</b> the month in which cumulative CM2 per customer passes CAC. The plan guardrail is 12 months. ${B.pbObs?'This one is observed in the data.':'This one falls in the projected part of the curve.'}</div><div class="formula">CAC ${fc(B.cac)}\n${B.cumcm.slice(0,13).map((v,m)=>'M'+m+'  '+fc(v)+(v>=B.cac?'  ✓':'')).join('\n')}</div>`+chRows(b=>fmo(b.pb))],
+    m3:['Month-3 active',nm,`<div class="prov"><b>Rule:</b> share of customers who placed an order exactly 3 months after their first, averaged over every cohort old enough to have a month 3.</div>`+chRows(b=>fp(b.m3))],
+    cmp:['Contribution margin (CM2)',nm,`<div class="formula">CM2 margin = CM2 ÷ net revenue\n= ${f$(B.tot.cm)} ÷ ${f$(B.tot.net)}\n= ${fp(B.cmPct,1)}</div>`+chRows(b=>fp(b.cmPct,1))],
+    act:['Budget actions','All paid campaigns',`<div class="prov"><b>Rules:</b> Scale when marginal LTV:CAC ≥ 3x and payback ≤ 12 months (+25% budget). Hold at 2x to 3x. Fix at 1x to 2x (hold budget until the offer, creative or landing page is fixed). Cut below 1x (−50%).</div><div class="formula">12-mo impact = budget change per month × (marginal LTV:CAC − 1) × 12</div>`]};
+  const e=E[key];if(e)openDrawer(e[0],e[1],e[2]);
+}
+function cohortDrawer(t,m){
+  const f=F(),B=build(f),C=B.coh[t],md=S.attr;
+  let h=flowH(['Shopify orders',MONTHS[t]+' first orders',m!=null?'Month '+m:'All months']);
+  h+=`<table class="fin"><tr><td>Customers</td><td>${fn(C.n)}</td></tr><tr><td>Acquisition spend</td><td>${C.spend?f$(C.spend):'—'}</td></tr><tr><td>CAC</td><td>${C.spend?fc(C.cac):'—'}</td></tr>`;
+  if(m!=null){const x=C.age[m];h+=`<tr><td>Active in month ${m}</td><td>${fn(x.act)} (${fp(x.act/C.n)})</td></tr><tr><td>Orders</td><td>${fn(x.ord)}</td></tr><tr><td>Net revenue</td><td>${f$(x.net)}</td></tr><tr><td>CM2</td><td>${f$(x.cm)}</td></tr><tr class="tot"><td>Earned per customer by month ${m}</td><td>${fc(C.cum[m])}${C.spend?` of ${fc(C.cac)} (${fp(C.cum[m]/C.cac)})`:''}</td></tr>`;}
+  else h+=`<tr class="tot"><td>Earned per customer by month ${C.age.length-1}</td><td>${fc(C.cum[C.age.length-1])}${C.spend?` (${fp(C.cum[C.age.length-1]/C.cac)} of CAC)`:''}</td></tr>`;
+  h+='</table>';
+  if(!f){h+=`<h4 class="dh">Channel mix of this cohort</h4><table class="fin"><tr><th>Channel</th><th>Customers</th><th>CAC</th><th>Earned back${m!=null?' by M'+m:''}</th></tr>${CH.map((c,i)=>{const D=CB[i].coh[t],mm=m??D.age.length-1;return `<tr class="click" data-dch="${c.id}"><td><span class="dot" style="background:${c.c}"></span>${c.name}</td><td>${fn(D.n)}</td><td>${fc(D.cac)}</td><td>${fp(D.cum[mm]/(D.cac||1))}</td></tr>`;}).join('')}</table>`;}
+  let cs=CUST.filter(c=>(!f||(chOf(c,md)===f.ch&&(f.cp==null||cpOf(c,md)===f.cp)))&&c.t===t);
+  if(m!=null)cs=cs.filter(c=>c.o.some(o=>o.a===m));
+  cs.sort((a,b)=>b.cm-a.cm);
+  h+=`<h4 class="dh">${m!=null?'Customers who ordered in month '+m:'Customers'} (${fn(cs.length)}, top 25 by CM2)</h4><table class="fin"><tr><th>Customer</th><th>Channel</th><th>Orders</th><th>CM2</th></tr>${cs.slice(0,25).map(c=>`<tr class="click" data-cust="${c.id}"><td>${c.id}</td><td class="l">${CHM[chOf(c,md)].short}</td><td>${c.n}</td><td>${fc(c.cm)}</td></tr>`).join('')}</table>`;
+  if(cs.length>25)h+=`<p class="footnote"><a data-gocust="${t}">See all ${fn(cs.length)} in Customers →</a></p>`;
+  openDrawer(MONTHS[t]+' cohort'+(m!=null?' · month '+m:''),fname(f)+attrNote(),h);
+}
+function custDrawer(id){
+  const c=CUST.find(x=>x.id===id);if(!c)return;const ch=CHM[c.ch],cac=cacOf(c);
+  let cum=0;const byA=[];for(let a=0;a<NM-c.t;a++){cum+=sum(c.o.filter(o=>o.a===a).map(o=>o.cm));byA.push(cum);}
+  const pbm=byA.findIndex(v=>v>=cac);
+  let h=`<div class="flow"><span class="n src">${esc(ch.src)}</span><span class="a">→</span><span class="n">${esc(ch.cps[c.cp].n)}</span><span class="a">→</span><span class="n">First order ${MLONG[c.t]}</span>${c.ans?`<span class="a">·</span><span class="n">Survey: ${CHM[c.ans].short}</span>`:''}</div>`;
+  h+=`<div class="prov">${pbm>=0?`<b>Paid back in month ${pbm}.</b> `:`<b>Not paid back yet.</b> `}This customer cost ${fc(cac)} to acquire${surveyed(c)?` (credited to ${CHM[c.sv].name} by their survey answer)`:' (campaign spend that month ÷ customers it brought in)'} and has earned ${fc(c.cm)} in CM2 over ${c.n} order${c.n>1?'s':''}.</div>`;
+  h+=`<div class="chart">${lineChart({labels:byA.map((_,i)=>'M'+i),fmt:v=>'$'+v.toFixed(0),w:600,h:200,series:[{name:c.id,lab:'Cumulative CM2',c:ch.c,v:byA}],ref:cac,refLabel:'CAC '+fc(cac),yMin:Math.min(0,...byA)})}</div>`;
+  const tot=k=>sum(c.o.map(o=>o[k])),neg=v=>v?'-'+fc(v):'—';
+  h+=`<h4 class="dh">Orders (Shopify, costed with ERP, ShipBob, Shopify Payments and Klaviyo)</h4><div class="tblwrap"><table class="fin"><tr><th>Date</th><th>Gross</th><th>Discount</th><th>Refund</th><th>COGS</th><th>Fulfillment</th><th>Fees</th><th>Email/SMS</th><th>CM2</th></tr>
+  ${c.o.map(o=>{const d=MLONG[c.t+o.a].split(' ');return `<tr><td>${d[0]} ${o.day}, ${d[1]}${o.first?' <span class="badge info">1st</span>':''}${o.refund?' <span class="badge bad">Returned</span>':''}</td><td>${fc(o.g)}</td><td>${neg(o.disc)}</td><td>${neg(o.refund)}</td><td>${neg(o.cogs)}</td><td>${neg(o.pick+o.post)}</td><td>${neg(o.fee)}</td><td>${neg(o.klav)}</td><td class="${o.cm<0?'dn':''}"><b>${fc(o.cm)}</b></td></tr>`;}).join('')}
+  <tr class="tot"><td>Total</td><td>${fc(tot('g'))}</td><td>${neg(tot('disc'))}</td><td>${neg(tot('refund'))}</td><td>${neg(tot('cogs'))}</td><td>${neg(tot('pick')+tot('post'))}</td><td>${neg(tot('fee'))}</td><td>${neg(tot('klav'))}</td><td>${fc(c.cm)}</td></tr></table></div>`;
+  openDrawer(c.id+' · '+CHM[chOf(c,S.attr)].name,`${MONTHS[c.t]} cohort · ${c.st} · ${c.n} orders`,h);
+}
+
+/* =====================================================================
+   SHELL
+   ===================================================================== */
+const TABS=[['overview','Overview','◫'],['actions','Budget Actions','⚑'],['cohorts','Cohorts','▦','Cohort Retention & Payback'],['channels','Channels','◎','Channels & Campaigns'],['unit','Unit Economics','$','Margin Ladder: CM1 to CM3'],['customers','Customers','👤','Customers & Orders'],['whatif','What-if','🎛','What-if: Budget & Levers'],['checks','Checks','✓','Ties, Backtest & Attribution'],['how','How it works','⚙']];
+const VIEWS={overview:vOverview,actions:vActions,cohorts:vCohorts,channels:vChannels,unit:vUnit,customers:vCustomers,whatif:vWhatif,checks:vChecks,how:vHow};
+const GLOBAL=['overview','actions','whatif','checks','how'];
+function setCh(id,cp=null){S.ch=id;S.cp=id==='ALL'?null:cp;S.cpage=0;syncHdr();}
+function syncHdr(){
+  document.querySelectorAll('#chSeg button').forEach(b=>b.classList.toggle('on',b.dataset.c===S.ch));
+  document.querySelectorAll('#attrSeg button').forEach(b=>b.classList.toggle('on',b.dataset.a===S.attr));
+  $('filtChip').textContent=fname(F())+attrNote();
+  $('cpChip').innerHTML=S.cp!=null?`<span class="pill v">Campaign: ${esc(cpName(S.ch,S.cp))} <a data-cp="none" style="cursor:pointer">✕</a></span>`:'';
+}
+function render(){
+  document.querySelectorAll('#nav a,#mnav a').forEach(a=>a.classList.toggle('on',a.dataset.t===S.tab));
+  const tt=TABS.find(t=>t[0]===S.tab);$('pageTitle').textContent=tt[3]||tt[1];
+  document.querySelector('#hdr .row2').style.opacity=['actions','whatif','checks','how'].includes(S.tab)?.45:1;
+  const root=$('content');root.innerHTML='';VIEWS[S.tab](root);
+}
+function go(t){S.tab=t;render();}
+function init(){
+  $('nav').innerHTML=TABS.map(([id,l,ic])=>`<a data-t="${id}"><span class="ic">${ic}</span>${l}</a>`).join('');
+  $('mnav').innerHTML='<a data-t="how">⚙ How it works: sources and flow</a>';
+  document.querySelectorAll('#nav a,#mnav a').forEach(a=>a.onclick=()=>{go(a.dataset.t);scrollTo(0,0);});
+  $('chSeg').innerHTML=`<button data-c="ALL" class="on">All</button>`+CH.map(c=>`<button data-c="${c.id}">${c.short}</button>`).join('');
+  document.querySelectorAll('#chSeg button').forEach(b=>b.onclick=()=>{setCh(b.dataset.c);if(GLOBAL.includes(S.tab)&&b.dataset.c!=='ALL')S.tab='channels';render();});
+  document.querySelectorAll('#attrSeg button').forEach(b=>b.onclick=()=>{S.attr=b.dataset.a;if(S.cp===-1&&S.attr==='utm')S.cp=null;calcAll();syncHdr();render();});
+  const ck=checks();$('pillChecks').textContent=ck.filter(c=>c.ok).length+'/'+ck.length+' checks pass';$('pillChecks').className='pill '+(ck.every(c=>c.ok)?'ok':'warn');
+  $('ovl').onclick=closeDrawer;$('dClose').onclick=closeDrawer;
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDrawer();});
+  document.body.addEventListener('click',e=>{
+    const t=e.target;
+    const k=t.closest('[data-x]');if(k){explain(k.dataset.x);return;}
+    const cu=t.closest('[data-cust]');if(cu){custDrawer(cu.dataset.cust);return;}
+    const ce=t.closest('[data-cell]');if(ce){const[a,b]=ce.dataset.cell.split(',').map(Number);cohortDrawer(a,b);return;}
+    const co=t.closest('[data-coh]');if(co){cohortDrawer(+co.dataset.coh,null);return;}
+    const gc=t.closest('[data-gocust]');if(gc){S.ccoh=gc.dataset.gocust;closeDrawer();go('customers');scrollTo(0,0);return;}
+    const dc=t.closest('[data-dch]');if(dc){closeDrawer();setCh(dc.dataset.dch);go('channels');scrollTo(0,0);return;}
+    const mt=t.closest('[data-metric]');if(mt){S.metric=mt.dataset.metric;render();return;}
+    const ue=t.closest('[data-ue]');if(ue){S.ue=ue.dataset.ue;render();return;}
+    const so=t.closest('[data-sort]');if(so){if(S.csort===so.dataset.sort)S.cdir*=-1;else{S.csort=so.dataset.sort;S.cdir=-1;}render();return;}
+    const pg=t.closest('[data-page]');if(pg){S.cpage=Math.max(0,S.cpage+ +pg.dataset.page);render();return;}
+    const ak=t.closest('[data-cpk]');if(ak){if(S.attr!=='utm'){S.attr='utm';calcAll();}setCh(ak.dataset.cch,+ak.dataset.cpk);go('channels');scrollTo(0,0);return;}
+    const cp=t.closest('[data-cp]');if(cp&&S.ch!=='ALL'){S.cp=cp.dataset.cp==='none'?null:+cp.dataset.cp;S.cpage=0;syncHdr();render();return;}
+    const g=t.closest('[data-go]');const ch=t.closest('[data-ch]');
+    if(ch&&!g){setCh(ch.dataset.ch);if(S.tab!=='unit'&&S.tab!=='cohorts')S.tab='channels';render();scrollTo(0,0);return;}
+    if(g){if(g.dataset.ch)setCh(g.dataset.ch);go(g.dataset.go);scrollTo(0,0);}
+  });
+  const tip=$('tip');
+  document.addEventListener('mousemove',e=>{const t=e.target.closest&&e.target.closest('[data-tip]');
+    if(!t){tip.style.display='none';return;}tip.innerHTML=t.dataset.tip;tip.style.display='block';
+    const x=Math.min(e.clientX+14,innerWidth-tip.offsetWidth-8),y=Math.min(e.clientY+14,innerHeight-tip.offsetHeight-8);tip.style.left=x+'px';tip.style.top=y+'px';});
+  syncHdr();render();
+}
+init();
+</script>
+</body>
+</html>
+<!-- home-pill --><script>(function(){function add(){if(document.getElementById("bs-home"))return;var a=document.createElement("a");a.id="bs-home";a.href="./";a.title="Back to Basav Sharma home page";a.setAttribute("style","position:fixed;left:16px;bottom:16px;z-index:2147483647;display:inline-flex;align-items:center;gap:10px;padding:8px 16px 8px 8px;border-radius:999px;background:#0f1f3d;color:#f7f2e7;text-decoration:none;font:600 14px/1 Inter,system-ui,-apple-system,Segoe UI,sans-serif;box-shadow:0 8px 24px rgba(15,31,61,.35);border:1px solid #b8975a");a.innerHTML="<span style=\"display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#b8975a;color:#0f1f3d;font:800 13px/1 Georgia,serif\">B.S</span><span>&larr; Basav Sharma &middot; all tools</span>";document.documentElement.appendChild(a)}if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",add);else add();window.addEventListener("load",add);setInterval(add,1500)})();</script>

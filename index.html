@@ -137,6 +137,16 @@ section{padding:104px 0}
 .tools.single .tool .body{justify-content:center;padding:36px}
 .note{margin-top:30px;font-size:14px;color:var(--deep-mute)}
 
+.tools.grid3{grid-template-columns:repeat(3,1fr);gap:18px}
+.tools.grid3 .tool{border-radius:18px}
+.tools.grid3 .tool .shot{aspect-ratio:16/10}
+.tools.grid3 .tool .body{padding:16px 18px 18px;gap:6px}
+.tools.grid3 .tool h4{font-size:20px}
+.tools.grid3 .tool p{font-size:14px;line-height:1.5}
+.tools.grid3 .tool .open{margin-top:6px;font-size:13px}
+.ttag{align-self:flex-start;font:500 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--royal);background:var(--royal-soft);padding:5px 8px;border-radius:999px}
+@media (max-width:1040px){.tools.grid3{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.tools.grid3{grid-template-columns:1fr}}
 /* looking for */
 .seek{background:var(--ivory)}
 .seek .box{border:1.5px solid var(--navy);border-radius:32px;padding:clamp(32px,5vw,64px);position:relative;overflow:hidden;background:var(--card)}
@@ -296,51 +306,38 @@ footer .fine{margin-top:72px;padding-top:24px;border-top:1px solid #24365e;displ
 
 <section class="tools-band" id="tools"><div class="wrap">
   <div class="head rv">
-    <div><div class="label">Portfolio</div><h2>Tools I've <em>Built</em>.</h2><span class="badge"><i style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold)"></i> 6 live tools · open in your browser</span></div>
+    <div><div class="label">Portfolio</div><h2>Tools I've <em>Built</em>.</h2><span class="badge"><i style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold)"></i> 7 live tools · open in your browser</span></div>
     <p>Each of these started as a real problem I had to solve. I rebuilt them with sample data so you can try them yourself. Click any tool to open it.</p>
   </div>
 
-  <div class="group rv"><h3>Finance tools</h3></div>
-  <div class="tools single">
+  <div class="tools grid3">
     <a class="tool rv" href="fpa-dashboard.html">
       <div class="shot"><img src="img/fpa.jpg" alt="FP&amp;A Dashboard preview" loading="lazy"></div>
-      <div class="body"><h4>FP&amp;A Dashboard</h4><p>Plan vs actuals, profit by channel, cash runway and covenants in one place, with what-if scenarios you can change live.</p><span class="open">Open live →</span></div>
+      <div class="body"><span class="ttag">Finance</span><h4>FP&amp;A Dashboard</h4><p>Plan vs actuals, profit by channel, cash runway and covenants in one place, with what-if scenarios you can change live.</p><span class="open">Open live →</span></div>
     </a>
-  </div>
-
-  <div class="group rv"><h3>Ops tools</h3></div>
-  <div class="tools">
+    <a class="tool rv" href="cohort-unit-economics.html">
+      <div class="shot"><img src="img/cohort.jpg" alt="Cohort &amp; Unit Economics preview" loading="lazy"></div>
+      <div class="body"><span class="ttag">Finance · GTM</span><h4>Cohort &amp; Unit Economics</h4><p>Joins ad spend (LinkedIn, TikTok, Meta, Google), Shopify orders and ERP/3PL costs to show CAC, payback and LTV by cohort and campaign, and which budgets to scale or cut.</p><span class="open">Open live →</span></div>
+    </a>
+    <a class="tool rv" href="gtm-planner.html">
+      <div class="shot"><img src="img/gtm.jpg" alt="GTM Capacity Planner preview" loading="lazy"></div>
+      <div class="body"><span class="ttag">GTM</span><h4>GTM Capacity Planner</h4><p>Starts from the revenue target and works back to pipeline, reps and a hiring calendar, so you know who to hire and when.</p><span class="open">Open live →</span></div>
+    </a>
     <a class="tool rv" href="inventory-open-to-buy.html">
       <div class="shot"><img src="img/otb.jpg" alt="Inventory Open-to-Buy preview" loading="lazy"></div>
-      <div class="body"><h4>Inventory Open-to-Buy</h4><p>Answers "what should we buy, and when?" for every product, channel and warehouse, so cash doesn't get stuck in slow stock.</p><span class="open">Open live →</span></div>
+      <div class="body"><span class="ttag">Ops</span><h4>Inventory Open-to-Buy</h4><p>Answers "what should we buy, and when?" for every product, channel and warehouse, so cash doesn't get stuck in slow stock.</p><span class="open">Open live →</span></div>
     </a>
     <a class="tool rv" href="po-tracker.html">
       <div class="shot"><img src="img/po.jpg" alt="PO Tracker preview" loading="lazy"></div>
-      <div class="body"><h4>PO Tracker</h4><p>Matches every purchase order to what arrived and what was billed, so overpayments and missing shipments show up before they cost money.</p><span class="open">Open live →</span></div>
+      <div class="body"><span class="ttag">Ops</span><h4>PO Tracker</h4><p>Matches every purchase order to what arrived and what was billed, so overpayments and missing shipments show up before they cost money.</p><span class="open">Open live →</span></div>
     </a>
-  </div>
-
-  <div class="group rv"><h3>GTM tools</h3></div>
-  <div class="tools single">
-    <a class="tool rv" href="gtm-planner.html">
-      <div class="shot"><img src="img/gtm.jpg" alt="GTM Capacity Planner preview" loading="lazy"></div>
-      <div class="body"><h4>GTM Capacity Planner</h4><p>Starts from the revenue target and works back to pipeline, reps and a hiring calendar, so you know who to hire and when.</p><span class="open">Open live →</span></div>
-    </a>
-  </div>
-
-  <div class="group rv"><h3>Recruitment tools</h3></div>
-  <div class="tools single">
     <a class="tool rv" href="recruitment-automation.html">
       <div class="shot"><img src="img/recruit.jpg" alt="Recruitment Automation preview" loading="lazy"></div>
-      <div class="body"><h4>Recruitment Automation</h4><p>Follows up with candidates who've waited too long, holds the sensitive ones for a person, and keeps notes on everyone.</p><span class="open">Open live →</span></div>
+      <div class="body"><span class="ttag">Recruiting</span><h4>Recruitment Automation</h4><p>Follows up with candidates who've waited too long, holds the sensitive ones for a person, and keeps notes on everyone.</p><span class="open">Open live →</span></div>
     </a>
-  </div>
-
-  <div class="group rv"><h3>Fundraising room</h3></div>
-  <div class="tools single">
     <a class="tool rv" href="fundraising-room.html">
       <div class="shot"><img src="img/fundraise.jpg" alt="Fundraising Room preview" loading="lazy"></div>
-      <div class="body"><h4>Fundraising Room</h4><p>How I'd present a company to investors: the key numbers, the market, the flywheel, and a valuation you can pressure-test.</p><span class="open">Open live →</span></div>
+      <div class="body"><span class="ttag">Fundraising</span><h4>Fundraising Room</h4><p>How I'd present a company to investors: the key numbers, the market, the flywheel, and a valuation you can pressure-test.</p><span class="open">Open live →</span></div>
     </a>
   </div>
   <p class="note">All company names, products and figures in these tools are anonymized or fictional.</p>
