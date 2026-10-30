@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Basav Sharma · Finance, Strategy &amp; AI Systems</title>
+<meta name="description" content="Basav Sharma: founder, finance head, banker and AI transformation lead. Columbia MBA. Looking to work with founders, operators and finance leaders in San Francisco and New York.">
+<meta property="og:title" content="Basav Sharma">
+<meta property="og:description" content="I build finance strategy and AI systems that fast-growing companies run on.">
+<meta property="og:image" content="https://basav16.github.io/profile/img/basav.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --ivory:#f8f0e1; --ivory-2:#f0e5cf; --card:#fffbf2; --line:#e4d6bb;
+  --royal:#2a52be; --royal-soft:#e3e9fa;
+  --navy:#0f1f3d; --navy-2:#2b3a57; --mute:#6b7389;
+  --gold:#b8975a; --gold-ink:#8a6a2f; --gold-soft:#f1e6cc;
+  --deep:#0b1730; --deep-2:#13244a; --deep-line:#253a66; --deep-mute:#b3bdd1;
+  --li:#0a66c2;
+  --serif:"Fraunces", Georgia, serif; --sans:"Inter", system-ui, -apple-system, "Segoe UI", sans-serif; --mono:"JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--ivory);color:var(--navy);font:17px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+img{max-width:100%;display:block}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.label{font:500 12px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--royal)}
+
+/* nav */
+nav{position:sticky;top:0;z-index:20;background:rgba(247,242,231,.88);backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid transparent;transition:border-color .2s}
+nav.scrolled{border-bottom-color:var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.mono{font:800 20px/1 var(--serif);letter-spacing:-.02em;text-decoration:none}
+.mono span{color:var(--gold)}
+nav ul{display:flex;gap:28px;list-style:none;margin:0;padding:0;font-size:14px;font-weight:500}
+nav ul a{text-decoration:none;color:var(--navy-2)}
+nav ul a:hover{color:var(--gold-ink)}
+nav ul a.hl{color:var(--navy);font-weight:700;border-bottom:2px solid var(--gold);padding-bottom:3px}
+
+/* hero */
+.hero{padding:40px 0 56px}
+.hero .wrap{display:grid;grid-template-columns:1.25fr .75fr;gap:56px;align-items:center}
+.hero h1{font:800 clamp(54px,8vw,112px)/.9 var(--serif);letter-spacing:-.04em;margin:18px 0 22px}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero .lede{font-size:clamp(19px,2vw,23px);line-height:1.5;color:var(--navy-2);max-width:31ch;margin:0 0 34px}
+.hero .lede b{color:var(--navy);font-weight:600}
+.cta{display:flex;flex-wrap:wrap;gap:12px}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:13px 22px;border-radius:999px;font:600 15px/1 var(--sans);text-decoration:none;border:1.5px solid var(--navy);transition:transform .15s, background .15s, color .15s, border-color .15s}
+.btn.primary{background:var(--navy);color:var(--ivory)}
+.btn:hover{transform:translateY(-2px)}
+.btn.primary:hover{background:var(--royal);border-color:var(--royal)}
+.btn.li{background:var(--li);border-color:var(--li);color:#fff}
+.btn.li:hover{background:#084e96;border-color:#084e96}
+.btn svg{width:17px;height:17px}
+.portrait{position:relative;justify-self:end;width:100%;max-width:330px}
+.portrait::before{content:"";position:absolute;inset:16px -16px -16px 16px;background:var(--gold);border-radius:28px}
+.portrait img{position:relative;border-radius:28px;aspect-ratio:1/1.08;object-fit:cover;object-position:50% 25%;width:100%;height:auto}
+.portrait .tag{position:absolute;left:-34px;bottom:-20px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;box-shadow:0 10px 30px rgba(15,31,61,.14);font-size:14px;line-height:1.35}
+.portrait .tag b{display:block;font-weight:600}
+.portrait .tag span{color:var(--mute);font-size:13px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2f9e68;margin-right:7px;vertical-align:1px;box-shadow:0 0 0 4px rgba(47,158,104,.2)}
+
+/* ticker */
+.ticker{background:var(--navy);color:var(--ivory);padding:20px 16px;font:600 clamp(15px,1.6vw,20px)/1.4 var(--serif);border-bottom:3px solid var(--royal)}
+.ticker .track{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 22px;align-items:center;max-width:1180px;margin:0 auto}
+.ticker i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold);align-self:center;box-shadow:0 0 0 3px rgba(184,151,90,.18)}
+@keyframes slide{to{transform:translateX(-50%)}}
+
+/* sections */
+section{padding:104px 0}
+.head{display:grid;grid-template-columns:1fr 1.3fr;gap:48px;align-items:end;margin-bottom:56px}
+.head h2{font:800 clamp(40px,5.4vw,68px)/.98 var(--serif);letter-spacing:-.035em;margin:14px 0 0}
+.head p{margin:0;color:var(--navy-2);font-size:19px;max-width:52ch}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1.5px solid var(--navy);border-bottom:1.5px solid var(--navy)}
+.stat{padding:30px 24px 28px;border-right:1px solid var(--line)}
+.stat:last-child{border-right:0}
+.stat b{display:block;font:800 clamp(38px,4.4vw,56px)/1 var(--serif);letter-spacing:-.03em}
+.stat b small{font-size:.5em;color:var(--royal)}
+.stat span{display:block;margin-top:10px;color:var(--navy-2);font-size:15px;line-height:1.45}
+
+/* journey */
+.journey{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:64px}
+.role{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:28px 24px 26px;display:flex;flex-direction:column;gap:12px;transition:transform .2s, box-shadow .2s}
+.role:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(15,31,61,.09)}
+.role .yr{font:500 12px/1 var(--mono);letter-spacing:.08em;color:var(--mute)}
+.role h3{font:800 30px/1 var(--serif);letter-spacing:-.02em;margin:4px 0 0}
+.role .org{font-weight:600;font-size:15px}
+.role p{margin:0;color:var(--navy-2);font-size:15px;line-height:1.55}
+.role .pill{align-self:flex-start;margin-top:auto;font:500 11px/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:7px 10px;border-radius:999px;background:var(--royal-soft);color:var(--royal)}
+.role .pills{margin-top:auto;display:flex;flex-wrap:wrap;gap:6px}
+.role .pills .pill{margin-top:0}
+.creds{margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.cred{display:flex;align-items:center;gap:18px;background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px 22px}
+.cred .logo{flex:none;width:96px;height:56px;display:grid;place-items:center}
+.cred .logo img{max-width:96px;max-height:56px;width:auto;height:auto;object-fit:contain}
+.cred b{display:block;font-weight:600;font-size:15.5px;line-height:1.3}
+.cred span{color:var(--mute);font-size:14px}
+
+/* industries */
+.industries{background:var(--ivory-2)}
+.ind{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.ind div{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:28px 22px;display:flex;flex-direction:column;gap:14px;min-height:230px}
+.ind .ico{width:58px;height:58px;border-radius:16px;background:linear-gradient(145deg,var(--navy),#1d3466);color:var(--gold);display:grid;place-items:center;box-shadow:inset 0 0 0 1px rgba(184,151,90,.35)}
+.ind .ico svg{width:28px;height:28px}
+.ind h3{font:800 22px/1.1 var(--serif);letter-spacing:-.01em;margin:6px 0 0}
+.ind p{margin:0;color:var(--mute);font-size:14px;line-height:1.5}
+
+/* tools: highlighted band */
+.tools-band{background:var(--deep);color:var(--ivory);position:relative;overflow:hidden;padding:120px 0}
+.tools-band::before{content:"";position:absolute;inset:0;background:radial-gradient(900px 420px at 85% -10%,rgba(184,151,90,.28),transparent 60%),radial-gradient(700px 360px at -10% 110%,rgba(184,151,90,.14),transparent 60%);pointer-events:none}
+.tools-band .wrap{position:relative}
+.tools-band .label{color:var(--gold)}
+.tools-band .head p{color:var(--deep-mute)}
+.tools-band .head h2{font-size:clamp(52px,7.4vw,104px)}
+.tools-band .head h2 em{font-style:italic;font-weight:400;color:var(--gold)}
+.badge{display:inline-flex;align-items:center;gap:8px;margin-top:22px;padding:9px 14px;border:1px solid var(--gold);border-radius:999px;color:var(--gold);font:500 12px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase}
+.group{display:flex;align-items:center;gap:14px;margin:56px 0 18px}
+.group:first-of-type{margin-top:0}
+.group h3{font:500 13px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;margin:0;color:var(--gold)}
+.group::after{content:"";flex:1;height:1px;background:var(--deep-line)}
+.tools{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+.tools.single{grid-template-columns:1fr}
+.tool{display:grid;grid-template-rows:auto 1fr;background:var(--card);color:var(--navy);border:1px solid var(--deep-line);border-radius:24px;overflow:hidden;text-decoration:none;transition:transform .2s, box-shadow .2s, border-color .2s}
+.tool:hover{transform:translateY(-5px);box-shadow:0 26px 60px rgba(0,0,0,.35);border-color:var(--gold)}
+.tool .shot{aspect-ratio:16/9;overflow:hidden;background:var(--ivory-2);border-bottom:1px solid var(--line)}
+.tool .shot img{width:100%;height:100%;object-fit:cover;object-position:top left;transition:transform .5s}
+.tool:hover .shot img{transform:scale(1.04)}
+.tool .body{padding:24px 26px 26px;display:flex;flex-direction:column;gap:8px}
+.tool h4{font:800 28px/1.05 var(--serif);letter-spacing:-.02em;margin:0}
+.tool p{margin:0;color:var(--navy-2);font-size:15.5px}
+.tool .open{margin-top:10px;font-weight:600;font-size:14px;color:var(--royal)}
+.tools.single .tool{grid-template-columns:1.1fr 1fr;grid-template-rows:none}
+.tools.single .tool .shot{aspect-ratio:auto;min-height:280px;border-bottom:0;border-right:1px solid var(--line)}
+.tools.single .tool .body{justify-content:center;padding:36px}
+.note{margin-top:30px;font-size:14px;color:var(--deep-mute)}
+
+.tools.grid3{grid-template-columns:repeat(3,1fr);gap:18px}
+.tools.grid3 .tool{border-radius:18px}
+.tools.grid3 .tool .shot{aspect-ratio:16/10}
+.tools.grid3 .tool .body{padding:16px 18px 18px;gap:6px}
+.tools.grid3 .tool h4{font-size:20px}
+.tools.grid3 .tool p{font-size:14px;line-height:1.5}
+.tools.grid3 .tool .open{margin-top:6px;font-size:13px}
+.ttag{align-self:flex-start;font:500 10.5px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--royal);background:var(--royal-soft);padding:5px 8px;border-radius:999px}
+@media (max-width:1040px){.tools.grid3{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.tools.grid3{grid-template-columns:1fr}}
+/* looking for */
+.seek{background:var(--ivory)}
+.seek .box{border:1.5px solid var(--navy);border-radius:32px;padding:clamp(32px,5vw,64px);position:relative;overflow:hidden;background:var(--card)}
+.seek .box::after{content:"";position:absolute;right:-120px;top:-120px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(184,151,90,.28),transparent 65%)}
+.seek h2{position:relative;font:800 clamp(44px,6.4vw,88px)/.95 var(--serif);letter-spacing:-.04em;margin:18px 0 26px;max-width:15ch}
+.seek h2 em{font-style:italic;font-weight:400;color:var(--gold-ink)}
+.seek p{position:relative;color:var(--navy-2);font-size:20px;max-width:56ch;margin:0 0 36px}
+.chips{position:relative;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.chips>span{border:1px solid var(--line);background:var(--ivory);padding:12px 18px;border-radius:999px;font-weight:600;font-size:15px}
+.chips>span.role-c{background:var(--navy);border-color:var(--navy);color:var(--ivory)}
+.chips>span.avail{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:700;box-shadow:0 0 0 6px rgba(184,151,90,.22);animation:glow 2.4s ease-in-out infinite}
+.chips span.avail .dot{background:#1f7a4f;box-shadow:0 0 0 4px rgba(31,122,79,.25)}
+@keyframes glow{50%{box-shadow:0 0 0 11px rgba(184,151,90,.08)}}
+
+/* footer */
+footer{background:var(--navy);color:var(--ivory);padding:88px 0 40px}
+footer .label{color:var(--gold)}
+footer h2{font:800 clamp(44px,7vw,96px)/.95 var(--serif);letter-spacing:-.04em;margin:0 0 34px}
+footer h2 a{text-decoration:none;border-bottom:4px solid var(--gold)}
+footer .row{display:flex;flex-wrap:wrap;gap:12px}
+footer .btn{border-color:var(--ivory);color:var(--ivory)}
+footer .btn.primary{background:var(--ivory);color:var(--navy)}
+footer .btn.primary:hover{background:var(--gold);border-color:var(--gold);color:var(--navy)}
+footer .btn.li{background:var(--li);border-color:var(--li);color:#fff}
+footer .fine{margin-top:72px;padding-top:24px;border-top:1px solid #24365e;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font:400 13px/1.4 var(--mono);color:#8e9ab3}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(22px);transition:opacity .7s ease, transform .7s ease}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}.ticker .track,.chips span.avail{animation:none}}
+
+/* responsive */
+@media (max-width:1040px){.ind{grid-template-columns:repeat(3,1fr)}.journey{grid-template-columns:repeat(2,1fr)}.creds{grid-template-columns:1fr}}
+@media (max-width:860px){
+  .hero .wrap,.head{grid-template-columns:1fr}
+  .portrait{justify-self:start;max-width:320px;margin-left:8px}
+  .stats{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .tools{grid-template-columns:1fr}
+  .tools.single .tool{grid-template-columns:1fr}.tools.single .tool .shot{border-right:0;border-bottom:1px solid var(--line);min-height:200px}
+  nav ul{display:none}
+  section,.tools-band{padding:76px 0}
+}
+@media (max-width:560px){
+  .wrap{padding:0 16px}
+  .ind,.journey{grid-template-columns:1fr}
+  .ind div{min-height:0}
+  .portrait .tag{left:12px}
+}
+</style>
+</head>
+<body>
+
+<nav id="nav"><div class="wrap">
+  <a class="mono" href="#top">B<span>.</span>S</a>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#journey">Experience</a></li>
+    <li><a href="#industries">Industries</a></li>
+    <li><a class="hl" href="#tools">Tools I've Built</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</div></nav>
+
+<header class="hero" id="top"><div class="wrap">
+  <div>
+    <div class="label">Founder · Chief of Staff · Finance head · Banker</div>
+    <h1>Basav<br>Sharma<em>.</em></h1>
+    <p class="lede">I work next to <b>founders and CEOs</b> on the decisions that decide how a company grows: where to spend, what to cut, when to raise and how to scale. I bring the <b>finance depth</b> to make the call, and I build the systems that turn it into a plan the team can run.</p>
+    <div class="cta">
+      <a class="btn primary" href="#tools">See what I've built
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></a>
+      <a class="btn li" href="https://www.linkedin.com/in/basavsharma/" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9.75h4v11H3zM9.5 9.75h3.8v1.6h.06c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.77 2.6 4.77 6v5.45h-4v-4.83c0-1.15-.02-2.63-1.6-2.63-1.6 0-1.85 1.25-1.85 2.55v4.91h-3.95z"/></svg>LinkedIn</a>
+    </div>
+  </div>
+  <div class="portrait rv">
+    <img src="img/basav.jpg" alt="Portrait of Basav Sharma" width="800" height="800">
+    <div class="tag"><b><span class="dot"></span>San Francisco · New York</b><span>Columbia MBA '26 · available now</span></div>
+  </div>
+</div></header>
+
+<div class="ticker"><div class="track">
+  <span>Founder</span><i></i><span>Finance head</span><i></i><span>Investment banker</span><i></i><span>AI transformation lead</span><i></i><span>Columbia MBA</span>
+</div></div>
+
+<section id="about"><div class="wrap">
+  <div class="head rv">
+    <div><div class="label">About</div><h2>8 years in the room where decisions get made.</h2></div>
+    <p>I started as an analyst at a pilot training company in Delhi and grew into its founders' Chief of Staff and finance lead, the person they called before big decisions: what to invest in, what to walk away from, which aircraft to buy, and how to fund growth. Along the way I started my own advisory firm for founders, finished my MBA at Columbia, and at UBS built the case for a $1.4B acquisition that my team pitched to a $150B client. Today I lead AI, finance and special operations at a Khosla-backed consumer brand, reporting to the CEO. The pattern is the same: get clear on the decision, bring the numbers that settle it, then stay to make it happen. Finance is my depth; working across ops, GTM and AI makes me a useful generalist next to the people running the business.</p>
+  </div>
+
+  <div class="journey" id="journey">
+    <article class="role rv">
+      <div class="yr">2026 — NOW</div>
+      <h3>AI, Finance &amp; Special Ops</h3>
+      <div class="org">Because Market · San Francisco</div>
+      <p>Finance &amp; Special Operations Lead, reporting to the CEO. I built the FY26 operating plan that showed a website customer took about 25 months to pay back versus about 2 on Amazon, and we moved our GTM spend to Amazon and retail. I led the AI transformation of finance and ops, with agents that took the month-end close from 20 days to 5, and ran special projects for the CEO, from moving 240+ purchase orders onto our ERP in two weeks to finding $1.2M of cash tied up in old stock.</p>
+      <div class="pills"><span class="pill">Strategic Finance</span><span class="pill">AI transformation</span><span class="pill">FP&amp;A</span><span class="pill">Special ops</span></div>
+    </article>
+    <article class="role rv">
+      <div class="yr">2025</div>
+      <h3>Banking</h3>
+      <div class="org">UBS · New York</div>
+      <p>Investment Banking Associate, Global Industrials. I built the case for a $1.4B acquisition and took it to my deal team, who pitched it to a $150B client. I also found 10 targets for a private equity client, three of which went to committee diligence.</p>
+      <div class="pills"><span class="pill">M&amp;A</span><span class="pill">Capital markets</span><span class="pill">Industrials</span></div>
+    </article>
+    <article class="role rv">
+      <div class="yr">2019 — 2024</div>
+      <h3>Founder</h3>
+      <div class="org">Stratrun · New Delhi</div>
+      <p>I started an advisory firm and worked directly with founders of seven growing companies around the world. With each, I helped decide where to focus (GTM, pricing or hiring), built the plan, and stayed through implementation. For one U.S. founder, I built the forecasts and investor materials for a seed raise.</p>
+      <div class="pills"><span class="pill">Built from zero</span><span class="pill">GTM</span><span class="pill">Pricing</span><span class="pill">Hiring</span></div>
+    </article>
+    <article class="role rv">
+      <div class="yr">2017 — 2024</div>
+      <h3>Chief of Staff &amp; Finance</h3>
+      <div class="org">Chimes Aviation · Delhi</div>
+      <p>I joined as an analyst and was promoted early to Chief of Staff and FP&amp;A manager, working as a trusted partner to the founders. I advised the board to walk away from a $700K investment, negotiated a ~15% higher valuation in a stake-sale process, sourced ~$7M of training aircraft across 4 countries, and raised $8.5M for a new airbase.</p>
+      <div class="pills"><span class="pill">CEO's right hand</span><span class="pill">Strategic Finance</span><span class="pill">FP&amp;A</span><span class="pill">Capital raising</span><span class="pill">Fleet sourcing</span></div>
+    </article>
+  </div>
+  <div class="creds">
+    <div class="cred rv"><div class="logo"><img src="img/cbs.svg" alt="Columbia Business School logo"></div><div><b>Columbia Business School</b><span>MBA, Finance &amp; Strategy</span></div></div>
+    <div class="cred rv"><div class="logo"><img src="img/bayes.svg" alt="Bayes Business School logo"></div><div><b>Bayes Business School, London</b><span>BSc (Hons) Management</span></div></div>
+    <div class="cred rv"><div class="logo"><img src="img/cfa.svg" alt="CFA Institute logo"></div><div><b>CFA Institute</b><span>CFA Level II</span></div></div>
+  </div>
+</div></section>
+
+<section class="industries" id="industries"><div class="wrap">
+  <div class="head rv">
+    <div><div class="label">Industries</div><h2>Where I've worked.</h2></div>
+    <p>Different industries, same role: sit next to the people running the business, find what really drives the numbers, and help them make the call with confidence.</p>
+  </div>
+  <div class="ind">
+    <div class="rv">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+      <h3>Consumer &amp; senior care</h3><p>Deciding where to sell (our own site, Amazon or retail) and how much stock to hold, so growth comes with margin.</p>
+    </div>
+    <div class="rv">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22h18"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M12 2 20 7H4z"/></svg></span>
+      <h3>Investment banking</h3><p>Industrials M&amp;A: helping CEOs and investors decide what to buy, and how to fund it.</p>
+    </div>
+    <div class="rv">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></span>
+      <h3>Aviation training</h3><p>Helped the founders scale India's leading pilot training company: when to add capacity, which aircraft to buy, and how to fund it.</p>
+    </div>
+    <div class="rv">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span>
+      <h3>Strategy advisory</h3><p>Founders in manufacturing, hospitality, consumer and dating apps, around the world.</p>
+    </div>
+    <div class="rv">
+      <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg></span>
+      <h3>AI &amp; automation</h3><p>Deciding where AI actually pays off, then rolling it out across planning, finance and accounting, operations and recruiting.</p>
+    </div>
+  </div>
+</div></section>
+
+<section class="tools-band" id="tools"><div class="wrap">
+  <div class="head rv">
+    <div><div class="label">Portfolio</div><h2>Tools I've <em>Built</em>.</h2><span class="badge"><i style="display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--gold)"></i> 7 live tools · open in your browser</span></div>
+    <p>Each of these started as a question a founder or CEO needed answered. I built the tool that answered it, then rebuilt it with sample data so you can try it. Click any tool to open it.</p>
+  </div>
+
+  <div class="tools grid3">
+    <a class="tool rv" href="fpa-dashboard.html">
+      <div class="shot"><img src="img/fpa.jpg" alt="FP&amp;A Dashboard preview" loading="lazy"></div>
+      <div class="body"><span class="ttag">Finance</span><h4>FP&amp;A Dashboard</h4><p>"Are we on plan, and how long does our cash last?" Plan vs actuals, channel profit, runway and covenants, with what-ifs a CEO can change live.</p><span class="open">Open live →</span></div>
+    </a>
+    <a class="tool rv" href="cohort-unit-economics.html">
+      <div class="shot"><img src="img/cohort.jpg" alt="Cohort &amp; Unit Economics preview" loading="lazy"></div>
+      <div class="body"><span class="ttag">Finance · GTM</span><h4>Cohort &amp; Unit Economics</h4><p>"Which marketing dollars should we scale, and which should we cut?" Joins ad spend, orders and costs to show CAC, payback and LTV by cohort and campaign.</p><span class="open">Open live →</span></div>
+    </a>
+    <a class="tool rv" href="gtm-planner.html">
+      <div class="shot"><img src="img/gtm.jpg" alt="GTM Capacity Planner preview" loading="lazy"></div>
+      <div class="body"><span class="ttag">GTM</span><h4>GTM Capacity Planner</h4><p>"Can we hit the revenue target, and who do we need to hire?" Works back from the target to pipeline, reps and a hiring calendar.</p><span class="open">Open live →</span></div>
+    </a>
+    <a class="tool rv" href="inventory-open-to-buy.html">
+      <div class="shot"><img src="img/otb.jpg" alt="Inventory Open-to-Buy preview" loading="lazy"></div>
+      <div class="body"><span class="ttag">Ops</span><h4>Inventory Open-to-Buy</h4><p>"What should we buy, and when?" For every product, channel and warehouse, so cash doesn't get stuck in slow stock.</p><span class="open">Open live →</span></div>
+    </a>
+    <a class="tool rv" href="po-tracker.html">
+      <div class="shot"><img src="img/po.jpg" alt="PO Tracker preview" loading="lazy"></div>
+      <div class="body"><span class="ttag">Ops</span><h4>PO Tracker</h4><p>"Are we paying for what we actually received?" Matches every order to what arrived and what was billed, before it costs money.</p><span class="open">Open live →</span></div>
+    </a>
+    <a class="tool rv" href="recruitment-automation.html">
+      <div class="shot"><img src="img/recruit.jpg" alt="Recruitment Automation preview" loading="lazy"></div>
+      <div class="body"><span class="ttag">Recruiting</span><h4>Recruitment Automation</h4><p>"Are we losing good candidates because we're slow?" Follows up on time, holds the sensitive ones for a person, and keeps notes on everyone.</p><span class="open">Open live →</span></div>
+    </a>
+    <a class="tool rv" href="fundraising-room.html">
+      <div class="shot"><img src="img/fundraise.jpg" alt="Fundraising Room preview" loading="lazy"></div>
+      <div class="body"><span class="ttag">Fundraising</span><h4>Fundraising Room</h4><p>"Are we ready to raise, and at what valuation?" How I'd present a company to investors, with a valuation you can pressure-test.</p><span class="open">Open live →</span></div>
+    </a>
+  </div>
+  <p class="note">All company names, products and figures in these tools are anonymized or fictional.</p>
+</div></section>
+
+<section class="seek"><div class="wrap">
+  <div class="box rv">
+    <div class="label">What I'm looking for</div>
+    <h2>Help founders decide. <em>Scale</em> businesses.</h2>
+    <p>I'm looking to be the person a founder or CEO turns to for the hard calls, as a Chief of Staff, in Strategic Finance, or in BizOps at an AI-native or fast-growing company. I'll own the problems no one else has time for, bring the numbers that settle them, and make sure the decision actually gets carried out.</p>
+    <div class="chips">
+      <span class="role-c">Chief of Staff</span><span class="role-c">Strategic Finance</span><span class="role-c">BizOps</span><span>San Francisco · New York · in person</span><span class="avail"><span class="dot"></span>Available now</span>
+    </div>
+  </div>
+</div></section>
+
+<footer id="contact"><div class="wrap">
+  <div class="label">Let's talk</div>
+  <h2>Building something?<br><a href="mailto:basavsharma16@gmail.com">Let's work together.</a></h2>
+  <div class="row">
+    <a class="btn primary" href="mailto:basavsharma16@gmail.com">basavsharma16@gmail.com</a>
+    <a class="btn li" href="https://www.linkedin.com/in/basavsharma/" target="_blank" rel="noopener">LinkedIn</a>
+  </div>
+  <div class="fine"><span>© 2026 Basav Sharma</span><span>San Francisco, CA · New York, NY</span></div>
+</div></footer>
+
+<script>
+(function(){
+  var nav=document.getElementById('nav');
+  function onScroll(){nav.classList.toggle('scrolled',window.scrollY>8)}
+  window.addEventListener('scroll',onScroll,{passive:true});onScroll();
+  var els=document.querySelectorAll('.rv');
+  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('in')});return}
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{threshold:.12});
+  els.forEach(function(e){io.observe(e)});
+})();
+</script>
+</body>
+</html>
